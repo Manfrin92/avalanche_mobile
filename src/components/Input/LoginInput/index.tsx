@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useImperativeHandle, forwardRef, useState, useCallback } from 'react';
 import { TextInputProps } from 'react-native';
 import { useField } from '@unform/core';
-import { AntDesign, MaterialIcons } from '@expo/vector-icons';
+import { AntDesign, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 
 import { Container, TextInput } from './styles';
 
@@ -68,16 +68,16 @@ const Input: React.RefForwardingComponent<InputRef, InputProps> = (
     return (
         <Container style={containerStyle} isFocused={isFocused} isErrored={!!error}>
             {icon === 'lock' ? (
-                <AntDesign
+                <MaterialIcons
                     style={{ marginRight: 8 }}
-                    name="lock"
+                    name={isFocused || isFilled ? 'lock' : 'lock-outline'}
                     size={20}
                     color={isFocused || isFilled ? '#DA4453' : '#DA4453'}
                 />
             ) : (
-                <MaterialIcons
+                <MaterialCommunityIcons
                     style={{ marginRight: 8 }}
-                    name="email"
+                    name={isFocused || isFilled ? 'email' : 'email-outline'}
                     size={20}
                     color={isFocused || isFilled ? '#DA4453' : '#DA4453'}
                 />

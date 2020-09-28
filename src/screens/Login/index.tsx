@@ -1,5 +1,16 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
-import { View, TextInput, Alert, SafeAreaView, TouchableOpacity, NativeModules, Keyboard } from 'react-native';
+import {
+    View,
+    TextInput,
+    Alert,
+    SafeAreaView,
+    TouchableOpacity,
+    NativeModules,
+    Platform,
+    Keyboard,
+    KeyboardAvoidingView,
+    ScrollView,
+} from 'react-native';
 import * as Yup from 'yup';
 import { Form } from '@unform/mobile';
 import { FormHandles } from '@unform/core';
@@ -43,6 +54,16 @@ const Login: React.FC = () => {
     const passwordInputRef = useRef<TextInput>(null);
     const [connected, setConnected] = useState<boolean | undefined>(true);
     const [keyboardOpen, setKeyboardOpen] = useState(false);
+
+    useEffect(() => {
+        Keyboard.addListener('keyboardDidShow', () => setKeyboardOpen(true));
+        Keyboard.addListener('keyboardDidHide', () => setKeyboardOpen(false));
+
+        return () => {
+            Keyboard.removeAllListeners('keyboardDidShow');
+            Keyboard.removeAllListeners('keyboardDidHide');
+        };
+    });
 
     useEffect(() => {
         async function checkConnection(): Promise<void> {
@@ -111,82 +132,54 @@ const Login: React.FC = () => {
     }, []);
 
     return (
-        <>
-            {connected === true ? (
-                <SafeAreaView style={{ flex: 1 }}>
-                    <Container>
-                        <StyledImage source={Logo} />
-                        <StyledText>
-                            Avalanche {'\n'} de <BoldText>Amor</BoldText>
-                        </StyledText>
-                        <HeaderNavigatorContainer onPress={() => console.log('LoginEnter')}>
-                            <Feather name="arrow-left" size={22} color="#ACACAC" style={{ paddingLeft: 12 }} />
-                            <NavigationText>Voltar</NavigationText>
-                        </HeaderNavigatorContainer>
+        <SafeAreaView style={{ flex: 1 }}>
+            <HeaderNavigatorContainer onPress={() => console.log('LoginEnter')}>
+                <Feather name="arrow-left" size={22} color="#ACACAC" style={{ paddingLeft: 12 }} />
+                <NavigationText>Voltar</NavigationText>
+            </HeaderNavigatorContainer>
+            <Container>
+                <StyledImage style={{ display: keyboardOpen ? 'none' : null }} source={Logo} />
+                <StyledText>
+                    Avalanche {'\n'} de <BoldText>Amor</BoldText>
+                </StyledText>
 
-                        <Content>
-                            <Form ref={formRef} onSubmit={handleSignIn}>
-                                <Input
-                                    autoCorrect={false}
-                                    autoCapitalize="none"
-                                    keyboardType="email-address"
-                                    name="email"
-                                    icon="mail"
-                                    placeholder="E-mail"
-                                    returnKeyType="next"
-                                    onSubmitEditing={() => {
-                                        passwordInputRef.current?.focus();
-                                    }}
-                                />
-                                <Input
-                                    ref={passwordInputRef}
-                                    secureTextEntry
-                                    autoCapitalize="none"
-                                    name="password"
-                                    icon="lock"
-                                    placeholder="Senha"
-                                    returnKeyType="send"
-                                    onSubmitEditing={() => {
-                                        formRef.current?.submitForm();
-                                    }}
-                                />
-                                <ViewButton>
-                                    <Button
-                                        buttonType="enter"
-                                        buttonText="entrar"
-                                        onPress={() => formRef.current?.submitForm()}
-                                    />
-                                </ViewButton>
-                            </Form>
-
-                            <View>
-                                {/* <TouchableOpacity onPress={() => goToUrl(`www.google.com.br`)}>
-                                    <Text>Esqueci minha senha</Text>
-                                </TouchableOpacity> */}
-                            </View>
-                        </Content>
-                    </Container>
-                </SafeAreaView>
-            ) : (
-                <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-                    <TouchableOpacity
-                        onPress={() => {
-                            NativeModules.DevSettings.reload();
+                <Form ref={formRef} onSubmit={handleSignIn}>
+                    <Input
+                        autoCorrect={false}
+                        autoCapitalize="none"
+                        keyboardType="email-address"
+                        name="email"
+                        icon="mail"
+                        placeholder="E-mail"
+                        returnKeyType="next"
+                        onSubmitEditing={() => {
+                            passwordInputRef.current?.focus();
                         }}
-                    >
-                        {/* <Text style={{ fontSize: 24, alignSelf: 'center' }}>
-                            Favor verificar sua conexão com a internet.
-                        </Text> */}
-                        <SimpleLineIcons
-                            style={{ alignSelf: 'center', paddingTop: 16 }}
-                            name="refresh"
-                            size={24}
-                            color="black"
+                    />
+                    <Input
+                        ref={passwordInputRef}
+                        secureTextEntry
+                        autoCapitalize="none"
+                        name="password"
+                        icon="lock"
+                        placeholder="Senha"
+                        returnKeyType="send"
+                        onSubmitEditing={() => {
+                            formRef.current?.submitForm();
+                        }}
+                    />
+                    <ViewButton>
+                        <Button
+                            buttonType="enter"
+                            buttonText="entrar"
+                            onPress={() => formRef.current?.submitForm()}
                         />
-                    </TouchableOpacity>
-                </View>
-            )}
-        </>
+                    </ViewButton>
+
+                    <Text>ESQUECI MINHA SENHA</Text>
+                </Form>
+            </Container>
+        </SafeAreaView>
     );
 };
 

@@ -17,7 +17,7 @@ interface LoginRegisterData {
 
 const LoginRegister: React.FC = () => {
     return (
-        <SafeAreaView style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+        <SafeAreaView style={{ flex: 1, alignItems: 'center' }}>
             <StyledImage source={Logo} />
             <StyledText>
                 Avalanche {'\n'} de <BoldText>Amor</BoldText>
@@ -26,8 +26,7 @@ const LoginRegister: React.FC = () => {
                 <ButtonContainer>
                     {/* <Button buttonText="entrar" buttonType="enter" onPress={() => navigation.navigate('Login')} /> */}
                     <Button buttonText="entrar" buttonType="enter" onPress={() => console.log('s')} />
-                </ButtonContainer>
-                <ButtonContainer>
+
                     <Button
                         buttonText="cadastrar"
                         buttonType="register"

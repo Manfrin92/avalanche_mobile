@@ -15,7 +15,7 @@ export const Container = styled.View<ContainerProps>`
     ${(props: ContainerProps) =>
         props.buttonType === 'enter' &&
         css`
-            background-color: #e82b43;
+            background-color: #da4453;
         `}
 
     ${(props: ContainerProps) =>
