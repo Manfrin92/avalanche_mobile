@@ -2,13 +2,11 @@ import { StatusBar } from 'expo-status-bar';
 import React from 'react';
 import { Text, View } from 'react-native';
 
+import LoginRegister from './src/screens/LoginRegister';
+import Login from './src/screens/Login';
+
 const App: React.FC = () => {
-    return (
-        <View style={{ flex: 1, alignContent: 'center', justifyContent: 'center' }}>
-            <Text> teste Open up App.tsx to start working on your app!</Text>
-            <StatusBar backgroundColor="#F9F9F9" />
-        </View>
-    );
+    return <Login />;
 };
 
 export default App;
