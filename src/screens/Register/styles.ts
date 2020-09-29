@@ -1,4 +1,4 @@
-import styled from 'styled-components/native';
+import styled, { css } from 'styled-components/native';
 
 export const Container = styled.View`
     flex: 1;
@@ -8,7 +8,7 @@ export const Container = styled.View`
     margin-right: 6%;
 `;
 
-export const HeaderNavigatorContainer = styled.TouchableOpacity`
+export const HeaderNavigatorContainer = styled.View`
     flex-direction: row;
     background-color: transparent;
     width: 100%;
@@ -87,4 +87,36 @@ export const StageText = styled.Text`
     text-align: center;
     color: #4a89dc;
     margin-right: 4%;
+`;
+
+export const TextInput = styled.TextInput`
+    flex: 1;
+    color: #da4453;
+    font-size: 16px;
+    font-family: sans-serif;
+`;
+
+interface ContainerProps {
+    isFocused: boolean;
+    isErrored: boolean;
+}
+
+export const InputContainer = styled.View<ContainerProps>`
+    width: 100%;
+    height: 60px;
+    padding: 0 16px;
+    background: #f9f9f9;
+    border-radius: 10px;
+    margin-bottom: 8px;
+    border-width: 2px;
+    border-color: #da4453;
+
+    flex-direction: row;
+    align-items: center;
+
+    ${(props) =>
+        props.isErrored &&
+        css`
+            border-color: #c53030;
+        `}
 `;

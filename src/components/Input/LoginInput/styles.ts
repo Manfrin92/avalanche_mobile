@@ -24,6 +24,7 @@ export const Container = styled.View<ContainerProps>`
             border-color: #c53030;
         `}
 `;
+
 export const TextInput = styled.TextInput`
     flex: 1;
     color: #da4453;

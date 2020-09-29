@@ -4,14 +4,14 @@ import { ButtonProps } from 'react-native';
 import { StyledButton, Text, Container } from './styles';
 
 interface EnterButtonProps extends ButtonProps {
-    title?: string;
-    buttonType: 'enter' | 'register';
+    width?: number;
+    buttonType: 'enter' | 'register' | 'goBack';
     buttonText: string;
 }
 
-const Button: React.FC<EnterButtonProps> = ({ buttonType, buttonText, ...rest }) => {
+const Button: React.FC<EnterButtonProps> = ({ buttonType, buttonText, width, ...rest }) => {
     return (
-        <Container buttonType={buttonType}>
+        <Container width={width} buttonType={buttonType}>
             <StyledButton {...rest}>
                 <Text buttonType={buttonType}>{buttonText}</Text>
             </StyledButton>

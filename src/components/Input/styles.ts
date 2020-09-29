@@ -1,49 +1,32 @@
 import styled, { css } from 'styled-components/native';
 
 interface ContainerProps {
+    isFocused: boolean;
     isErrored: boolean;
-    width?: number;
 }
 
 export const Container = styled.View<ContainerProps>`
-    flex-direction: row;
-    height: 55px;
-    margin-bottom: 16px;
-    margin-right: 6%;
-    margin-left: 6%;
-    background-color: #acacac;
+    width: 100%;
+    height: 60px;
+    padding: 0 16px;
+    background: #f9f9f9;
+    border-radius: 10px;
+    margin-bottom: 8px;
     border-width: 2px;
-    border-style: solid;
-    border-color: #fff;
-    border-radius: 8px;
+    border-color: #da4453;
+
+    flex-direction: row;
     align-items: center;
-    justify-content: flex-start;
 
     ${(props) =>
         props.isErrored &&
         css`
-            border-color: #fa403b;
-        `}
-
-    &&+View {
-        margin-bottom: 50px;
-    }
-
-    ${(props) =>
-        props.width &&
-        css`
-            width: ${props.width}%;
-            margin-right: 0%;
-            margin-left: 0%;
+            border-color: #c53030;
         `}
 `;
-
 export const TextInput = styled.TextInput`
     flex: 1;
+    color: #da4453;
+    font-size: 16px;
     font-family: sans-serif;
-    font-size: 20px;
-    color: #ffffff;
-    background-color: #acacac;
-    padding-left: 10px;
-    /* margin-right: 80px; */
 `;
