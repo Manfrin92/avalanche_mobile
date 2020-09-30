@@ -60,87 +60,89 @@ const Register: React.FC = () => {
     }, [user]);
 
     return (
-        <SafeAreaView style={{ flex: 1 }}>
-            <HeaderNavigatorContainer onPress={() => console.log('LoginEnter')}>
-                <View style={{ flexDirection: 'row', marginLeft: 19 }}>
-                    <StyledImage source={Logo} />
-                    <NavigationText>
-                        Cadastro {formStage === '2' && <BoldText> Endereço</BoldText>}
-                        {formStage === '3' && <BoldText>Habilidades</BoldText>}
-                    </NavigationText>
-                </View>
-                <StageText>{formStage}/3 </StageText>
-            </HeaderNavigatorContainer>
+        <>
+            {/* FIRST PART */}
+            <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+                <SafeAreaView style={{ flex: 1 }}>
+                    <HeaderNavigatorContainer onPress={() => console.log('LoginEnter')}>
+                        <View style={{ flexDirection: 'row', marginLeft: 19 }}>
+                            <StyledImage source={Logo} />
+                            <NavigationText>
+                                Cadastro {formStage === '2' && <BoldText> Endereço</BoldText>}
+                                {formStage === '3' && <BoldText>Habilidades</BoldText>}
+                            </NavigationText>
+                        </View>
+                        <StageText>{formStage}/3 </StageText>
+                    </HeaderNavigatorContainer>
 
-            <View
-                style={{
-                    marginTop: '6%',
-                }}
-            >
-                <View style={{ marginRight: '6%', marginLeft: '6%' }}>
-                    {/* FIRST PART */}
-                    <InputContainer isErrored={false} isFocused={false}>
-                        <TextInput
-                            autoCapitalize="words"
-                            placeholderTextColor="#DA4453"
-                            placeholder="NOME"
-                            onChangeText={(name) => setUser({ ...user, name })}
-                        />
-                    </InputContainer>
+                    <ScrollView style={{ marginTop: '6%', marginRight: '6%', marginLeft: '6%' }}>
+                        <InputContainer isErrored={false} isFocused={false}>
+                            <TextInput
+                                autoCapitalize="words"
+                                placeholderTextColor="#DA4453"
+                                placeholder="NOME"
+                                onChangeText={(name) => setUser({ ...user, name })}
+                            />
+                        </InputContainer>
 
-                    <InputContainer isErrored={false} isFocused={false}>
-                        <TextInput
-                            autoCapitalize="none"
-                            placeholderTextColor="#DA4453"
-                            placeholder="E-MAIL"
-                            onChangeText={(email) => setUser({ ...user, email })}
-                        />
-                    </InputContainer>
+                        <InputContainer isErrored={false} isFocused={false}>
+                            <TextInput
+                                autoCapitalize="none"
+                                placeholderTextColor="#DA4453"
+                                placeholder="E-MAIL"
+                                onChangeText={(email) => setUser({ ...user, email })}
+                            />
+                        </InputContainer>
 
-                    <InputContainer isErrored={false} isFocused={false}>
-                        <TextInput
-                            autoCapitalize="none"
-                            placeholderTextColor="#DA4453"
-                            placeholder="CPF"
-                            keyboardType="number-pad"
-                            onChangeText={(cpf) => setUser({ ...user, cpf })}
-                        />
-                    </InputContainer>
+                        <InputContainer isErrored={false} isFocused={false}>
+                            <TextInput
+                                autoCapitalize="none"
+                                placeholderTextColor="#DA4453"
+                                placeholder="CPF"
+                                keyboardType="number-pad"
+                                onChangeText={(cpf) => setUser({ ...user, cpf })}
+                            />
+                        </InputContainer>
 
-                    <InputContainer isErrored={false} isFocused={false}>
-                        <TextInput
-                            autoCapitalize="none"
-                            placeholderTextColor="#DA4453"
-                            placeholder="TELEFONE"
-                            keyboardType="number-pad"
-                            onChangeText={(phoneNumber) => setUser({ ...user, phoneNumber })}
-                        />
-                    </InputContainer>
+                        <InputContainer isErrored={false} isFocused={false}>
+                            <TextInput
+                                autoCapitalize="none"
+                                placeholderTextColor="#DA4453"
+                                placeholder="TELEFONE"
+                                keyboardType="number-pad"
+                                onChangeText={(phoneNumber) => setUser({ ...user, phoneNumber })}
+                            />
+                        </InputContainer>
 
-                    <InputContainer isErrored={false} isFocused={false}>
-                        <TextInput
-                            autoCapitalize="none"
-                            secureTextEntry
-                            placeholderTextColor="#DA4453"
-                            placeholder="SENHA"
-                            onChangeText={(password) => setUser({ ...user, password })}
-                        />
-                    </InputContainer>
+                        <InputContainer isErrored={false} isFocused={false}>
+                            <TextInput
+                                autoCapitalize="none"
+                                secureTextEntry
+                                placeholderTextColor="#DA4453"
+                                placeholder="SENHA"
+                                onChangeText={(password) => setUser({ ...user, password })}
+                            />
+                        </InputContainer>
 
-                    <InputContainer isErrored={false} isFocused={false}>
-                        <TextInput
-                            autoCapitalize="none"
-                            secureTextEntry
-                            placeholderTextColor="#DA4453"
-                            placeholder="CONFIRME A SENHA"
-                            onChangeText={(repeatPassword) => setUser({ ...user, repeatPassword })}
-                        />
-                    </InputContainer>
+                        <InputContainer isErrored={false} isFocused={false}>
+                            <TextInput
+                                autoCapitalize="none"
+                                secureTextEntry
+                                placeholderTextColor="#DA4453"
+                                placeholder="CONFIRME A SENHA"
+                                onChangeText={(repeatPassword) => setUser({ ...user, repeatPassword })}
+                            />
+                        </InputContainer>
+                    </ScrollView>
+
                     <View
                         style={{
                             flexDirection: 'row',
                             justifyContent: 'space-between',
-                            marginTop: '50%',
+                            marginBottom: '4%',
+                            marginTop: '2%',
+                            marginRight: '6%',
+                            marginLeft: '6%',
                         }}
                     >
                         <Button
@@ -158,11 +160,9 @@ const Register: React.FC = () => {
                             onPress={() => console.log('apertou')}
                         />
                     </View>
-                </View>
-            </View>
-
-            <Container />
-        </SafeAreaView>
+                </SafeAreaView>
+            </KeyboardAvoidingView>
+        </>
     );
 };
 
