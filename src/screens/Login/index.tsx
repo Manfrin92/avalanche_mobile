@@ -17,6 +17,7 @@ import { FormHandles } from '@unform/core';
 import { Feather, SimpleLineIcons } from '@expo/vector-icons';
 import * as Network from 'expo-network';
 
+import { useNavigation } from '@react-navigation/native';
 import Logo from '../../../assets/logo.png';
 import Button from '../../components/Button';
 import Input from '../../components/Input/LoginInput';
@@ -54,6 +55,7 @@ const Login: React.FC = () => {
     const passwordInputRef = useRef<TextInput>(null);
     const [connected, setConnected] = useState<boolean | undefined>(true);
     const [keyboardOpen, setKeyboardOpen] = useState(false);
+    const navigation = useNavigation();
 
     useEffect(() => {
         Keyboard.addListener('keyboardDidShow', () => setKeyboardOpen(true));
@@ -133,7 +135,7 @@ const Login: React.FC = () => {
 
     return (
         <SafeAreaView style={{ flex: 1 }}>
-            <HeaderNavigatorContainer onPress={() => console.log('LoginEnter')}>
+            <HeaderNavigatorContainer onPress={() => navigation.navigate('LoginRegister')}>
                 <Feather name="arrow-left" size={22} color="#ACACAC" style={{ paddingLeft: 12 }} />
                 <NavigationText>Voltar</NavigationText>
             </HeaderNavigatorContainer>

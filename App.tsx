@@ -1,13 +1,14 @@
-import { StatusBar } from 'expo-status-bar';
 import React from 'react';
-import { Text, View } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
 
-import LoginRegister from './src/screens/LoginRegister';
-import Login from './src/screens/Login';
-import Register from './src/screens/Register';
+import Routes from './src/routes';
 
 const App: React.FC = () => {
-    return <Register />;
+    return (
+        <NavigationContainer>
+            <Routes />
+        </NavigationContainer>
+    );
 };
 
 export default App;
