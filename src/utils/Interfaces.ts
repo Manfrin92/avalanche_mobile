@@ -28,9 +28,16 @@ export interface SecondFormData {
     addressZipCode: string;
     addressStreet: string;
     addressNumber: string;
-    addressCity: string;
-    addressState: string;
     addressComplement: string;
     addressArea: string;
-    addressCountry: string;
+    addressCity: string;
+    addressState: string;
+}
+
+export interface AddressFromURL {
+    cep: string;
+    logradouro: string;
+    bairro: string;
+    localidade: string;
+    uf: string;
 }

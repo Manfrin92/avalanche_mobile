@@ -1,5 +1,6 @@
 import { Alert, Linking } from 'react-native';
 import api from '../services/api';
+import { AddressFromURL } from './Interfaces';
 
 export const maxAllowedImageSize = 30 * 1024 * 1024;
 
@@ -42,4 +43,19 @@ export function testCPF(cpf: string): boolean {
         return false;
     }
     return true;
+}
+
+export async function getAddressByCep(cep: string): Promise<AddressFromURL | undefined> {
+    try {
+        const completeAddress = await api.get(`https://viacep.com.br/ws/${cep}/json/`);
+
+        if (completeAddress) {
+            return completeAddress.data;
+        }
+    } catch (e) {
+        Alert.alert('Erro ao buscar CEP');
+        console.log('Erro no cep, ', e);
+    }
+
+    return undefined;
 }

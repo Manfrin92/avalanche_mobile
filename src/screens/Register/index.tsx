@@ -1,15 +1,5 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
-import {
-    View,
-    Alert,
-    SafeAreaView,
-    TouchableOpacity,
-    NativeModules,
-    Platform,
-    Keyboard,
-    KeyboardAvoidingView,
-    ScrollView,
-} from 'react-native';
+import { View, Alert, SafeAreaView, Platform, KeyboardAvoidingView, ScrollView } from 'react-native';
 import * as Yup from 'yup';
 
 import { useNavigation } from '@react-navigation/native';
@@ -20,7 +10,7 @@ import Button from '../../components/Button';
 import Selector from '../../components/Selector';
 
 import { UserData, FirstFormData, SecondFormData } from '../../utils/Interfaces';
-import { testCPF } from '../../utils/AppUtil';
+import { testCPF, getAddressByCep } from '../../utils/AppUtil';
 
 import {
     Container,
@@ -50,18 +40,26 @@ const Register: React.FC = () => {
     const [manualWorker, setManualWorker] = useState(false);
     const [carpinter, setCarpinter] = useState(false);
     const [formStage, setFormStage] = useState<'1' | '2' | '3'>('1');
+    // PRIMEIRO FORM
+    const firstFormRef = useRef<FormHandles>(null);
     const fullNameRef = useRef<TextInput>(null);
     const emailRef = useRef<TextInput>(null);
     const cpfRef = useRef<TextInput>(null);
     const phoneNumberRef = useRef<TextInput>(null);
     const passwordRef = useRef<TextInput>(null);
     const repeatPasswordRef = useRef<TextInput>(null);
-
-    const firstFormRef = useRef<FormHandles>(null);
+    // SEGUNDO FORM
+    const secondFormRef = useRef<FormHandles>(null);
+    const addressZipCodeRef = useRef<TextInput>(null);
+    const addressStreetRef = useRef<TextInput>(null);
+    const addressNumberRef = useRef<TextInput>(null);
+    const addressComplementRef = useRef<TextInput>(null);
+    const addressAreaRef = useRef<TextInput>(null);
+    const addressCityRef = useRef<TextInput>(null);
+    const addressStateRef = useRef<TextInput>(null);
 
     const handleFirstForm = useCallback(
         async (data: FirstFormData) => {
-            console.log('dados vindo: ', data);
             try {
                 firstFormRef.current?.setErrors({});
 
@@ -106,6 +104,50 @@ const Register: React.FC = () => {
                 });
 
                 setFormStage('2');
+            } catch (e) {
+                if (e instanceof Yup.ValidationError) {
+                    const errors = getValidationsErrors(e);
+                    Object.entries(errors).forEach(([key, value]) => {
+                        Alert.alert(value);
+                    });
+                    firstFormRef.current?.setErrors(errors);
+                    return;
+                }
+
+                console.log(e);
+
+                Alert.alert('Erro na autenticação', 'Cheque as credenciais');
+            }
+        },
+        [user],
+    );
+
+    const handleSecondForm = useCallback(
+        async (data: SecondFormData) => {
+            console.log('dados vindo: ', data);
+            try {
+                secondFormRef.current?.setErrors({});
+
+                const schema = Yup.object().shape({
+                    addressZipCode: Yup.string().required('CEP obrigatório'),
+                    addressStreet: Yup.string().required('Digite uma cidade'),
+                    addressState: Yup.string().required('Digite um estado'),
+                    addressCity: Yup.string().required('Digite uma cidade'),
+                    addressArea: Yup.string().required('Digite um bairro'),
+                });
+
+                await schema.validate(data, { abortEarly: false });
+
+                // setUser({
+                //     ...user,
+                //     name: data.name,
+                //     email: data.email,
+                //     cpf: data.cpf,
+                //     phoneNumber: data.phoneNumber,
+                //     password: data.password,
+                // });
+
+                // setFormStage('3');
             } catch (e) {
                 if (e instanceof Yup.ValidationError) {
                     const errors = getValidationsErrors(e);
@@ -284,101 +326,117 @@ const Register: React.FC = () => {
                             <StageText>{formStage}/3 </StageText>
                         </HeaderNavigatorContainer>
 
-                        <ScrollView style={{ marginTop: '6%', marginRight: '6%', marginLeft: '6%' }}>
-                            <InputContainer isErrored={false} isFocused={false}>
-                                <TextInput
+                        <Form
+                            onSubmit={handleSecondForm}
+                            ref={secondFormRef}
+                            style={{ flex: 1, justifyContent: 'flex-end' }}
+                        >
+                            <ScrollView style={{ marginTop: '6%', marginRight: '6%', marginLeft: '6%' }}>
+                                <Input
+                                    ref={addressZipCodeRef}
+                                    maxLength={8}
+                                    autoCapitalize="words"
                                     placeholderTextColor="#DA4453"
                                     placeholder="CEP"
+                                    name="addressZipCode"
                                     keyboardType="number-pad"
-                                    onChangeText={(addressZipCode) => setUser({ ...user, addressZipCode })}
+                                    returnKeyType="next"
+                                    onSubmitEditing={() => {
+                                        addressStreetRef.current?.focus();
+                                    }}
                                 />
-                            </InputContainer>
-
-                            <InputContainer isErrored={false} isFocused={false}>
-                                <TextInput
-                                    autoCapitalize="none"
+                                <Input
+                                    ref={addressStreetRef}
                                     placeholderTextColor="#DA4453"
                                     placeholder="RUA"
-                                    onChangeText={(addressStreet) => setUser({ ...user, addressStreet })}
+                                    autoCapitalize="words"
+                                    name="addressStreet"
+                                    returnKeyType="next"
+                                    onSubmitEditing={() => {
+                                        addressNumberRef.current?.focus();
+                                    }}
                                 />
-                            </InputContainer>
-
-                            <InputContainer isErrored={false} isFocused={false}>
-                                <TextInput
-                                    autoCapitalize="none"
+                                <Input
+                                    ref={addressNumberRef}
                                     placeholderTextColor="#DA4453"
                                     placeholder="NÚMERO"
+                                    name="addressNumber"
                                     keyboardType="number-pad"
-                                    onChangeText={(addressNumber) => setUser({ ...user, addressNumber })}
+                                    returnKeyType="next"
+                                    onSubmitEditing={() => {
+                                        addressComplementRef.current?.focus();
+                                    }}
                                 />
-                            </InputContainer>
 
-                            <InputContainer isErrored={false} isFocused={false}>
-                                <TextInput
-                                    autoCapitalize="none"
-                                    placeholderTextColor="#DA4453"
+                                <Input
+                                    ref={addressComplementRef}
                                     placeholder="COMPLEMENTO"
-                                    keyboardType="default"
-                                    onChangeText={(addressComplement) => setUser({ ...user, addressComplement })}
+                                    autoCapitalize="words"
+                                    name="addressComplement"
+                                    returnKeyType="next"
+                                    onSubmitEditing={() => {
+                                        addressAreaRef.current?.focus();
+                                    }}
                                 />
-                            </InputContainer>
 
-                            <InputContainer isErrored={false} isFocused={false}>
-                                <TextInput
-                                    autoCapitalize="none"
-                                    secureTextEntry
-                                    placeholderTextColor="#DA4453"
+                                <Input
+                                    ref={addressAreaRef}
+                                    autoCapitalize="words"
                                     placeholder="BAIRRO"
-                                    onChangeText={(addressArea) => setUser({ ...user, addressArea })}
+                                    name="addressArea"
+                                    returnKeyType="next"
+                                    onSubmitEditing={() => {
+                                        addressCityRef.current?.focus();
+                                    }}
                                 />
-                            </InputContainer>
 
-                            <InputContainer isErrored={false} isFocused={false}>
-                                <TextInput
-                                    autoCapitalize="none"
-                                    secureTextEntry
+                                <Input
+                                    ref={addressCityRef}
                                     placeholderTextColor="#DA4453"
                                     placeholder="CIDADE"
-                                    onChangeText={(addressCity) => setUser({ ...user, addressCity })}
+                                    name="addressCity"
+                                    returnKeyType="next"
+                                    onSubmitEditing={() => {
+                                        addressStateRef.current?.focus();
+                                    }}
                                 />
-                            </InputContainer>
-
-                            <InputContainer isErrored={false} isFocused={false}>
-                                <TextInput
-                                    autoCapitalize="none"
-                                    secureTextEntry
-                                    placeholderTextColor="#DA4453"
+                                <Input
+                                    ref={addressStateRef}
                                     placeholder="ESTADO"
-                                    onChangeText={(addressState) => setUser({ ...user, addressState })}
+                                    name="addressState"
+                                    returnKeyType="done"
+                                    onSubmitEditing={() => {
+                                        secondFormRef.current?.submitForm();
+                                    }}
                                 />
-                            </InputContainer>
-                        </ScrollView>
+                            </ScrollView>
 
-                        <View
-                            style={{
-                                flexDirection: 'row',
-                                justifyContent: 'space-between',
-                                marginBottom: '4%',
-                                marginTop: '2%',
-                                marginRight: '6%',
-                                marginLeft: '6%',
-                            }}
-                        >
-                            <Button
-                                title="goBack"
-                                width={33}
-                                buttonText="VOLTAR"
-                                buttonType="goBack"
-                                onPress={() => setFormStage('1')}
-                            />
-                            <Button
-                                title="next"
-                                width={65}
-                                buttonText="CONFIRMAR"
-                                buttonType="enter"
-                                onPress={() => setFormStage('3')}
-                            />
-                        </View>
+                            <View
+                                style={{
+                                    flexDirection: 'row',
+                                    justifyContent: 'space-between',
+                                    marginBottom: '4%',
+                                    marginTop: '1%',
+                                    marginRight: '6%',
+                                    marginLeft: '6%',
+                                }}
+                            >
+                                <Button
+                                    title="goBack"
+                                    width={33}
+                                    buttonText="VOLTAR"
+                                    buttonType="goBack"
+                                    onPress={() => setFormStage('1')}
+                                />
+                                <Button
+                                    title="next"
+                                    width={65}
+                                    buttonText="CONFIRMAR"
+                                    buttonType="enter"
+                                    onPress={() => secondFormRef.current?.submitForm()}
+                                />
+                            </View>
+                        </Form>
                     </SafeAreaView>
                 </KeyboardAvoidingView>
             )}
