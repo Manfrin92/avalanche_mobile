@@ -11,13 +11,16 @@ import {
     ScrollView,
 } from 'react-native';
 import * as Yup from 'yup';
-import { Form } from '@unform/mobile';
-import { FormHandles } from '@unform/core';
 
 import { useNavigation } from '@react-navigation/native';
+import { Form } from '@unform/mobile';
+import { FormHandles } from '@unform/core';
 import Logo from '../../../assets/logo.png';
 import Button from '../../components/Button';
 import Selector from '../../components/Selector';
+
+import { UserData, FirstFormData, SecondFormData } from '../../utils/Interfaces';
+import { testCPF } from '../../utils/AppUtil';
 
 import {
     Container,
@@ -29,27 +32,8 @@ import {
     TextInput,
     InputContainer,
 } from './styles';
-
-interface Navigation {
-    navigate(screen: string): void;
-}
-
-interface UserData {
-    name: string;
-    email: string;
-    cpf: string;
-    phoneNumber: string;
-    password: string;
-    repeatPassword: string;
-    addressZipCode: string;
-    addressStreet: string;
-    addressNumber: string;
-    addressCity: string;
-    addressState: string;
-    addressComplement: string;
-    addressArea: string;
-    addressCountry: string;
-}
+import getValidationsErrors from '../../utils/getValidationsErrors';
+import Input from '../../components/Input';
 
 const Register: React.FC = () => {
     const navigation = useNavigation();
@@ -65,11 +49,100 @@ const Register: React.FC = () => {
     const [interceptor, setInterceptor] = useState(false);
     const [manualWorker, setManualWorker] = useState(false);
     const [carpinter, setCarpinter] = useState(false);
-    const [formStage, setFormStage] = useState('1');
+    const [formStage, setFormStage] = useState<'1' | '2' | '3'>('1');
+    const fullNameRef = useRef<TextInput>(null);
+    const emailRef = useRef<TextInput>(null);
+    const cpfRef = useRef<TextInput>(null);
+    const phoneNumberRef = useRef<TextInput>(null);
+    const passwordRef = useRef<TextInput>(null);
+    const repeatPasswordRef = useRef<TextInput>(null);
+
+    const firstFormRef = useRef<FormHandles>(null);
+
+    const handleFirstForm = useCallback(
+        async (data: FirstFormData) => {
+            console.log('dados vindo: ', data);
+            try {
+                firstFormRef.current?.setErrors({});
+
+                const schema = Yup.object().shape({
+                    name: Yup.string().required('Nome obrigatório'),
+                    email: Yup.string().email('Digite um email válido').required('Email obrigatório'),
+                    cpf: Yup.string().max(11, 'CPF mínimo 11 digitos').required('CPF obrigatório'),
+                    phoneNumber: Yup.string()
+                        .min(10, 'Telefone muito pequeno')
+                        .max(11, 'Telefone excede máximo')
+                        .required('Telefone obrigatório e com DDD'),
+                    password: Yup.string().required('Senha obrigatória'),
+                    repeatPassword: Yup.string()
+                        .equals([Yup.ref('password')], 'Senhas não são iguais')
+                        .required('Repita a senha'),
+                });
+
+                await schema.validate(data, { abortEarly: false });
+
+                if (data) {
+                    if (data.name) {
+                        if (!data.name.split(' ')[1]) {
+                            return Alert.alert('Sobrenome obrigatório!');
+                        }
+                    }
+                    if (data.cpf) {
+                        const validDelivererCPF = testCPF(data.cpf);
+
+                        if (!validDelivererCPF) {
+                            return Alert.alert('CPF inválido');
+                        }
+                    }
+                }
+
+                setUser({
+                    ...user,
+                    name: data.name,
+                    email: data.email,
+                    cpf: data.cpf,
+                    phoneNumber: data.phoneNumber,
+                    password: data.password,
+                });
+
+                setFormStage('2');
+            } catch (e) {
+                if (e instanceof Yup.ValidationError) {
+                    const errors = getValidationsErrors(e);
+                    Object.entries(errors).forEach(([key, value]) => {
+                        Alert.alert(value);
+                    });
+                    firstFormRef.current?.setErrors(errors);
+                    return;
+                }
+
+                console.log(e);
+
+                Alert.alert('Erro na autenticação', 'Cheque as credenciais');
+            }
+        },
+        [user],
+    );
 
     useEffect(() => {
-        console.log('Usuário mais atualizado: ', user);
-    }, [user]);
+        let mounted = true;
+
+        if (firstFormRef.current) {
+            if (formStage === '1') {
+                if (mounted) {
+                    console.log('user: ', user);
+                    firstFormRef.current.setData({
+                        ...user,
+                        repeatPassword: user.password,
+                    });
+                }
+            }
+        }
+
+        return () => {
+            mounted = false;
+        };
+    }, [formStage]);
 
     return (
         <>
@@ -88,92 +161,110 @@ const Register: React.FC = () => {
                             <StageText>{formStage}/3 </StageText>
                         </HeaderNavigatorContainer>
 
-                        <ScrollView style={{ marginTop: '6%', marginRight: '6%', marginLeft: '6%' }}>
-                            <InputContainer isErrored={false} isFocused={false}>
-                                <TextInput
+                        <Form
+                            onSubmit={handleFirstForm}
+                            ref={firstFormRef}
+                            style={{ flex: 1, justifyContent: 'flex-end' }}
+                        >
+                            <ScrollView style={{ marginTop: '6%', marginRight: '6%', marginLeft: '6%' }}>
+                                <Input
+                                    ref={fullNameRef}
                                     autoCapitalize="words"
                                     placeholderTextColor="#DA4453"
                                     placeholder="NOME"
-                                    onChangeText={(name) => setUser({ ...user, name })}
+                                    name="name"
+                                    keyboardType="default"
+                                    returnKeyType="next"
+                                    onSubmitEditing={() => {
+                                        emailRef.current?.focus();
+                                    }}
                                 />
-                            </InputContainer>
-
-                            <InputContainer isErrored={false} isFocused={false}>
-                                <TextInput
+                                <Input
+                                    ref={emailRef}
                                     autoCapitalize="none"
                                     placeholderTextColor="#DA4453"
                                     placeholder="E-MAIL"
+                                    name="email"
                                     keyboardType="email-address"
-                                    onChangeText={(email) => setUser({ ...user, email })}
+                                    returnKeyType="next"
+                                    onSubmitEditing={() => {
+                                        cpfRef.current?.focus();
+                                    }}
                                 />
-                            </InputContainer>
-
-                            <InputContainer isErrored={false} isFocused={false}>
-                                <TextInput
-                                    autoCapitalize="none"
+                                <Input
+                                    ref={cpfRef}
+                                    maxLength={11}
+                                    autoCapitalize="words"
                                     placeholderTextColor="#DA4453"
                                     placeholder="CPF"
+                                    name="cpf"
                                     keyboardType="number-pad"
-                                    onChangeText={(cpf) => setUser({ ...user, cpf })}
+                                    returnKeyType="next"
+                                    onSubmitEditing={() => {
+                                        phoneNumberRef.current?.focus();
+                                    }}
                                 />
-                            </InputContainer>
 
-                            <InputContainer isErrored={false} isFocused={false}>
-                                <TextInput
-                                    autoCapitalize="none"
+                                <Input
+                                    ref={phoneNumberRef}
+                                    maxLength={11}
                                     placeholderTextColor="#DA4453"
                                     placeholder="TELEFONE"
+                                    name="phoneNumber"
                                     keyboardType="number-pad"
-                                    onChangeText={(phoneNumber) => setUser({ ...user, phoneNumber })}
+                                    returnKeyType="next"
+                                    onSubmitEditing={() => {
+                                        passwordRef.current?.focus();
+                                    }}
                                 />
-                            </InputContainer>
-
-                            <InputContainer isErrored={false} isFocused={false}>
-                                <TextInput
-                                    autoCapitalize="none"
+                                <Input
                                     secureTextEntry
-                                    placeholderTextColor="#DA4453"
+                                    ref={passwordRef}
                                     placeholder="SENHA"
-                                    onChangeText={(password) => setUser({ ...user, password })}
+                                    name="password"
+                                    returnKeyType="next"
+                                    onSubmitEditing={() => {
+                                        repeatPasswordRef.current?.focus();
+                                    }}
                                 />
-                            </InputContainer>
-
-                            <InputContainer isErrored={false} isFocused={false}>
-                                <TextInput
-                                    autoCapitalize="none"
+                                <Input
+                                    ref={repeatPasswordRef}
                                     secureTextEntry
-                                    placeholderTextColor="#DA4453"
-                                    placeholder="CONFIRME A SENHA"
-                                    onChangeText={(repeatPassword) => setUser({ ...user, repeatPassword })}
+                                    placeholder="REPITA A SENHA"
+                                    name="repeatPassword"
+                                    returnKeyType="next"
+                                    onSubmitEditing={() => {
+                                        firstFormRef.current?.submitForm();
+                                    }}
                                 />
-                            </InputContainer>
-                        </ScrollView>
+                            </ScrollView>
 
-                        <View
-                            style={{
-                                flexDirection: 'row',
-                                justifyContent: 'space-between',
-                                marginBottom: '4%',
-                                marginTop: '2%',
-                                marginRight: '6%',
-                                marginLeft: '6%',
-                            }}
-                        >
-                            <Button
-                                title="goBack"
-                                width={33}
-                                buttonText="VOLTAR"
-                                buttonType="goBack"
-                                onPress={() => navigation.navigate('LoginRegister')}
-                            />
-                            <Button
-                                title="next"
-                                width={65}
-                                buttonText="PRÓXIMO"
-                                buttonType="enter"
-                                onPress={() => setFormStage('2')}
-                            />
-                        </View>
+                            <View
+                                style={{
+                                    flexDirection: 'row',
+                                    justifyContent: 'space-between',
+                                    marginBottom: '4%',
+                                    marginTop: '1%',
+                                    marginRight: '6%',
+                                    marginLeft: '6%',
+                                }}
+                            >
+                                <Button
+                                    title="goBack"
+                                    width={33}
+                                    buttonText="VOLTAR"
+                                    buttonType="goBack"
+                                    onPress={() => navigation.navigate('LoginRegister')}
+                                />
+                                <Button
+                                    title="next"
+                                    width={65}
+                                    buttonText="CONFIRMAR"
+                                    buttonType="enter"
+                                    onPress={() => firstFormRef.current?.submitForm()}
+                                />
+                            </View>
+                        </Form>
                     </SafeAreaView>
                 </KeyboardAvoidingView>
             )}
@@ -182,7 +273,7 @@ const Register: React.FC = () => {
             {formStage === '2' && (
                 <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
                     <SafeAreaView style={{ flex: 1 }}>
-                        <HeaderNavigatorContainer onPress={() => console.log('LoginEnter')}>
+                        <HeaderNavigatorContainer>
                             <View style={{ flexDirection: 'row', marginLeft: 19 }}>
                                 <StyledImage source={Logo} />
                                 <NavigationText>
@@ -283,7 +374,7 @@ const Register: React.FC = () => {
                             <Button
                                 title="next"
                                 width={65}
-                                buttonText="PRÓXIMO"
+                                buttonText="CONFIRMAR"
                                 buttonType="enter"
                                 onPress={() => setFormStage('3')}
                             />
@@ -296,7 +387,7 @@ const Register: React.FC = () => {
             {formStage === '3' && (
                 <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
                     <SafeAreaView style={{ flex: 1 }}>
-                        <HeaderNavigatorContainer onPress={() => console.log('LoginEnter')}>
+                        <HeaderNavigatorContainer>
                             <View style={{ flexDirection: 'row', marginLeft: 19 }}>
                                 <StyledImage source={Logo} />
                                 <NavigationText>

@@ -1,34 +1,74 @@
-import React, { useEffect, useRef, useImperativeHandle, forwardRef, useState, useCallback } from 'react';
-import { TextInputProps } from 'react-native';
+import React, { useRef, useEffect, useImperativeHandle, forwardRef, useState } from 'react';
+import { TextInputProps, TouchableOpacity, Keyboard, Platform, View } from 'react-native';
+import { Ionicons, AntDesign, FontAwesome } from '@expo/vector-icons';
+
 import { useField } from '@unform/core';
-import { AntDesign, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 
 import { Container, TextInput } from './styles';
 
 interface InputProps extends TextInputProps {
     name: string;
-    icon: string;
-    containerStyle?: {};
+    iconName?: string;
+    cepIcon?: boolean;
+    getCep?: (e: any) => Promise<void>;
 }
 
 interface InputValueReference {
-    value: string;
+    value: any;
 }
 
 interface InputRef {
     focus(): void;
 }
 
-const Input: React.FC<TextInputProps> = ({ name, ...rest }) => {
+const Input: React.RefForwardingComponent<InputRef, InputProps> = (
+    { name, iconName, cepIcon, getCep, ...rest },
+    ref,
+) => {
     const inputElementRef = useRef<any>(null);
+    const { registerField, defaultValue = '', fieldName, error } = useField(name);
     const inputValueRef = useRef<InputValueReference>({ value: defaultValue });
-    const [isFocused, setIsFocused] = useState(false);
-    const [isFilled, setIsFilled] = useState(false);
-    const [isErrored, setIsErrored] = useState(false);
+    const [isIos, setIsIos] = useState(false);
+
+    useImperativeHandle(ref, () => ({
+        focus() {
+            inputElementRef.current.focus();
+        },
+    }));
+
+    useEffect(() => {
+        registerField({
+            name: fieldName,
+            ref: inputValueRef.current,
+            path: 'value',
+            setValue(ref: any, value) {
+                inputValueRef.current.value = value;
+                inputElementRef.current.setNativeProps({ text: value });
+            },
+            clearValue() {
+                inputValueRef.current.value = '';
+                inputElementRef.current.clear();
+            },
+        });
+
+        Platform.OS === 'ios' ? setIsIos(true) : setIsIos(false);
+    }, [fieldName, registerField]);
 
     return (
-        <Container isFocused={isFocused} isErrored={isErrored}>
-            <TextInput placeholderTextColor="#DA4453" {...rest} />
+        <Container isErrored={!!error}>
+            {iconName && (
+                <Ionicons style={{ padding: 18, paddingRight: 4 }} name={iconName} color="#FFF" size={26} />
+            )}
+
+            <TextInput
+                ref={inputElementRef}
+                placeholderTextColor="#DA4453"
+                defaultValue={defaultValue}
+                onChangeText={(value) => {
+                    inputValueRef.current.value = value;
+                }}
+                {...rest}
+            />
         </Container>
     );
 };
