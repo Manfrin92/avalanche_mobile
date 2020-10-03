@@ -4,13 +4,16 @@ import { Ionicons, AntDesign, FontAwesome } from '@expo/vector-icons';
 
 import { useField } from '@unform/core';
 
-import { Container, TextInput } from './styles';
+import { Container, TextInput, Label, LabelContainer } from './styles';
 
 interface InputProps extends TextInputProps {
     name: string;
+    width?: number;
     iconName?: string;
     cepIcon?: boolean;
     getCep?: (e: any) => Promise<void>;
+    labelName?: string;
+    marginBottom?: number;
 }
 
 interface InputValueReference {
@@ -22,7 +25,7 @@ interface InputRef {
 }
 
 const Input: React.RefForwardingComponent<InputRef, InputProps> = (
-    { name, iconName, cepIcon, getCep, ...rest },
+    { name, iconName, width, cepIcon, getCep, labelName, marginBottom, ...rest },
     ref,
 ) => {
     const inputElementRef = useRef<any>(null);
@@ -55,21 +58,51 @@ const Input: React.RefForwardingComponent<InputRef, InputProps> = (
     }, [fieldName, registerField]);
 
     return (
-        <Container isErrored={!!error}>
-            {iconName && (
-                <Ionicons style={{ padding: 18, paddingRight: 4 }} name={iconName} color="#FFF" size={26} />
+        <>
+            {labelName && (
+                <LabelContainer>
+                    <Label>{labelName}</Label>
+                </LabelContainer>
             )}
+            <Container marginBottom={marginBottom} isErrored={!!error} width={width}>
+                {iconName && (
+                    <Ionicons style={{ padding: 18, paddingRight: 4 }} name={iconName} color="#FFF" size={26} />
+                )}
 
-            <TextInput
-                ref={inputElementRef}
-                placeholderTextColor="#DA4453"
-                defaultValue={defaultValue}
-                onChangeText={(value) => {
-                    inputValueRef.current.value = value;
-                }}
-                {...rest}
-            />
-        </Container>
+                <TextInput
+                    ref={inputElementRef}
+                    placeholderTextColor="#acacac"
+                    defaultValue={defaultValue}
+                    onChangeText={(value) => {
+                        inputValueRef.current.value = value;
+                    }}
+                    {...rest}
+                />
+
+                {cepIcon && (
+                    <View style={{ marginRight: 0 }}>
+                        <FontAwesome
+                            style={{ marginRight: 15 }}
+                            onClick={getCep}
+                            color="#e82b43"
+                            size={24}
+                            name="search"
+                        />
+                    </View>
+                )}
+
+                {isIos && (
+                    <TouchableOpacity
+                        onPress={() => {
+                            Keyboard.dismiss();
+                        }}
+                        style={{ alignSelf: 'auto', paddingRight: 6 }}
+                    >
+                        <AntDesign name="right" size={20} color="#FFF" />
+                    </TouchableOpacity>
+                )}
+            </Container>
+        </>
     );
 };
 

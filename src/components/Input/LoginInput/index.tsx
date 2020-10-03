@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useImperativeHandle, forwardRef, useState, useCallback } from 'react';
 import { TextInputProps } from 'react-native';
 import { useField } from '@unform/core';
-import { AntDesign, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
+import { AntDesign, MaterialIcons } from '@expo/vector-icons';
 
 import { Container, TextInput } from './styles';
 
@@ -68,25 +68,25 @@ const Input: React.RefForwardingComponent<InputRef, InputProps> = (
     return (
         <Container style={containerStyle} isFocused={isFocused} isErrored={!!error}>
             {icon === 'lock' ? (
-                <MaterialIcons
+                <AntDesign
                     style={{ marginRight: 8 }}
-                    name={isFocused || isFilled ? 'lock' : 'lock-outline'}
+                    name="lock"
                     size={20}
-                    color={isFocused || isFilled ? '#DA4453' : '#DA4453'}
+                    color={isFocused || isFilled ? '#e82b43' : '#666360'}
                 />
             ) : (
-                <MaterialCommunityIcons
+                <MaterialIcons
                     style={{ marginRight: 8 }}
-                    name={isFocused || isFilled ? 'email' : 'email-outline'}
+                    name="email"
                     size={20}
-                    color={isFocused || isFilled ? '#DA4453' : '#DA4453'}
+                    color={isFocused || isFilled ? '#e82b43' : '#666360'}
                 />
             )}
 
             <TextInput
                 ref={inputElementRef}
                 keyboardAppearance="dark"
-                placeholderTextColor="#DA4453"
+                placeholderTextColor="#666360"
                 defaultValue={defaultValue}
                 onFocus={handleInputFocus}
                 onBlur={handleInputBlur}

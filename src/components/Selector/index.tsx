@@ -11,7 +11,6 @@ interface SelectorProps {
 }
 
 const Selector: React.FC<SelectorProps> = ({ selected, optionText, setSelected, ...rest }) => {
-    console.log('selecionado? ', selected);
     return (
         <View style={{ marginBottom: '4%' }} {...rest}>
             <OptionContainer onPress={setSelected}>

@@ -9,7 +9,7 @@ import Logo from '../../../assets/logo.png';
 import Button from '../../components/Button';
 import Selector from '../../components/Selector';
 
-import { UserData, FirstFormData, SecondFormData } from '../../utils/Interfaces';
+import { UserData, FirstFormData, SecondFormData, AddressFromURL } from '../../utils/Interfaces';
 import { testCPF, getAddressByCep } from '../../utils/AppUtil';
 
 import {
@@ -57,6 +57,33 @@ const Register: React.FC = () => {
     const addressAreaRef = useRef<TextInput>(null);
     const addressCityRef = useRef<TextInput>(null);
     const addressStateRef = useRef<TextInput>(null);
+
+    const handleSearchAdressZipCode = useCallback(async (cep: string) => {
+        if (cep === '' || cep.length < 8) {
+            Alert.alert('Digite um cep valido.');
+        }
+        const completeAddress = await getAddressByCep(cep);
+
+        if (completeAddress) {
+            if (completeAddress.localidade) {
+                secondFormRef.current?.setFieldValue('addressCity', completeAddress.localidade);
+            }
+
+            if (completeAddress.uf) {
+                secondFormRef.current?.setFieldValue('addressState', completeAddress.uf);
+            }
+
+            if (completeAddress.logradouro) {
+                secondFormRef.current?.setFieldValue('addressStreet', completeAddress.logradouro);
+            }
+
+            if (completeAddress.bairro) {
+                secondFormRef.current?.setFieldValue('addressArea', completeAddress.bairro);
+            }
+
+            addressNumberRef.current?.focus();
+        }
+    }, []);
 
     const handleFirstForm = useCallback(
         async (data: FirstFormData) => {
@@ -138,33 +165,37 @@ const Register: React.FC = () => {
 
                 await schema.validate(data, { abortEarly: false });
 
-                // setUser({
-                //     ...user,
-                //     name: data.name,
-                //     email: data.email,
-                //     cpf: data.cpf,
-                //     phoneNumber: data.phoneNumber,
-                //     password: data.password,
-                // });
+                setUser({
+                    ...user,
+                    addressZipCode: data.addressZipCode,
+                    addressStreet: data.addressStreet,
+                    addressState: data.addressState,
+                    addressCity: data.addressCity,
+                    addressArea: data.addressArea,
+                    addressNumber: data.addressNumber,
+                    addressComplement: data.addressComplement,
+                });
 
-                // setFormStage('3');
+                setFormStage('3');
             } catch (e) {
                 if (e instanceof Yup.ValidationError) {
                     const errors = getValidationsErrors(e);
                     Object.entries(errors).forEach(([key, value]) => {
                         Alert.alert(value);
                     });
-                    firstFormRef.current?.setErrors(errors);
+                    secondFormRef.current?.setErrors(errors);
                     return;
                 }
-
                 console.log(e);
-
                 Alert.alert('Erro na autenticação', 'Cheque as credenciais');
             }
         },
         [user],
     );
+
+    const handleCreateUser = useCallback(() => {
+        console.log('User: ', user);
+    }, [user]);
 
     useEffect(() => {
         let mounted = true;
@@ -172,10 +203,19 @@ const Register: React.FC = () => {
         if (firstFormRef.current) {
             if (formStage === '1') {
                 if (mounted) {
-                    console.log('user: ', user);
                     firstFormRef.current.setData({
                         ...user,
                         repeatPassword: user.password,
+                    });
+                }
+            }
+        }
+
+        if (secondFormRef.current) {
+            if (formStage === '2') {
+                if (mounted) {
+                    secondFormRef.current.setData({
+                        ...user,
                     });
                 }
             }
@@ -208,12 +248,11 @@ const Register: React.FC = () => {
                             ref={firstFormRef}
                             style={{ flex: 1, justifyContent: 'flex-end' }}
                         >
-                            <ScrollView style={{ marginTop: '6%', marginRight: '6%', marginLeft: '6%' }}>
+                            <ScrollView style={{ marginTop: '6%' }}>
                                 <Input
                                     ref={fullNameRef}
+                                    labelName="NOME"
                                     autoCapitalize="words"
-                                    placeholderTextColor="#DA4453"
-                                    placeholder="NOME"
                                     name="name"
                                     keyboardType="default"
                                     returnKeyType="next"
@@ -224,8 +263,7 @@ const Register: React.FC = () => {
                                 <Input
                                     ref={emailRef}
                                     autoCapitalize="none"
-                                    placeholderTextColor="#DA4453"
-                                    placeholder="E-MAIL"
+                                    labelName="E-MAIL"
                                     name="email"
                                     keyboardType="email-address"
                                     returnKeyType="next"
@@ -237,8 +275,7 @@ const Register: React.FC = () => {
                                     ref={cpfRef}
                                     maxLength={11}
                                     autoCapitalize="words"
-                                    placeholderTextColor="#DA4453"
-                                    placeholder="CPF"
+                                    labelName="CPF"
                                     name="cpf"
                                     keyboardType="number-pad"
                                     returnKeyType="next"
@@ -250,8 +287,7 @@ const Register: React.FC = () => {
                                 <Input
                                     ref={phoneNumberRef}
                                     maxLength={11}
-                                    placeholderTextColor="#DA4453"
-                                    placeholder="TELEFONE"
+                                    labelName="TELEFONE"
                                     name="phoneNumber"
                                     keyboardType="number-pad"
                                     returnKeyType="next"
@@ -262,7 +298,7 @@ const Register: React.FC = () => {
                                 <Input
                                     secureTextEntry
                                     ref={passwordRef}
-                                    placeholder="SENHA"
+                                    labelName="SENHA"
                                     name="password"
                                     returnKeyType="next"
                                     onSubmitEditing={() => {
@@ -272,7 +308,7 @@ const Register: React.FC = () => {
                                 <Input
                                     ref={repeatPasswordRef}
                                     secureTextEntry
-                                    placeholder="REPITA A SENHA"
+                                    labelName="REPITA A SENHA"
                                     name="repeatPassword"
                                     returnKeyType="next"
                                     onSubmitEditing={() => {
@@ -331,24 +367,26 @@ const Register: React.FC = () => {
                             ref={secondFormRef}
                             style={{ flex: 1, justifyContent: 'flex-end' }}
                         >
-                            <ScrollView style={{ marginTop: '6%', marginRight: '6%', marginLeft: '6%' }}>
+                            <ScrollView style={{ marginTop: '6%' }}>
                                 <Input
                                     ref={addressZipCodeRef}
                                     maxLength={8}
                                     autoCapitalize="words"
-                                    placeholderTextColor="#DA4453"
-                                    placeholder="CEP"
+                                    labelName="CEP"
                                     name="addressZipCode"
                                     keyboardType="number-pad"
                                     returnKeyType="next"
-                                    onSubmitEditing={() => {
-                                        addressStreetRef.current?.focus();
+                                    onEndEditing={(e) => {
+                                        handleSearchAdressZipCode(e.nativeEvent.text.replace(/\D/g, ''));
                                     }}
+                                    cepIcon
+                                    getCep={(e: any) =>
+                                        handleSearchAdressZipCode(e.nativeEvent.text.replace(/\D/g, ''))
+                                    }
                                 />
                                 <Input
                                     ref={addressStreetRef}
-                                    placeholderTextColor="#DA4453"
-                                    placeholder="RUA"
+                                    labelName="RUA"
                                     autoCapitalize="words"
                                     name="addressStreet"
                                     returnKeyType="next"
@@ -358,8 +396,7 @@ const Register: React.FC = () => {
                                 />
                                 <Input
                                     ref={addressNumberRef}
-                                    placeholderTextColor="#DA4453"
-                                    placeholder="NÚMERO"
+                                    labelName="NÚMERO"
                                     name="addressNumber"
                                     keyboardType="number-pad"
                                     returnKeyType="next"
@@ -370,7 +407,7 @@ const Register: React.FC = () => {
 
                                 <Input
                                     ref={addressComplementRef}
-                                    placeholder="COMPLEMENTO"
+                                    labelName="COMPLEMENTO"
                                     autoCapitalize="words"
                                     name="addressComplement"
                                     returnKeyType="next"
@@ -382,7 +419,7 @@ const Register: React.FC = () => {
                                 <Input
                                     ref={addressAreaRef}
                                     autoCapitalize="words"
-                                    placeholder="BAIRRO"
+                                    labelName="BAIRRO"
                                     name="addressArea"
                                     returnKeyType="next"
                                     onSubmitEditing={() => {
@@ -392,8 +429,7 @@ const Register: React.FC = () => {
 
                                 <Input
                                     ref={addressCityRef}
-                                    placeholderTextColor="#DA4453"
-                                    placeholder="CIDADE"
+                                    labelName="CIDADE"
                                     name="addressCity"
                                     returnKeyType="next"
                                     onSubmitEditing={() => {
@@ -402,7 +438,7 @@ const Register: React.FC = () => {
                                 />
                                 <Input
                                     ref={addressStateRef}
-                                    placeholder="ESTADO"
+                                    labelName="ESTADO"
                                     name="addressState"
                                     returnKeyType="done"
                                     onSubmitEditing={() => {
@@ -532,7 +568,7 @@ const Register: React.FC = () => {
                                 width={65}
                                 buttonText={formStage !== '3' ? 'PRÓXIMO' : 'CADASTRAR'}
                                 buttonType="enter"
-                                onPress={() => console.log('ENVIAR CADASTRO')}
+                                onPress={() => handleCreateUser()}
                             />
                         </View>
                     </SafeAreaView>
