@@ -5,13 +5,13 @@ import { createStackNavigator, CardStyleInterpolators } from '@react-navigation/
 import Login from '../screens/Login';
 import LoginRegister from '../screens/LoginRegister';
 import Register from '../screens/Register';
+import MainScreen from '../screens/MainScreen';
 
 const App = createStackNavigator();
 
 const AppRoutes: React.FC = () => {
     return (
         <App.Navigator
-            initialRouteName="LoginRegister"
             screenOptions={{
                 headerShown: false,
                 cardStyle: { backgroundColor: '#f0f0f0' },
@@ -20,6 +20,7 @@ const AppRoutes: React.FC = () => {
                 cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
             }}
         >
+            <App.Screen name="Main" component={MainScreen} />
             <App.Screen name="LoginRegister" component={LoginRegister} />
             <App.Screen name="Login" component={Login} />
             <App.Screen name="Register" component={Register} />

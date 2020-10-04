@@ -36,6 +36,7 @@ import {
     Text,
     BoldText,
 } from './styles';
+import { useAuth } from '../../hooks/auth';
 
 interface Navigation {
     navigate(screen: string): void;
@@ -56,6 +57,7 @@ const Login: React.FC = () => {
     const [connected, setConnected] = useState<boolean | undefined>(true);
     const [keyboardOpen, setKeyboardOpen] = useState(false);
     const navigation = useNavigation();
+    const { signIn } = useAuth();
 
     useEffect(() => {
         Keyboard.addListener('keyboardDidShow', () => setKeyboardOpen(true));
@@ -88,8 +90,6 @@ const Login: React.FC = () => {
         };
     }, []);
 
-    // const { signIn } = useAuth();
-
     // const navigate = useCallback(() => {
     //     navigation.navigate('Error');
     // }, [navigation]);
@@ -115,11 +115,14 @@ const Login: React.FC = () => {
 
             await schema.validate(data, { abortEarly: false });
 
-            // signIn({
-            //     email: data.email.trim(),
-            //     password: data.password,
-            //     navigateToError,
-            // });
+            const logged = await signIn({
+                email: data.email.trim(),
+                password: data.password,
+            });
+
+            if (logged) {
+                navigation.navigate('Main');
+            }
         } catch (err) {
             if (err instanceof Yup.ValidationError) {
                 const errors = getValidationsErrors(err);

@@ -1,16 +1,16 @@
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
+import AppProvider from './src/hooks';
 
 import Routes from './src/routes';
 
-import MainScreen from './src/screens/MainScreen';
-
 const App: React.FC = () => {
     return (
-        <MainScreen />
-        // <NavigationContainer>
-        //     <Routes />
-        // </NavigationContainer>
+        <NavigationContainer>
+            <AppProvider>
+                <Routes />
+            </AppProvider>
+        </NavigationContainer>
     );
 };
 
