@@ -3,11 +3,14 @@ import { NavigationContainer } from '@react-navigation/native';
 
 import Routes from './src/routes';
 
+import MainScreen from './src/screens/MainScreen';
+
 const App: React.FC = () => {
     return (
-        <NavigationContainer>
-            <Routes />
-        </NavigationContainer>
+        <MainScreen />
+        // <NavigationContainer>
+        //     <Routes />
+        // </NavigationContainer>
     );
 };
 
