@@ -24,6 +24,7 @@ import {
 } from './styles';
 import getValidationsErrors from '../../utils/getValidationsErrors';
 import Input from '../../components/Input';
+import api from '../../services/api';
 
 const Register: React.FC = () => {
     const navigation = useNavigation();
@@ -121,6 +122,15 @@ const Register: React.FC = () => {
                     }
                 }
 
+                const alreadyCreatedUser = await api.post('/user/checkCpfEmail', {
+                    cpf: data.cpf,
+                    email: data.email,
+                });
+
+                if (alreadyCreatedUser.data) {
+                    return Alert.alert('CPF ou E-mail já cadastrado.');
+                }
+
                 setUser({
                     ...user,
                     name: data.name,
@@ -138,6 +148,7 @@ const Register: React.FC = () => {
                         Alert.alert(value);
                     });
                     firstFormRef.current?.setErrors(errors);
+                    console.log(e);
                     return;
                 }
 
@@ -193,9 +204,37 @@ const Register: React.FC = () => {
         [user],
     );
 
-    const handleCreateUser = useCallback(() => {
-        console.log('User: ', user);
-    }, [user]);
+    const handleCreateUser = useCallback(async () => {
+        try {
+            const addressIdRaw = await api.post('address/add', {
+                addressZipCode: user.addressZipCode,
+                addressStreet: user.addressStreet,
+                addressNumber: user.addressNumber ? Number(user.addressNumber) : null,
+                addressComplement: user.addressComplement,
+                addressArea: user.addressArea,
+                addressCity: user.addressCity,
+                addressState: user.addressState,
+            });
+
+            await api.post('user/add', {
+                name: user.name,
+                email: user.email,
+                cpf: user.cpf,
+                password: user.password,
+                phoneNumber: user.phoneNumber,
+                addressId: addressIdRaw.data,
+            });
+
+            Alert.alert('Usuário criado com sucesso!');
+            navigation.navigate('Login');
+        } catch (e) {
+            console.log(e.response.data);
+            if (e && e.response && e.response.data) {
+                Alert.alert(e.response.data);
+            }
+            Alert.alert('Erro no cadastro');
+        }
+    }, [user, navigation]);
 
     useEffect(() => {
         let mounted = true;
