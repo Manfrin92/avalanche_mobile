@@ -63,7 +63,7 @@ const MainScreen: React.FC = () => {
 
             <View style={{ flexDirection: 'row', marginTop: '4%' }}>
                 <View style={{ width: '84%', height: '100%' }} />
-                <TouchableOpacity>
+                <TouchableOpacity onPress={() => navigation.navigate('NewHelp')}>
                     <Ionicons name="md-add-circle" size={60} color="#4A89DC" />
                 </TouchableOpacity>
             </View>
