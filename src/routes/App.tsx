@@ -6,6 +6,7 @@ import Login from '../screens/Login';
 import LoginRegister from '../screens/LoginRegister';
 import Register from '../screens/Register';
 import MainScreen from '../screens/MainScreen';
+import Menu from '../screens/Menu';
 
 const App = createStackNavigator();
 
@@ -24,6 +25,7 @@ const AppRoutes: React.FC = () => {
             <App.Screen name="LoginRegister" component={LoginRegister} />
             <App.Screen name="Login" component={Login} />
             <App.Screen name="Register" component={Register} />
+            <App.Screen name="Menu" component={Menu} />
         </App.Navigator>
     );
 };

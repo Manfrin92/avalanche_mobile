@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Alert, SafeAreaView, ScrollView } from 'react-native';
 
-import { useNavigation } from '@react-navigation/native';
+import { NavigationContainer, useNavigation } from '@react-navigation/native';
 import { Entypo, Ionicons } from '@expo/vector-icons';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import Logo from '../../../assets/logo.png';
@@ -23,6 +23,8 @@ import Input from '../../components/Input';
 import api from '../../services/api';
 
 const MainScreen: React.FC = () => {
+    const navigation = useNavigation();
+
     return (
         <SafeAreaView style={{ flex: 1 }}>
             <HeaderNavigatorContainer>
@@ -47,6 +49,7 @@ const MainScreen: React.FC = () => {
                         justifyContent: 'center',
                         marginRight: '4%',
                     }}
+                    onPress={() => navigation.navigate('Menu')}
                 >
                     <Entypo name="menu" size={40} color="black" />
                 </TouchableOpacity>

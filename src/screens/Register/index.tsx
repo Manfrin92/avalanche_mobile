@@ -162,7 +162,6 @@ const Register: React.FC = () => {
 
     const handleSecondForm = useCallback(
         async (data: SecondFormData) => {
-            console.log('dados vindo: ', data);
             try {
                 secondFormRef.current?.setErrors({});
 

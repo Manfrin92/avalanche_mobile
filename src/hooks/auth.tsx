@@ -39,7 +39,6 @@ const AuthProvider: React.FC = ({ children }) => {
         const [token, user] = await AsyncStorage.multiGet(['@Avalanche:token', '@Avalanche:user']);
 
         if (token[1] && user[1]) {
-            console.log('chamando load', JSON.parse(user[1]));
             setData({ token: token[1], user: JSON.parse(user[1]) });
         }
 
