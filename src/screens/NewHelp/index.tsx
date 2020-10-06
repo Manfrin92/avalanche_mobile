@@ -10,6 +10,7 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 import Logo from '../../../assets/logo.png';
 import Button from '../../components/Button';
 import Selector from '../../components/Selector';
+import DateSelector from '../../components/DateSelector';
 
 import { UserData, FirstFormData, SecondFormData, AddressFromURL } from '../../utils/Interfaces';
 import { testCPF, getAddressByCep } from '../../utils/AppUtil';
@@ -547,6 +548,7 @@ const NewHelp: React.FC = () => {
 
                         <ScrollView style={{ marginTop: '6%' }}>
                             <View>
+                                <DateSelector />
                                 <TextTitle>Componente de Data</TextTitle>
                             </View>
                         </ScrollView>

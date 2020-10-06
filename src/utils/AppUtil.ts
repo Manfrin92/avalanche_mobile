@@ -1,4 +1,6 @@
 import { Alert, Linking } from 'react-native';
+import { format } from 'date-fns-tz';
+import { add, sub, startOfMonth, endOfMonth, isBefore } from 'date-fns';
 import api from '../services/api';
 import { AddressFromURL } from './Interfaces';
 
@@ -58,4 +60,16 @@ export async function getAddressByCep(cep: string): Promise<AddressFromURL | und
     }
 
     return undefined;
+}
+
+export function formatFirstDateToFilter(dateToFormat: string | number | Date): string {
+    return format(dateToFormat, 'yyyy-MM-dd 00:00:00 -03:00', {
+        timeZone: 'America/Sao_Paulo',
+    });
+}
+
+export function formatLastDateToFilter(dateToFormat: string | number | Date): string {
+    return format(dateToFormat, 'yyyy-MM-dd 23:59:59 -03:00', {
+        timeZone: 'America/Sao_Paulo',
+    });
 }
