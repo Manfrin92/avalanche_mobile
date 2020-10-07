@@ -41,3 +41,40 @@ export interface AddressFromURL {
     localidade: string;
     uf: string;
 }
+
+export interface HelpData {
+    name: string;
+    email: string;
+    title: string;
+    description: string;
+    observation: string;
+    addressZipCode: string;
+    addressStreet: string;
+    addressNumber: string;
+    addressCity: string;
+    addressState: string;
+    addressComplement: string;
+    addressArea: string;
+    addressCountry: string;
+    helpDateId: string;
+    helpDate: Date;
+}
+
+export interface FirstFormHelpData {
+    name: string;
+    email: string;
+    title: string;
+    description: string;
+    observation: string;
+}
+
+export interface SecondFormHelpData {
+    addressZipCode: string;
+    addressStreet: string;
+    addressNumber: string;
+    addressCity: string;
+    addressState: string;
+    addressComplement: string;
+    addressArea: string;
+    addressCountry: string;
+}

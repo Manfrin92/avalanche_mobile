@@ -100,7 +100,8 @@ export const TextTitle = styled.Text`
     font-size: 22px;
     line-height: 23px;
     color: #434a54;
-    margin-bottom: 6%;
+    margin-bottom: 2%;
+    margin-left: 6%;
 `;
 
 export const DescriptionText = styled.Text`

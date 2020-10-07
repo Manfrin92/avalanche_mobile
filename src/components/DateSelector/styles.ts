@@ -9,12 +9,14 @@ export const Container = styled.View`
 `;
 
 export const SelectorContainer = styled.View`
-    background-color: #c4c4c4;
+    background-color: #f9f9f9;
     padding: 5px;
     border-radius: 5px;
     margin: 0px 14px 16px 14px;
-    height: ${Platform.OS === 'android' ? 50 : 80}px;
+    height: ${Platform.OS === 'android' ? 70 : 100}px;
     justify-content: center;
+    border-width: 2px;
+    border-color: #da4453;
 `;
 
 export const Text = styled.Text`
@@ -22,6 +24,7 @@ export const Text = styled.Text`
     font-size: 16px;
     line-height: 20px;
     text-align: center;
+    color: #da4453;
 `;
 
 export const ActionText = styled.Text`

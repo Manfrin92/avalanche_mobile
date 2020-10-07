@@ -12,7 +12,7 @@ import Button from '../../components/Button';
 import Selector from '../../components/Selector';
 import DateSelector from '../../components/DateSelector';
 
-import { UserData, FirstFormData, SecondFormData, AddressFromURL } from '../../utils/Interfaces';
+import { HelpData, FirstFormHelpData, SecondFormHelpData } from '../../utils/Interfaces';
 import { testCPF, getAddressByCep } from '../../utils/AppUtil';
 
 import {
@@ -35,8 +35,8 @@ import api from '../../services/api';
 
 const NewHelp: React.FC = () => {
     const navigation = useNavigation();
-    const [user, setUser] = useState({} as UserData);
-    const [formStage, setFormStage] = useState<'1' | '2' | '3' | '4'>('4');
+    const [help, setHelp] = useState({} as HelpData);
+    const [formStage, setFormStage] = useState<'1' | '2' | '3' | '4'>('1');
     // PRIMEIRO FORM
     const firstFormRef = useRef<FormHandles>(null);
     const fullNameRef = useRef<TextInput>(null);
@@ -54,6 +54,16 @@ const NewHelp: React.FC = () => {
     const addressAreaRef = useRef<TextInput>(null);
     const addressCityRef = useRef<TextInput>(null);
     const addressStateRef = useRef<TextInput>(null);
+    // TERCEIRO FORM
+    const [chosenDate, setChosenDate] = useState<Date>();
+
+    const handleSetChosenDate = useCallback(
+        (childChosenDate: Date) => {
+            setChosenDate(childChosenDate);
+            help.helpDate = childChosenDate;
+        },
+        [help.helpDate],
+    );
 
     const handleSearchAdressZipCode = useCallback(async (cep: string) => {
         if (cep === '' || cep.length < 8) {
@@ -83,58 +93,31 @@ const NewHelp: React.FC = () => {
     }, []);
 
     const handleFirstForm = useCallback(
-        async (data: FirstFormData) => {
+        async (data: FirstFormHelpData) => {
             try {
                 firstFormRef.current?.setErrors({});
 
                 const schema = Yup.object().shape({
-                    name: Yup.string().required('Nome obrigatório'),
-                    email: Yup.string().email('Digite um email válido').required('Email obrigatório'),
-                    cpf: Yup.string().max(11, 'CPF mínimo 11 digitos').required('CPF obrigatório'),
-                    phoneNumber: Yup.string()
-                        .min(10, 'Telefone muito pequeno')
-                        .max(11, 'Telefone excede máximo')
-                        .required('Telefone obrigatório e com DDD'),
-                    password: Yup.string().required('Senha obrigatória'),
-                    repeatPassword: Yup.string()
-                        .equals([Yup.ref('password')], 'Senhas não são iguais')
-                        .required('Repita a senha'),
+                    name: Yup.string().required('Nome do necessitado obrigatório'),
+                    email: Yup.string()
+                        .email('Digite um email válido')
+                        .required('Email do necessitado obrigatório'),
+                    title: Yup.string().required('Título da ajuda obrigatório'),
+                    description: Yup.string().required('Descrição obrigatória'),
                 });
 
                 await schema.validate(data, { abortEarly: false });
 
-                if (data) {
-                    if (data.name) {
-                        if (!data.name.split(' ')[1]) {
-                            return Alert.alert('Sobrenome obrigatório!');
-                        }
-                    }
-                    if (data.cpf) {
-                        const validDelivererCPF = testCPF(data.cpf);
-
-                        if (!validDelivererCPF) {
-                            return Alert.alert('CPF inválido');
-                        }
-                    }
-                }
-
-                const alreadyCreatedUser = await api.post('/user/checkCpfEmail', {
-                    cpf: data.cpf,
-                    email: data.email,
-                });
-
-                if (alreadyCreatedUser.data) {
-                    return Alert.alert('CPF ou E-mail já cadastrado.');
-                }
-
-                setUser({
-                    ...user,
+                setHelp({
+                    ...help,
                     name: data.name,
                     email: data.email,
-                    cpf: data.cpf,
-                    phoneNumber: data.phoneNumber,
-                    password: data.password,
+                    title: data.title,
+                    description: data.description,
+                    observation: data.observation,
                 });
+
+                console.log('ajuda até o momento: ', help);
 
                 setFormStage('2');
             } catch (e) {
@@ -153,26 +136,29 @@ const NewHelp: React.FC = () => {
                 Alert.alert('Erro na autenticação', 'Cheque as credenciais');
             }
         },
-        [user],
+        [help],
     );
 
     const handleSecondForm = useCallback(
-        async (data: SecondFormData) => {
+        async (data: SecondFormHelpData) => {
             try {
                 secondFormRef.current?.setErrors({});
 
                 const schema = Yup.object().shape({
                     addressZipCode: Yup.string().required('CEP obrigatório'),
-                    addressStreet: Yup.string().required('Digite uma cidade'),
-                    addressState: Yup.string().required('Digite um estado'),
-                    addressCity: Yup.string().required('Digite uma cidade'),
-                    addressArea: Yup.string().required('Digite um bairro'),
+                    addressStreet: Yup.string().max(70, 'Tamanho rua excede máximo').required('Digite uma rua'),
+                    addressComplement: Yup.string().max(100, 'Tamanho complemento excede máximo'),
+                    addressState: Yup.string().max(2, 'Tamanho estado excede máximo').required('Digite um estado'),
+                    addressCity: Yup.string()
+                        .max(60, 'Tamanho cidade excede máximo')
+                        .required('Digite uma cidade'),
+                    addressArea: Yup.string().max(60, 'Tamanho bairro excede máximo').required('Digite um bairro'),
                 });
 
                 await schema.validate(data, { abortEarly: false });
 
-                setUser({
-                    ...user,
+                setHelp({
+                    ...help,
                     addressZipCode: data.addressZipCode,
                     addressStreet: data.addressStreet,
                     addressState: data.addressState,
@@ -180,7 +166,10 @@ const NewHelp: React.FC = () => {
                     addressArea: data.addressArea,
                     addressNumber: data.addressNumber,
                     addressComplement: data.addressComplement,
+                    addressCountry: 'Brasil',
                 });
+
+                console.log('ajuda até o momento: ', help);
 
                 setFormStage('3');
             } catch (e) {
@@ -196,32 +185,30 @@ const NewHelp: React.FC = () => {
                 Alert.alert('Erro na autenticação', 'Cheque as credenciais');
             }
         },
-        [user],
+        [help],
     );
 
-    const handleCreateUser = useCallback(async () => {
+    const handleCreateHelp = useCallback(async () => {
         try {
             const addressIdRaw = await api.post('address/add', {
-                addressZipCode: user.addressZipCode,
-                addressStreet: user.addressStreet,
-                addressNumber: user.addressNumber ? Number(user.addressNumber) : null,
-                addressComplement: user.addressComplement,
-                addressArea: user.addressArea,
-                addressCity: user.addressCity,
-                addressState: user.addressState,
+                addressZipCode: help.addressZipCode,
+                addressStreet: help.addressStreet,
+                addressNumber: help.addressNumber ? Number(help.addressNumber) : null,
+                addressComplement: help.addressComplement,
+                addressArea: help.addressArea,
+                addressCity: help.addressCity,
+                addressState: help.addressState,
             });
 
-            await api.post('user/add', {
-                name: user.name,
-                email: user.email,
-                cpf: user.cpf,
-                password: user.password,
-                phoneNumber: user.phoneNumber,
+            help.helpDateId = addressIdRaw.data;
+
+            await api.post('help/add', {
+                ...help,
                 addressId: addressIdRaw.data,
             });
 
-            Alert.alert('Usuário criado com sucesso!');
-            navigation.navigate('Login');
+            Alert.alert('Ajuda cadastrada com sucesso!');
+            navigation.navigate('Main');
         } catch (e) {
             console.log(e.response.data);
             if (e && e.response && e.response.data) {
@@ -229,7 +216,7 @@ const NewHelp: React.FC = () => {
             }
             Alert.alert('Erro no cadastro');
         }
-    }, [user, navigation]);
+    }, [help, navigation]);
 
     return (
         <>
@@ -291,7 +278,10 @@ const NewHelp: React.FC = () => {
                                 />
 
                                 <Input
+                                    numberOfLines={5}
+                                    multiline
                                     ref={descriptionRef}
+                                    height={400}
                                     labelName="Descrição"
                                     name="description"
                                     returnKeyType="next"
@@ -524,9 +514,9 @@ const NewHelp: React.FC = () => {
                             <Button
                                 title="next"
                                 width={65}
-                                buttonText={formStage !== '3' ? 'PRÓXIMO' : 'CADASTRAR'}
+                                buttonText="PRÓXIMO"
                                 buttonType="enter"
-                                onPress={() => handleCreateUser()}
+                                onPress={() => setFormStage('4')}
                             />
                         </View>
                     </SafeAreaView>
@@ -548,8 +538,7 @@ const NewHelp: React.FC = () => {
 
                         <ScrollView style={{ marginTop: '6%' }}>
                             <View>
-                                <DateSelector />
-                                <TextTitle>Componente de Data</TextTitle>
+                                <DateSelector setChosenDate={handleSetChosenDate} />
                             </View>
                         </ScrollView>
 
@@ -578,7 +567,7 @@ const NewHelp: React.FC = () => {
                                 width={65}
                                 buttonText="ADICIONAR DATA"
                                 buttonType="enter"
-                                onPress={() => console.log('ok')}
+                                onPress={() => handleCreateHelp()}
                             />
                         </View>
                     </SafeAreaView>

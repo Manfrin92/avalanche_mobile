@@ -7,48 +7,37 @@ import { format } from 'date-fns-tz';
 import { Container, Text, SelectorContainer, ActionText } from './styles';
 import { formatFirstDateToFilter } from '../../utils/AppUtil';
 
-const DateSelector: React.FC = () => {
-    const [showFirstDate, setFirstDate] = useState(false);
-    const [showSecondDate, setSecondDate] = useState(false);
+interface DateSelectorData {
+    setChosenDate(date: Date): void;
+}
 
+const DateSelector: React.FC<DateSelectorData> = ({ setChosenDate }) => {
     const today = new Date(Date.now());
+    const [showFirstDate, setFirstDate] = useState(false);
+    const [selectedDate, setSelectedDate] = useState(today);
 
     const todayFormatedToFilter = formatFirstDateToFilter(today);
 
-    // const handleSetDateInThePicker = useCallback(
-    //     (event, date, picker) => {
-    //         if (event && event.nativeEvent && event.nativeEvent.timestamp) {
-    //             const timestampLength = event.nativeEvent.timestamp.toString().length;
-    //             const idealTimestampToBeConverted = event.nativeEvent.timestamp
-    //                 .toString()
-    //                 .slice(0, timestampLength - 3);
+    const handleSetDateInThePicker = useCallback((event, date) => {
+        if (event && event.nativeEvent && event.nativeEvent.timestamp) {
+            const timestampLength = event.nativeEvent.timestamp.toString().length;
+            const idealTimestampToBeConverted = event.nativeEvent.timestamp
+                .toString()
+                .slice(0, timestampLength - 3);
 
-    //             picker === 'secondPicker'
-    //                 ? handleSetFinalDate(fromUnixTime(idealTimestampToBeConverted))
-    //                 : handleSetInitialDate(fromUnixTime(idealTimestampToBeConverted));
-
-    //             if (picker === 'secondPicker') {
-    //                 if (date < initialDate) {
-    //                     Alert.alert('Data final anterior a data inicial, igualando ambas.');
-    //                     handleSetInitialDate(fromUnixTime(idealTimestampToBeConverted));
-    //                 }
-    //             } else if (date > finalDate) {
-    //                 Alert.alert('Data final anterior a data inicial, igualando ambas.');
-    //                 handleSetFinalDate(fromUnixTime(idealTimestampToBeConverted));
-    //             }
-    //         }
-    //     },
-    //     [handleSetFinalDate, handleSetInitialDate, initialDate, finalDate],
-    // );
+            setSelectedDate(fromUnixTime(idealTimestampToBeConverted));
+            setChosenDate(fromUnixTime(idealTimestampToBeConverted));
+        }
+    }, []);
 
     return (
         <Container>
             <SelectorContainer>
-                {!showFirstDate && !showSecondDate && (
+                {!showFirstDate && (
                     <TouchableOpacity onPress={() => setFirstDate(true)}>
-                        <Text>Data inicial</Text>
+                        <Text>Data da ajuda</Text>
                         <Text>
-                            {format(today, 'dd/MM/yyyy', {
+                            {format(selectedDate, 'dd/MM/yyyy', {
                                 timeZone: 'America/Sao_Paulo',
                             })}
                         </Text>
@@ -70,48 +59,13 @@ const DateSelector: React.FC = () => {
                             </View>
                         )}
                         <DateTimePicker
-                            value={today}
+                            value={selectedDate}
                             mode="date"
                             is24Hour
                             display="calendar"
                             onChange={(event, date) => {
                                 setFirstDate(false);
-                                console.log('data escolhida: ', date);
-                            }}
-                        />
-                    </View>
-                )}
-            </SelectorContainer>
-
-            <SelectorContainer>
-                {!showFirstDate && !showSecondDate && (
-                    <TouchableOpacity onPress={() => setSecondDate(true)}>
-                        <Text>Data final</Text>
-                        <Text>
-                            {format(today, 'dd/MM/yyyy', {
-                                timeZone: 'America/Sao_Paulo',
-                            })}
-                        </Text>
-                    </TouchableOpacity>
-                )}
-
-                {showSecondDate && (
-                    <View style={{ marginTop: '60%', backgroundColor: 'white' }}>
-                        {Platform.OS === 'ios' && (
-                            <View style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
-                                <TouchableOpacity onPress={() => setSecondDate(false)}>
-                                    <ActionText>Cancelar</ActionText>
-                                </TouchableOpacity>
-                            </View>
-                        )}
-                        <DateTimePicker
-                            value={today}
-                            mode="date"
-                            is24Hour
-                            display="calendar"
-                            onChange={(event, date) => {
-                                setSecondDate(false);
-                                console.log('data escolhida: ', date);
+                                handleSetDateInThePicker(event, date);
                             }}
                         />
                     </View>

@@ -8,6 +8,7 @@ import { Container, TextInput, Label, LabelContainer } from './styles';
 
 interface InputProps extends TextInputProps {
     name: string;
+    height?: number;
     width?: number;
     iconName?: string;
     cepIcon?: boolean;
@@ -25,7 +26,7 @@ interface InputRef {
 }
 
 const Input: React.RefForwardingComponent<InputRef, InputProps> = (
-    { name, iconName, width, cepIcon, getCep, labelName, marginBottom, ...rest },
+    { name, iconName, height, width, cepIcon, getCep, labelName, marginBottom, ...rest },
     ref,
 ) => {
     const inputElementRef = useRef<any>(null);
@@ -64,7 +65,7 @@ const Input: React.RefForwardingComponent<InputRef, InputProps> = (
                     <Label>{labelName}</Label>
                 </LabelContainer>
             )}
-            <Container marginBottom={marginBottom} isErrored={!!error} width={width}>
+            <Container marginBottom={marginBottom} isErrored={!!error} width={width} height={height}>
                 {iconName && (
                     <Ionicons style={{ padding: 18, paddingRight: 4 }} name={iconName} color="#FFF" size={26} />
                 )}

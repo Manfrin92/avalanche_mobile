@@ -2,13 +2,14 @@ import styled, { css } from 'styled-components/native';
 
 interface ContainerProps {
     isErrored: boolean;
+    height?: number;
     width?: number;
     marginBottom: number;
 }
 
 export const Container = styled.View<ContainerProps>`
     flex-direction: row;
-    height: 55px;
+    height: ${(props) => (props.height ? '150px' : '55px')};
     margin-bottom: 1%;
     margin-right: 6%;
     margin-left: 6%;
@@ -19,7 +20,7 @@ export const Container = styled.View<ContainerProps>`
     border-radius: 8px;
 
     /* border-top-width: 0; */
-    align-items: center;
+    align-items: stretch;
     justify-content: flex-start;
 
     ${(props) =>
@@ -44,6 +45,12 @@ export const Container = styled.View<ContainerProps>`
         props.marginBottom &&
         css`
             margin-bottom: ${props.marginBottom}px;
+        `}
+
+        ${(props) =>
+        props.width &&
+        css`
+            height: ${props.height}%;
         `}
 `;
 
