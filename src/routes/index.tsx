@@ -8,6 +8,8 @@ import AuthRoutes from './Auth';
 const Routes: React.FC = () => {
     const { user, loading } = useAuth();
 
+    console.log('Entrou de novo na lógica das rotas com o user: ', user ? console.log(true) : console.log(false));
+
     if (loading) {
         return (
             <View

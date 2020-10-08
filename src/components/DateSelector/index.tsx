@@ -1,4 +1,4 @@
-import React, { useContext, useState, useCallback } from 'react';
+import React, { useContext, useState, useCallback, useEffect } from 'react';
 
 import { Alert, TouchableOpacity, View, Platform } from 'react-native';
 import { fromUnixTime } from 'date-fns';
@@ -28,6 +28,11 @@ const DateSelector: React.FC<DateSelectorData> = ({ setChosenDate }) => {
             setSelectedDate(fromUnixTime(idealTimestampToBeConverted));
             setChosenDate(fromUnixTime(idealTimestampToBeConverted));
         }
+    }, []);
+
+    useEffect(() => {
+        console.log('chamando ufncao: ', today);
+        setChosenDate(today);
     }, []);
 
     return (

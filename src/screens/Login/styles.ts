@@ -63,8 +63,8 @@ export const BoldText = styled.Text`
 `;
 
 export const StyledImage = styled.Image`
-    width: 205px;
-    height: 190px;
+    width: 160px;
+    height: 146px;
     margin-bottom: 12%;
 `;
 

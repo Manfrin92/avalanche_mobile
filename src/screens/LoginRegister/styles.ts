@@ -1,9 +1,9 @@
 import styled from 'styled-components/native';
 
 export const StyledImage = styled.Image`
-    width: 205px;
-    height: 190px;
-    margin-top: 36%;
+    width: 164px;
+    height: 152px;
+    margin-top: 30%;
 `;
 
 export const StyledText = styled.Text`
@@ -19,18 +19,17 @@ export const BoldText = styled.Text`
     font-weight: bold;
     font-size: 32px;
     text-align: center;
-    padding-top: 16px;
     color: #434a54;
 `;
 
 export const FormView = styled.View`
     width: 100%;
     height: 24%;
-    padding-bottom: 8%;
+    padding-bottom: 2%;
 `;
 
 export const ButtonContainer = styled.View`
     margin-right: 6%;
     margin-left: 6%;
-    margin-top: 44%;
+    margin-top: 30%;
 `;

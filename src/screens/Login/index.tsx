@@ -70,12 +70,12 @@ const Login: React.FC = () => {
     });
 
     useEffect(() => {
-        async function checkConnection(): Promise<void> {
-            const isConnected = await Network.getNetworkStateAsync();
-            setConnected(isConnected.isConnected);
-        }
+        // async function checkConnection(): Promise<void> {
+        //     const isConnected = await Network.getNetworkStateAsync();
+        //     setConnected(isConnected.isConnected);
+        // }
 
-        checkConnection();
+        // checkConnection();
 
         const keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', () => {
             setKeyboardOpen(true);
@@ -115,14 +115,10 @@ const Login: React.FC = () => {
 
             await schema.validate(data, { abortEarly: false });
 
-            const logged = await signIn({
+            signIn({
                 email: data.email.trim(),
                 password: data.password,
             });
-
-            if (logged) {
-                navigation.navigate('Main');
-            }
         } catch (err) {
             if (err instanceof Yup.ValidationError) {
                 const errors = getValidationsErrors(err);
@@ -175,6 +171,7 @@ const Login: React.FC = () => {
                     />
                     <ViewButton>
                         <Button
+                            title="enter"
                             buttonType="enter"
                             buttonText="entrar"
                             onPress={() => formRef.current?.submitForm()}

@@ -55,10 +55,12 @@ const NewHelp: React.FC = () => {
     const addressCityRef = useRef<TextInput>(null);
     const addressStateRef = useRef<TextInput>(null);
     // TERCEIRO FORM
-    const [chosenDate, setChosenDate] = useState<Date>();
+    const today = new Date(Date.now());
+    const [chosenDate, setChosenDate] = useState<Date>(today);
 
     const handleSetChosenDate = useCallback(
         (childChosenDate: Date) => {
+            console.log('chegou a data: ', childChosenDate);
             setChosenDate(childChosenDate);
             help.helpDate = childChosenDate;
         },
@@ -169,8 +171,6 @@ const NewHelp: React.FC = () => {
                     addressCountry: 'Brasil',
                 });
 
-                console.log('ajuda até o momento: ', help);
-
                 setFormStage('3');
             } catch (e) {
                 if (e instanceof Yup.ValidationError) {
@@ -201,10 +201,11 @@ const NewHelp: React.FC = () => {
             });
 
             help.helpDateId = addressIdRaw.data;
+            help.helpDate = chosenDate;
 
             await api.post('help/add', {
                 ...help,
-                addressId: addressIdRaw.data,
+                address: addressIdRaw.data,
             });
 
             Alert.alert('Ajuda cadastrada com sucesso!');
@@ -216,7 +217,7 @@ const NewHelp: React.FC = () => {
             }
             Alert.alert('Erro no cadastro');
         }
-    }, [help, navigation]);
+    }, [help, navigation, chosenDate]);
 
     return (
         <>

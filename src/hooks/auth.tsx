@@ -67,8 +67,6 @@ const AuthProvider: React.FC = ({ children }) => {
             ]);
 
             setData({ token, user });
-
-            return true;
         } catch (err) {
             console.log('ssignin: ', err);
             if (err.message && err.message.toLowerCase().includes('network error')) {
