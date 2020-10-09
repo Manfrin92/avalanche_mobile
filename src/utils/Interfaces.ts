@@ -24,6 +24,13 @@ export interface FirstFormData {
     repeatPassword: string;
 }
 
+export interface FirstFormUpdateData {
+    name: string;
+    email: string;
+    cpf: string;
+    phoneNumber: string;
+}
+
 export interface SecondFormData {
     addressZipCode: string;
     addressStreet: string;
@@ -47,7 +54,7 @@ export interface HelpData {
     email: string;
     title: string;
     description: string;
-    observation: string;
+    observation?: string | null;
     addressZipCode: string;
     addressStreet: string;
     addressNumber: string;
@@ -65,7 +72,7 @@ export interface FirstFormHelpData {
     email: string;
     title: string;
     description: string;
-    observation: string;
+    observation?: string | null;
 }
 
 export interface SecondFormHelpData {
@@ -77,4 +84,23 @@ export interface SecondFormHelpData {
     addressComplement: string;
     addressArea: string;
     addressCountry: string;
+}
+
+export interface HelpDataToShow {
+    id: string;
+    title: string;
+    email?: string;
+    title?: string;
+    description?: string | null;
+    observation?: string | null;
+    addressZipCode?: string;
+    addressStreet?: string;
+    addressNumber?: string;
+    addressCity?: string;
+    addressState?: string;
+    addressComplement?: string;
+    addressArea?: string;
+    addressCountry?: string;
+    helpDateId?: string;
+    helpDate?: Date;
 }

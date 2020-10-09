@@ -83,7 +83,7 @@ const Input: React.RefForwardingComponent<InputRef, InputProps> = (
                 {cepIcon && (
                     <View style={{ marginRight: 0 }}>
                         <FontAwesome
-                            style={{ marginRight: 15 }}
+                            style={{ marginRight: 15, marginTop: '35%' }}
                             onClick={getCep}
                             color="#e82b43"
                             size={24}

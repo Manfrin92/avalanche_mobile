@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { View, Alert, SafeAreaView, Platform, KeyboardAvoidingView, ScrollView } from 'react-native';
 import * as Yup from 'yup';
+import { format } from 'date-fns-tz';
 
 import { useNavigation } from '@react-navigation/native';
 import { Form } from '@unform/mobile';
@@ -32,8 +33,10 @@ import {
 import getValidationsErrors from '../../utils/getValidationsErrors';
 import Input from '../../components/Input';
 import api from '../../services/api';
+import { useAuth } from '../../hooks/auth';
 
 const NewHelp: React.FC = () => {
+    const { user } = useAuth();
     const navigation = useNavigation();
     const [help, setHelp] = useState({} as HelpData);
     const [formStage, setFormStage] = useState<'1' | '2' | '3' | '4'>('1');
@@ -57,12 +60,14 @@ const NewHelp: React.FC = () => {
     // TERCEIRO FORM
     const today = new Date(Date.now());
     const [chosenDate, setChosenDate] = useState<Date>(today);
+    const [selectedDate, setSelectedDate] = useState(false);
 
     const handleSetChosenDate = useCallback(
         (childChosenDate: Date) => {
             console.log('chegou a data: ', childChosenDate);
             setChosenDate(childChosenDate);
             help.helpDate = childChosenDate;
+            setSelectedDate(true);
         },
         [help.helpDate],
     );
@@ -116,7 +121,7 @@ const NewHelp: React.FC = () => {
                     email: data.email,
                     title: data.title,
                     description: data.description,
-                    observation: data.observation,
+                    observation: data.observation ? data.observation : null,
                 });
 
                 console.log('ajuda até o momento: ', help);
@@ -200,12 +205,18 @@ const NewHelp: React.FC = () => {
                 addressState: help.addressState,
             });
 
-            help.helpDateId = addressIdRaw.data;
-            help.helpDate = chosenDate;
-
-            await api.post('help/add', {
+            const HelpIdRaw = await api.post('help/add', {
                 ...help,
                 address: addressIdRaw.data,
+                userManager: user.id,
+            });
+
+            await api.post('helpDate/add', {
+                ...help,
+                userVolunteer: user.id,
+                help: HelpIdRaw.data,
+                date: chosenDate,
+                type: 'ride',
             });
 
             Alert.alert('Ajuda cadastrada com sucesso!');
@@ -217,7 +228,7 @@ const NewHelp: React.FC = () => {
             }
             Alert.alert('Erro no cadastro');
         }
-    }, [help, navigation, chosenDate]);
+    }, [help, navigation, user.id, chosenDate]);
 
     return (
         <>
@@ -479,20 +490,31 @@ const NewHelp: React.FC = () => {
                         <ScrollView style={{ marginTop: '6%', marginRight: '6%', marginLeft: '6%' }}>
                             <TextTitle>Datas:</TextTitle>
 
-                            <View style={{ flexDirection: 'row' }}>
-                                <TouchableOpacity>
-                                    <DateContainer>
-                                        <DateText>13/09</DateText>
-                                        <DescriptionText>Acompanhamento Hospitalar</DescriptionText>
-                                        <MaterialCommunityIcons
-                                            style={{ marginLeft: '6%' }}
-                                            name="pencil"
-                                            size={38}
-                                            color="#F6BB42"
-                                        />
-                                    </DateContainer>
-                                </TouchableOpacity>
-                            </View>
+                            {selectedDate && (
+                                <View>
+                                    <TouchableOpacity>
+                                        <DateContainer
+                                            style={{
+                                                flexDirection: 'row',
+                                                justifyContent: 'space-between',
+                                            }}
+                                        >
+                                            <DateText>
+                                                {format(chosenDate, 'dd/MM', {
+                                                    timeZone: 'America/Sao_Paulo',
+                                                })}
+                                            </DateText>
+                                            <DescriptionText>{help.title}</DescriptionText>
+                                            <MaterialCommunityIcons
+                                                style={{ marginLeft: '6%' }}
+                                                name="pencil"
+                                                size={38}
+                                                color="#F6BB42"
+                                            />
+                                        </DateContainer>
+                                    </TouchableOpacity>
+                                </View>
+                            )}
                         </ScrollView>
 
                         <View

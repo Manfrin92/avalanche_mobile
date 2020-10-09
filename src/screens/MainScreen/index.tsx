@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback, useState, useEffect } from 'react';
 import { View, Alert, SafeAreaView, ScrollView } from 'react-native';
 
 import { NavigationContainer, useNavigation } from '@react-navigation/native';
@@ -21,9 +21,25 @@ import {
 import getValidationsErrors from '../../utils/getValidationsErrors';
 import Input from '../../components/Input';
 import api from '../../services/api';
+import { HelpDataToShow } from '../../utils/Interfaces';
+import { useAuth } from '../../hooks/auth';
 
 const MainScreen: React.FC = () => {
+    const { user } = useAuth();
     const navigation = useNavigation();
+    const [helps, setHelps] = useState([] as HelpDataToShow[]);
+
+    const getHelpsByUser = useCallback(async () => {
+        const helpsRaw = await api.post('/help/findHelps', {
+            userManagerId: user.id,
+        });
+
+        setHelps(helpsRaw.data);
+    }, [user.id]);
+
+    useEffect(() => {
+        getHelpsByUser();
+    }, []);
 
     return (
         <SafeAreaView style={{ flex: 1 }}>
@@ -55,11 +71,12 @@ const MainScreen: React.FC = () => {
                 </TouchableOpacity>
             </HeaderNavigatorContainer>
 
-            <HelpItem />
-            <HelpItem />
-            <HelpItem />
-            <HelpItem />
-            <HelpItem />
+            <ScrollView>
+                {helps.length > 0 &&
+                    helps.map((help) => {
+                        return <HelpItem key={help.id} id={help.id} title={help.title} />;
+                    })}
+            </ScrollView>
 
             <View style={{ flexDirection: 'row', marginTop: '4%' }}>
                 <View style={{ width: '84%', height: '100%' }} />

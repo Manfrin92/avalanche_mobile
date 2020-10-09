@@ -4,6 +4,7 @@ import { createStackNavigator, CardStyleInterpolators } from '@react-navigation/
 import LoginRegister from '../screens/LoginRegister';
 import Login from '../screens/Login';
 import Register from '../screens/Register';
+import MainScreen from '../screens/MainScreen';
 
 const Auth = createStackNavigator();
 

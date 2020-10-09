@@ -70,13 +70,6 @@ const Login: React.FC = () => {
     });
 
     useEffect(() => {
-        // async function checkConnection(): Promise<void> {
-        //     const isConnected = await Network.getNetworkStateAsync();
-        //     setConnected(isConnected.isConnected);
-        // }
-
-        // checkConnection();
-
         const keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', () => {
             setKeyboardOpen(true);
         });
@@ -90,20 +83,6 @@ const Login: React.FC = () => {
         };
     }, []);
 
-    // const navigate = useCallback(() => {
-    //     navigation.navigate('Error');
-    // }, [navigation]);
-
-    // const navigateToError = useCallback(
-    //     (firstMessage: string, secondMessage: string) => {
-    //         navigation.navigate('Error', {
-    //             firstMessage,
-    //             secondMessage,
-    //         });
-    //     },
-    //     [navigation],
-    // );
-
     const handleSignIn = useCallback(async (data: SignInFormData) => {
         try {
             formRef.current?.setErrors({});
@@ -115,6 +94,7 @@ const Login: React.FC = () => {
 
             await schema.validate(data, { abortEarly: false });
 
+            console.log('chamando funcao de login');
             signIn({
                 email: data.email.trim(),
                 password: data.password,

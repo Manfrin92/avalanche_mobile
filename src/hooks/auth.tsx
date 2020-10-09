@@ -51,10 +51,13 @@ const AuthProvider: React.FC = ({ children }) => {
 
     const signIn = useCallback(async ({ email, password }) => {
         try {
+            setLoading(true);
             const response = await api.post('/user/logIn', {
                 email,
                 password,
             });
+
+            console.log('entrou na funcao de login');
 
             const { token } = response.data;
             const { user } = response.data;
@@ -67,6 +70,7 @@ const AuthProvider: React.FC = ({ children }) => {
             ]);
 
             setData({ token, user });
+            setLoading(false);
         } catch (err) {
             console.log('ssignin: ', err);
             if (err.message && err.message.toLowerCase().includes('network error')) {

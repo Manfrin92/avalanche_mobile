@@ -37,12 +37,6 @@ export const Content = styled.View`
     padding: 0 6%;
 `;
 
-export const DateContainer = styled.View`
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-`;
-
 export const ViewButton = styled.View`
     margin-top: 2%;
     margin-bottom: 8%;
@@ -93,30 +87,6 @@ export const StageText = styled.Text`
     text-align: center;
     color: #4a89dc;
     margin-right: 4%;
-`;
-
-export const TextTitle = styled.Text`
-    font-family: sans-serif;
-    font-size: 22px;
-    line-height: 23px;
-    color: #434a54;
-    margin-bottom: 2%;
-`;
-
-export const DescriptionText = styled.Text`
-    font-family: sans-serif;
-    font-size: 16px;
-    line-height: 17px;
-    color: #434a54;
-    margin-left: 4%;
-`;
-
-export const DateText = styled.Text`
-    font-family: sans-serif;
-    font-size: 22px;
-    font-weight: bold;
-    line-height: 23px;
-    color: #434a54;
 `;
 
 export const TextInput = styled.TextInput`

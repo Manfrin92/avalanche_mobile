@@ -95,7 +95,7 @@ const Menu: React.FC = () => {
                         <BoldText>Minhas ajudas</BoldText>
                     </View>
                 </TouchableOpacity>
-                <TouchableOpacity>
+                <TouchableOpacity onPress={() => navigation.navigate('UpdateRegister')}>
                     <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: '8%' }}>
                         <FontAwesome5 style={{ width: '14%' }} name="user-alt" size={28} color="black" />
                         <Text>Meus dados</Text>

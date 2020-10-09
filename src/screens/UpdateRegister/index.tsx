@@ -9,7 +9,7 @@ import Logo from '../../../assets/logo.png';
 import Button from '../../components/Button';
 import Selector from '../../components/Selector';
 
-import { UserData, FirstFormData, SecondFormData, AddressFromURL } from '../../utils/Interfaces';
+import { UserData, FirstFormUpdateData, SecondFormData, AddressFromURL } from '../../utils/Interfaces';
 import { testCPF, getAddressByCep } from '../../utils/AppUtil';
 
 import {
@@ -25,22 +25,13 @@ import {
 import getValidationsErrors from '../../utils/getValidationsErrors';
 import Input from '../../components/Input';
 import api from '../../services/api';
+import { useAuth } from '../../hooks/auth';
 
-const Register: React.FC = () => {
+const UpdateRegister: React.FC = () => {
     const navigation = useNavigation();
-    const [user, setUser] = useState({} as UserData);
-    const [fullName, setFullName] = useState('');
-    const [cooker, setCooker] = useState(false);
-    const [driver, setDriver] = useState(false);
-    const [doctor, setDoctor] = useState(false);
-    const [nurse, setNurse] = useState(false);
-    const [generalWorker, setGeneralWorker] = useState(false);
-    const [hospitalCompanion, setHospitalCompanion] = useState(false);
-    const [financialHelper, setFinancialHelper] = useState(false);
-    const [interceptor, setInterceptor] = useState(false);
-    const [manualWorker, setManualWorker] = useState(false);
-    const [carpinter, setCarpinter] = useState(false);
-    const [formStage, setFormStage] = useState<'1' | '2' | '3'>('1');
+    const { user } = useAuth();
+    const [updatedUser, setUpdatedUser] = useState({} as UserData);
+    const [formStage, setFormStage] = useState<'1' | '2'>('1');
     // PRIMEIRO FORM
     const firstFormRef = useRef<FormHandles>(null);
     const fullNameRef = useRef<TextInput>(null);
@@ -87,22 +78,18 @@ const Register: React.FC = () => {
     }, []);
 
     const handleFirstForm = useCallback(
-        async (data: FirstFormData) => {
+        async (data: FirstFormUpdateData) => {
             try {
+                console.log('dados chegando: ', data);
                 firstFormRef.current?.setErrors({});
 
                 const schema = Yup.object().shape({
                     name: Yup.string().required('Nome obrigatório'),
                     email: Yup.string().email('Digite um email válido').required('Email obrigatório'),
-                    cpf: Yup.string().max(11, 'CPF mínimo 11 digitos').required('CPF obrigatório'),
                     phoneNumber: Yup.string()
                         .min(10, 'Telefone muito pequeno')
                         .max(11, 'Telefone excede máximo')
                         .required('Telefone obrigatório e com DDD'),
-                    password: Yup.string().required('Senha obrigatória'),
-                    repeatPassword: Yup.string()
-                        .equals([Yup.ref('password')], 'Senhas não são iguais')
-                        .required('Repita a senha'),
                 });
 
                 await schema.validate(data, { abortEarly: false });
@@ -122,17 +109,8 @@ const Register: React.FC = () => {
                     }
                 }
 
-                const alreadyCreatedUser = await api.post('/user/checkCpfEmail', {
-                    cpf: data.cpf,
-                    email: data.email,
-                });
-
-                if (alreadyCreatedUser.data) {
-                    return Alert.alert('CPF ou E-mail já cadastrado.');
-                }
-
-                setUser({
-                    ...user,
+                setUpdatedUser({
+                    ...updatedUser,
                     name: data.name,
                     email: data.email,
                     cpf: data.cpf,
@@ -157,8 +135,19 @@ const Register: React.FC = () => {
                 Alert.alert('Erro na autenticação', 'Cheque as credenciais');
             }
         },
-        [user],
+        [updatedUser],
     );
+
+    const handleUpdateUser = useCallback(async () => {
+        try {
+        } catch (e) {
+            console.log(e.response.data);
+            if (e && e.response && e.response.data) {
+                Alert.alert(e.response.data);
+            }
+            Alert.alert('Erro no cadastro');
+        }
+    }, [updatedUser, navigation]);
 
     const handleSecondForm = useCallback(
         async (data: SecondFormData) => {
@@ -175,8 +164,8 @@ const Register: React.FC = () => {
 
                 await schema.validate(data, { abortEarly: false });
 
-                setUser({
-                    ...user,
+                setUpdatedUser({
+                    ...updatedUser,
                     addressZipCode: data.addressZipCode,
                     addressStreet: data.addressStreet,
                     addressState: data.addressState,
@@ -186,7 +175,28 @@ const Register: React.FC = () => {
                     addressComplement: data.addressComplement,
                 });
 
-                setFormStage('3');
+                const addressIdRaw = await api.post('address/add', {
+                    addressZipCode: data.addressZipCode,
+                    addressStreet: data.addressStreet,
+                    addressNumber: data.addressNumber ? Number(data.addressNumber) : null,
+                    addressComplement: data.addressComplement,
+                    addressArea: data.addressArea,
+                    addressCity: data.addressCity,
+                    addressState: data.addressState,
+                });
+
+                await api.put('user', {
+                    id: user.id,
+                    name: updatedUser.name,
+                    email: updatedUser.email,
+                    cpf: updatedUser.cpf,
+                    password: updatedUser.password,
+                    phoneNumber: updatedUser.phoneNumber,
+                    address: addressIdRaw.data,
+                });
+
+                Alert.alert('Usuário alterado com sucesso!');
+                navigation.navigate('Main');
             } catch (e) {
                 if (e instanceof Yup.ValidationError) {
                     const errors = getValidationsErrors(e);
@@ -197,72 +207,40 @@ const Register: React.FC = () => {
                     return;
                 }
                 console.log(e);
-                Alert.alert('Erro na autenticação', 'Cheque as credenciais');
+                Alert.alert('Erro na atualização', 'Cheque as credenciais');
             }
         },
-        [user],
+        [updatedUser, navigation],
     );
 
-    const handleCreateUser = useCallback(async () => {
-        try {
-            const addressIdRaw = await api.post('address/add', {
-                addressZipCode: user.addressZipCode,
-                addressStreet: user.addressStreet,
-                addressNumber: user.addressNumber ? Number(user.addressNumber) : null,
-                addressComplement: user.addressComplement,
-                addressArea: user.addressArea,
-                addressCity: user.addressCity,
-                addressState: user.addressState,
-            });
+    // useEffect(() => {
+    //     let mounted = true;
 
-            await api.post('user/add', {
-                name: user.name,
-                email: user.email,
-                cpf: user.cpf,
-                password: user.password,
-                phoneNumber: user.phoneNumber,
-                address: addressIdRaw.data,
-            });
+    //     if (firstFormRef.current) {
+    //         if (formStage === '1') {
+    //             if (mounted) {
+    //                 firstFormRef.current.setData({
+    //                     ...updatedUser,
+    //                     repeatPassword: updatedUser.password,
+    //                 });
+    //             }
+    //         }
+    //     }
 
-            Alert.alert('Usuário criado com sucesso!');
-            navigation.navigate('Login');
-        } catch (e) {
-            console.log(e.response.data);
-            if (e && e.response && e.response.data) {
-                Alert.alert(e.response.data);
-            }
-            Alert.alert('Erro no cadastro');
-        }
-    }, [user, navigation]);
+    //     if (secondFormRef.current) {
+    //         if (formStage === '2') {
+    //             if (mounted) {
+    //                 secondFormRef.current.setData({
+    //                     ...updatedUser,
+    //                 });
+    //             }
+    //         }
+    //     }
 
-    useEffect(() => {
-        let mounted = true;
-
-        if (firstFormRef.current) {
-            if (formStage === '1') {
-                if (mounted) {
-                    firstFormRef.current.setData({
-                        ...user,
-                        repeatPassword: user.password,
-                    });
-                }
-            }
-        }
-
-        if (secondFormRef.current) {
-            if (formStage === '2') {
-                if (mounted) {
-                    secondFormRef.current.setData({
-                        ...user,
-                    });
-                }
-            }
-        }
-
-        return () => {
-            mounted = false;
-        };
-    }, [formStage]);
+    //     return () => {
+    //         mounted = false;
+    //     };
+    // }, [formStage]);
 
     return (
         <>
@@ -275,13 +253,13 @@ const Register: React.FC = () => {
                                 <StyledImage source={Logo} />
                                 <NavigationText>
                                     Cadastro {formStage === '2' && <BoldText> Endereço</BoldText>}
-                                    {formStage === '3' && <BoldText>Habilidades</BoldText>}
                                 </NavigationText>
                             </View>
-                            <StageText>{formStage}/3 </StageText>
+                            <StageText>{formStage}/2 </StageText>
                         </HeaderNavigatorContainer>
 
                         <Form
+                            initialData={user}
                             onSubmit={handleFirstForm}
                             ref={firstFormRef}
                             style={{ flex: 1, justifyContent: 'flex-end' }}
@@ -306,18 +284,6 @@ const Register: React.FC = () => {
                                     keyboardType="email-address"
                                     returnKeyType="next"
                                     onSubmitEditing={() => {
-                                        cpfRef.current?.focus();
-                                    }}
-                                />
-                                <Input
-                                    ref={cpfRef}
-                                    maxLength={11}
-                                    autoCapitalize="words"
-                                    labelName="CPF"
-                                    name="cpf"
-                                    keyboardType="number-pad"
-                                    returnKeyType="next"
-                                    onSubmitEditing={() => {
                                         phoneNumberRef.current?.focus();
                                     }}
                                 />
@@ -331,26 +297,6 @@ const Register: React.FC = () => {
                                     returnKeyType="next"
                                     onSubmitEditing={() => {
                                         passwordRef.current?.focus();
-                                    }}
-                                />
-                                <Input
-                                    secureTextEntry
-                                    ref={passwordRef}
-                                    labelName="SENHA"
-                                    name="password"
-                                    returnKeyType="next"
-                                    onSubmitEditing={() => {
-                                        repeatPasswordRef.current?.focus();
-                                    }}
-                                />
-                                <Input
-                                    ref={repeatPasswordRef}
-                                    secureTextEntry
-                                    labelName="REPITA A SENHA"
-                                    name="repeatPassword"
-                                    returnKeyType="next"
-                                    onSubmitEditing={() => {
-                                        firstFormRef.current?.submitForm();
                                     }}
                                 />
                             </ScrollView>
@@ -370,7 +316,7 @@ const Register: React.FC = () => {
                                     width={33}
                                     buttonText="VOLTAR"
                                     buttonType="goBack"
-                                    onPress={() => navigation.navigate('LoginRegister')}
+                                    onPress={() => navigation.navigate('Menu')}
                                 />
                                 <Button
                                     title="next"
@@ -394,13 +340,13 @@ const Register: React.FC = () => {
                                 <StyledImage source={Logo} />
                                 <NavigationText>
                                     Cadastro {formStage === '2' && <BoldText>Endereço</BoldText>}
-                                    {formStage === '3' && <BoldText>Habilidades</BoldText>}
                                 </NavigationText>
                             </View>
-                            <StageText>{formStage}/3 </StageText>
+                            <StageText>{formStage}/2 </StageText>
                         </HeaderNavigatorContainer>
 
                         <Form
+                            initialData={user}
                             onSubmit={handleSecondForm}
                             ref={secondFormRef}
                             style={{ flex: 1, justifyContent: 'flex-end' }}
@@ -514,106 +460,8 @@ const Register: React.FC = () => {
                     </SafeAreaView>
                 </KeyboardAvoidingView>
             )}
-
-            {/* THIRD PART */}
-            {formStage === '3' && (
-                <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-                    <SafeAreaView style={{ flex: 1 }}>
-                        <HeaderNavigatorContainer>
-                            <View style={{ flexDirection: 'row', marginLeft: 19 }}>
-                                <StyledImage source={Logo} />
-                                <NavigationText>
-                                    Cadastro {formStage === '2' && <BoldText> Endereço</BoldText>}
-                                    {formStage === '3' && <BoldText>Habilidades</BoldText>}
-                                </NavigationText>
-                            </View>
-                            <StageText>{formStage}/3 </StageText>
-                        </HeaderNavigatorContainer>
-
-                        <ScrollView style={{ marginTop: '6%', marginRight: '6%', marginLeft: '6%' }}>
-                            <Selector
-                                optionText="Cozinheiro (a)"
-                                selected={cooker}
-                                setSelected={() => setCooker(!cooker)}
-                            />
-
-                            <Selector
-                                optionText="Motorista (a)"
-                                selected={driver}
-                                setSelected={() => setDriver(!driver)}
-                            />
-                            <Selector
-                                optionText="Médico (a)"
-                                selected={doctor}
-                                setSelected={() => setDoctor(!doctor)}
-                            />
-                            <Selector
-                                optionText="Enfermeiro (a)"
-                                selected={nurse}
-                                setSelected={() => setNurse(!nurse)}
-                            />
-                            <Selector
-                                optionText="Serviços Gerais"
-                                selected={generalWorker}
-                                setSelected={() => setGeneralWorker(!generalWorker)}
-                            />
-                            <Selector
-                                optionText="Acompanhante Hospitalar"
-                                selected={hospitalCompanion}
-                                setSelected={() => setHospitalCompanion(!hospitalCompanion)}
-                            />
-                            <Selector
-                                optionText="Ajudante Financeiro"
-                                selected={financialHelper}
-                                setSelected={() => setFinancialHelper(!financialHelper)}
-                            />
-                            <Selector
-                                optionText="Intercessor (a)"
-                                selected={interceptor}
-                                setSelected={() => setInterceptor(!interceptor)}
-                            />
-                            <Selector
-                                optionText="Pedreiro (a)"
-                                selected={manualWorker}
-                                setSelected={() => setManualWorker(!manualWorker)}
-                            />
-                            <Selector
-                                optionText="Carpinteiro (a)"
-                                selected={carpinter}
-                                setSelected={() => setCarpinter(!carpinter)}
-                            />
-                        </ScrollView>
-
-                        <View
-                            style={{
-                                flexDirection: 'row',
-                                justifyContent: 'space-between',
-                                marginBottom: '4%',
-                                marginTop: '2%',
-                                marginRight: '6%',
-                                marginLeft: '6%',
-                            }}
-                        >
-                            <Button
-                                title="goBack"
-                                width={33}
-                                buttonText="VOLTAR"
-                                buttonType="goBack"
-                                onPress={() => setFormStage('2')}
-                            />
-                            <Button
-                                title="next"
-                                width={65}
-                                buttonText={formStage !== '3' ? 'PRÓXIMO' : 'CADASTRAR'}
-                                buttonType="enter"
-                                onPress={() => handleCreateUser()}
-                            />
-                        </View>
-                    </SafeAreaView>
-                </KeyboardAvoidingView>
-            )}
         </>
     );
 };
 
-export default Register;
+export default UpdateRegister;
