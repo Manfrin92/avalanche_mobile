@@ -1,15 +1,26 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
-import { View, Alert, SafeAreaView, Platform, KeyboardAvoidingView, ScrollView } from 'react-native';
+import {
+    View,
+    Alert,
+    SafeAreaView,
+    Platform,
+    KeyboardAvoidingView,
+    ScrollView,
+    Text,
+    ActivityIndicator,
+} from 'react-native';
 import * as Yup from 'yup';
 
 import { useNavigation } from '@react-navigation/native';
 import { Form } from '@unform/mobile';
 import { FormHandles } from '@unform/core';
+import { AntDesign, MaterialCommunityIcons, FontAwesome5 } from '@expo/vector-icons';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 import Logo from '../../../assets/logo.png';
 import Button from '../../components/Button';
 import Selector from '../../components/Selector';
 
-import { UserData, FirstFormUpdateData, SecondFormData, AddressFromURL } from '../../utils/Interfaces';
+import { UserData, FirstFormUpdateData, SecondFormData, AddressFromURL, Address } from '../../utils/Interfaces';
 import { testCPF, getAddressByCep } from '../../utils/AppUtil';
 
 import {
@@ -28,6 +39,9 @@ import api from '../../services/api';
 import { useAuth } from '../../hooks/auth';
 
 const UpdateRegister: React.FC = () => {
+    const [selecting, setSelecting] = useState(true);
+    const [userAddress, setUserAddress] = useState({} as Address);
+    const [loading, setLoading] = useState(true);
     const navigation = useNavigation();
     const { user } = useAuth();
     const [updatedUser, setUpdatedUser] = useState({} as UserData);
@@ -80,7 +94,7 @@ const UpdateRegister: React.FC = () => {
     const handleFirstForm = useCallback(
         async (data: FirstFormUpdateData) => {
             try {
-                console.log('dados chegando: ', data);
+                setLoading(true);
                 firstFormRef.current?.setErrors({});
 
                 const schema = Yup.object().shape({
@@ -109,16 +123,25 @@ const UpdateRegister: React.FC = () => {
                     }
                 }
 
+                await api.put('/user', {
+                    id: user.id,
+                    name: data.name,
+                    email: data.email,
+                    phoneNumber: data.phoneNumber,
+                });
+
                 setUpdatedUser({
                     ...updatedUser,
                     name: data.name,
                     email: data.email,
-                    cpf: data.cpf,
                     phoneNumber: data.phoneNumber,
-                    password: data.password,
                 });
 
-                setFormStage('2');
+                Alert.alert('Dados pessoais atualizados com sucesso');
+
+                setLoading(false);
+
+                setSelecting(true);
             } catch (e) {
                 if (e instanceof Yup.ValidationError) {
                     const errors = getValidationsErrors(e);
@@ -135,23 +158,13 @@ const UpdateRegister: React.FC = () => {
                 Alert.alert('Erro na autenticação', 'Cheque as credenciais');
             }
         },
-        [updatedUser],
+        [updatedUser, user.id],
     );
-
-    const handleUpdateUser = useCallback(async () => {
-        try {
-        } catch (e) {
-            console.log(e.response.data);
-            if (e && e.response && e.response.data) {
-                Alert.alert(e.response.data);
-            }
-            Alert.alert('Erro no cadastro');
-        }
-    }, [updatedUser, navigation]);
 
     const handleSecondForm = useCallback(
         async (data: SecondFormData) => {
             try {
+                setLoading(true);
                 secondFormRef.current?.setErrors({});
 
                 const schema = Yup.object().shape({
@@ -163,17 +176,6 @@ const UpdateRegister: React.FC = () => {
                 });
 
                 await schema.validate(data, { abortEarly: false });
-
-                setUpdatedUser({
-                    ...updatedUser,
-                    addressZipCode: data.addressZipCode,
-                    addressStreet: data.addressStreet,
-                    addressState: data.addressState,
-                    addressCity: data.addressCity,
-                    addressArea: data.addressArea,
-                    addressNumber: data.addressNumber,
-                    addressComplement: data.addressComplement,
-                });
 
                 const addressIdRaw = await api.post('address/add', {
                     addressZipCode: data.addressZipCode,
@@ -195,8 +197,31 @@ const UpdateRegister: React.FC = () => {
                     address: addressIdRaw.data,
                 });
 
-                Alert.alert('Usuário alterado com sucesso!');
-                navigation.navigate('Main');
+                setUpdatedUser({
+                    ...updatedUser,
+                    addressZipCode: data.addressZipCode,
+                    addressStreet: data.addressStreet,
+                    addressState: data.addressState,
+                    addressCity: data.addressCity,
+                    addressArea: data.addressArea,
+                    addressNumber: data.addressNumber,
+                    addressComplement: data.addressComplement,
+                });
+
+                setUserAddress({
+                    ...userAddress,
+                    addressZipCode: data.addressZipCode,
+                    addressStreet: data.addressStreet,
+                    addressState: data.addressState,
+                    addressCity: data.addressCity,
+                    addressArea: data.addressArea,
+                    addressNumber: data.addressNumber,
+                    addressComplement: data.addressComplement,
+                });
+
+                Alert.alert('Endereço atualizado com sucesso!');
+                setLoading(false);
+                setSelecting(true);
             } catch (e) {
                 if (e instanceof Yup.ValidationError) {
                     const errors = getValidationsErrors(e);
@@ -210,42 +235,105 @@ const UpdateRegister: React.FC = () => {
                 Alert.alert('Erro na atualização', 'Cheque as credenciais');
             }
         },
-        [updatedUser, navigation],
+        [updatedUser, user.id],
     );
 
-    // useEffect(() => {
-    //     let mounted = true;
+    useEffect(() => {
+        let mounted = true;
+        async function getAddress(): Promise<void> {
+            try {
+                const receivedRawAddress = await api.post('/address/getAddressById', {
+                    id: user.address,
+                });
+                if (receivedRawAddress && receivedRawAddress.data) {
+                    if (mounted) {
+                        setUserAddress({
+                            ...receivedRawAddress.data,
+                            addressNumber: receivedRawAddress.data.addressNumber
+                                ? `${receivedRawAddress.data.addressNumber}`
+                                : '',
+                            addressComplement: receivedRawAddress.data.addressComplement
+                                ? `${receivedRawAddress.data.addressComplement}`
+                                : '',
+                        });
+                        setLoading(false);
+                    }
+                }
+            } catch (e) {
+                console.log(e);
+                Alert.alert('Erro ao buscar dados do endereço');
+            }
+        }
 
-    //     if (firstFormRef.current) {
-    //         if (formStage === '1') {
-    //             if (mounted) {
-    //                 firstFormRef.current.setData({
-    //                     ...updatedUser,
-    //                     repeatPassword: updatedUser.password,
-    //                 });
-    //             }
-    //         }
-    //     }
+        getAddress();
 
-    //     if (secondFormRef.current) {
-    //         if (formStage === '2') {
-    //             if (mounted) {
-    //                 secondFormRef.current.setData({
-    //                     ...updatedUser,
-    //                 });
-    //             }
-    //         }
-    //     }
+        return () => {
+            mounted = false;
+        };
+    }, [user.address]);
 
-    //     return () => {
-    //         mounted = false;
-    //     };
-    // }, [formStage]);
+    if (loading) {
+        return (
+            <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+                <ActivityIndicator size="large" color="#DA4453" />
+            </View>
+        );
+    }
 
     return (
         <>
-            {/* FIRST PART */}
-            {formStage === '1' && (
+            {selecting && (
+                <SafeAreaView style={{ flex: 1 }}>
+                    <HeaderNavigatorContainer>
+                        <View style={{ flexDirection: 'row', marginLeft: 19 }}>
+                            <TouchableOpacity
+                                onPress={() => {
+                                    navigation.navigate('Main');
+                                }}
+                            >
+                                <AntDesign name="arrowleft" size={24} color="black" />
+                            </TouchableOpacity>
+                            <StyledImage style={{ marginLeft: '10%' }} source={Logo} />
+                            <NavigationText>Alteração de Cadastro</NavigationText>
+                        </View>
+                    </HeaderNavigatorContainer>
+                    <View style={{ marginTop: '10%', marginLeft: '10%' }}>
+                        <TouchableOpacity
+                            style={{ flexDirection: 'row' }}
+                            onPress={() => {
+                                setFormStage('1');
+                                setSelecting(false);
+                            }}
+                        >
+                            <MaterialCommunityIcons
+                                style={{ width: 32, marginLeft: 1 }}
+                                name="face-profile"
+                                size={32}
+                                color="#434A54"
+                            />
+                            <NavigationText style={{ marginLeft: '2.5%' }}>Dados pessoais</NavigationText>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            style={{ flexDirection: 'row', marginTop: '6%' }}
+                            onPress={() => {
+                                setFormStage('2');
+                                setSelecting(false);
+                            }}
+                        >
+                            <FontAwesome5
+                                style={{ width: 32, marginLeft: 4 }}
+                                name="map-marker-alt"
+                                size={32}
+                                color="#434A54"
+                            />
+                            <NavigationText style={{ marginLeft: '2%' }}>Endereço</NavigationText>
+                        </TouchableOpacity>
+                    </View>
+                </SafeAreaView>
+            )}
+
+            {/* FIRST PART PERSONAL DATA */}
+            {formStage === '1' && !selecting && (
                 <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
                     <SafeAreaView style={{ flex: 1 }}>
                         <HeaderNavigatorContainer>
@@ -316,7 +404,9 @@ const UpdateRegister: React.FC = () => {
                                     width={33}
                                     buttonText="VOLTAR"
                                     buttonType="goBack"
-                                    onPress={() => navigation.navigate('Menu')}
+                                    onPress={() => {
+                                        setSelecting(true);
+                                    }}
                                 />
                                 <Button
                                     title="next"
@@ -331,8 +421,8 @@ const UpdateRegister: React.FC = () => {
                 </KeyboardAvoidingView>
             )}
 
-            {/* SECOND PART */}
-            {formStage === '2' && (
+            {/* SECOND PART ADDRESS */}
+            {formStage === '2' && !selecting && (
                 <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
                     <SafeAreaView style={{ flex: 1 }}>
                         <HeaderNavigatorContainer>
@@ -346,7 +436,7 @@ const UpdateRegister: React.FC = () => {
                         </HeaderNavigatorContainer>
 
                         <Form
-                            initialData={user}
+                            initialData={userAddress}
                             onSubmit={handleSecondForm}
                             ref={secondFormRef}
                             style={{ flex: 1, justifyContent: 'flex-end' }}
@@ -446,7 +536,7 @@ const UpdateRegister: React.FC = () => {
                                     width={33}
                                     buttonText="VOLTAR"
                                     buttonType="goBack"
-                                    onPress={() => setFormStage('1')}
+                                    onPress={() => setSelecting(true)}
                                 />
                                 <Button
                                     title="next"

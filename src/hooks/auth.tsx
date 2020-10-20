@@ -15,6 +15,7 @@ interface UserStoraged {
     email: string;
     cpf: string;
     phoneNumber: string;
+    address: string;
 }
 
 interface AuthContextData {

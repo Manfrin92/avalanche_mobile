@@ -88,7 +88,6 @@ export interface SecondFormHelpData {
 
 export interface HelpDataToShow {
     id: string;
-    title: string;
     email?: string;
     title?: string;
     description?: string | null;
@@ -103,4 +102,14 @@ export interface HelpDataToShow {
     addressCountry?: string;
     helpDateId?: string;
     helpDate?: Date;
+}
+
+export interface Address {
+    addressZipCode: string;
+    addressStreet: string;
+    addressNumber: string;
+    addressComplement: string;
+    addressArea: string;
+    addressCity: string;
+    addressState: string;
 }
