@@ -5,6 +5,7 @@ export interface UserData {
     phoneNumber: string;
     password: string;
     repeatPassword: string;
+    address: string;
     addressZipCode: string;
     addressStreet: string;
     addressNumber: string;

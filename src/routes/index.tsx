@@ -12,8 +12,6 @@ const Routes: React.FC = () => {
         console.log('rodou o user? ', user);
     }, [user]);
 
-    console.log('Entrou de novo na lógica das rotas com o user: ', user ? console.log(true) : console.log(false));
-
     if (loading) {
         return (
             <View

@@ -23,6 +23,8 @@ interface AuthContextData {
     signIn(credentials: SignInCredentials): Promise<boolean>;
     signOut(): void;
     loading: boolean;
+    setData({ token, user }: AuthState): void;
+    token: string;
 }
 
 interface AuthState {
@@ -96,7 +98,7 @@ const AuthProvider: React.FC = ({ children }) => {
     }, []);
 
     return (
-        <AuthContext.Provider value={{ user: data.user, signIn, signOut, loading }}>
+        <AuthContext.Provider value={{ user: data.user, signIn, signOut, loading, setData, token: data.token }}>
             {children}
         </AuthContext.Provider>
     );

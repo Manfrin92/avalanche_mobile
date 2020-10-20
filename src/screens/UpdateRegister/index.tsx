@@ -43,7 +43,7 @@ const UpdateRegister: React.FC = () => {
     const [userAddress, setUserAddress] = useState({} as Address);
     const [loading, setLoading] = useState(true);
     const navigation = useNavigation();
-    const { user } = useAuth();
+    const { user, setData, token } = useAuth();
     const [updatedUser, setUpdatedUser] = useState({} as UserData);
     const [formStage, setFormStage] = useState<'1' | '2'>('1');
     // PRIMEIRO FORM
@@ -130,6 +130,16 @@ const UpdateRegister: React.FC = () => {
                     phoneNumber: data.phoneNumber,
                 });
 
+                setData({
+                    token,
+                    user: {
+                        ...user,
+                        name: data.name,
+                        email: data.email,
+                        phoneNumber: data.phoneNumber,
+                    },
+                });
+
                 setUpdatedUser({
                     ...updatedUser,
                     name: data.name,
@@ -154,7 +164,7 @@ const UpdateRegister: React.FC = () => {
                 }
 
                 console.log(e);
-
+                setLoading(false);
                 Alert.alert('Erro na autenticação', 'Cheque as credenciais');
             }
         },
@@ -197,6 +207,18 @@ const UpdateRegister: React.FC = () => {
                     address: addressIdRaw.data,
                 });
 
+                await api.post('/address', {
+                    id: user.address,
+                });
+
+                setData({
+                    token,
+                    user: {
+                        ...user,
+                        address: addressIdRaw.data,
+                    },
+                });
+
                 setUpdatedUser({
                     ...updatedUser,
                     addressZipCode: data.addressZipCode,
@@ -206,6 +228,7 @@ const UpdateRegister: React.FC = () => {
                     addressArea: data.addressArea,
                     addressNumber: data.addressNumber,
                     addressComplement: data.addressComplement,
+                    address: addressIdRaw.data,
                 });
 
                 setUserAddress({
@@ -232,6 +255,7 @@ const UpdateRegister: React.FC = () => {
                     return;
                 }
                 console.log(e);
+                setLoading(false);
                 Alert.alert('Erro na atualização', 'Cheque as credenciais');
             }
         },
@@ -261,8 +285,10 @@ const UpdateRegister: React.FC = () => {
                 }
             } catch (e) {
                 console.log(e);
+                setLoading(false);
                 Alert.alert('Erro ao buscar dados do endereço');
             }
+            setLoading(false);
         }
 
         getAddress();
@@ -270,7 +296,7 @@ const UpdateRegister: React.FC = () => {
         return () => {
             mounted = false;
         };
-    }, [user.address]);
+    }, [user.address, updatedUser]);
 
     if (loading) {
         return (
