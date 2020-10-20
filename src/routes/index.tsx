@@ -8,10 +8,6 @@ import AuthRoutes from './Auth';
 const Routes: React.FC = () => {
     const { user, loading } = useAuth();
 
-    useEffect(() => {
-        console.log('rodou o user? ', user);
-    }, [user]);
-
     if (loading) {
         return (
             <View

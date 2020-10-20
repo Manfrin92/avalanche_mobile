@@ -269,6 +269,7 @@ const UpdateRegister: React.FC = () => {
                 const receivedRawAddress = await api.post('/address/getAddressById', {
                     id: user.address,
                 });
+                console.log('enderco recebido ', receivedRawAddress.data);
                 if (receivedRawAddress && receivedRawAddress.data) {
                     if (mounted) {
                         setUserAddress({
