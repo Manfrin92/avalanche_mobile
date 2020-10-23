@@ -25,7 +25,7 @@ export const NavigationText = styled.Text`
     line-height: 22px;
     letter-spacing: -0.01px;
     font-family: sans-serif;
-    color: #0A5F9A;
+    color: #434a54;
     align-self: center;
     padding-left: 18px;
 `;
@@ -50,7 +50,7 @@ export const ViewButton = styled.View`
 
 export const Title = styled.Text`
     font-size: 24px;
-    color: #0a5f9a;
+    color: #434a54;
     font-family: sans-serif;
     margin: 0px 0 24px;
 `;
@@ -67,7 +67,7 @@ export const BoldText = styled.Text`
     line-height: 22px;
     letter-spacing: -0.01px;
     font-family: sans-serif;
-    color: #0A5F9A;
+    color: #434a54;
     align-self: center;
 `;
 
@@ -81,7 +81,7 @@ export const StyledText = styled.Text`
     font-family: sans-serif;
     font-size: 32px;
     text-align: center;
-    color: #0A5F9A;
+    color: #434a54;
     margin-bottom: 16%;
 `;
 
@@ -99,15 +99,16 @@ export const TextTitle = styled.Text`
     font-family: sans-serif;
     font-size: 22px;
     line-height: 23px;
-    color: #0A5F9A;
+    color: #434a54;
     margin-bottom: 2%;
+    margin-left: 6%;
 `;
 
 export const DescriptionText = styled.Text`
     font-family: sans-serif;
     font-size: 16px;
     line-height: 17px;
-    color: #0A5F9A;
+    color: #434a54;
     margin-left: 4%;
 `;
 
@@ -116,7 +117,7 @@ export const DateText = styled.Text`
     font-size: 22px;
     font-weight: bold;
     line-height: 23px;
-    color: #0A5F9A;
+    color: #434a54;
 `;
 
 export const TextInput = styled.TextInput`

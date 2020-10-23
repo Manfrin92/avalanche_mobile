@@ -489,7 +489,7 @@ const NewHelp: React.FC = () => {
                         </HeaderNavigatorContainer>
 
                         <ScrollView style={{ marginTop: '6%', marginRight: '6%', marginLeft: '6%' }}>
-                            <TextTitle>Datas:</TextTitle>
+                            <TextTitle style={{ marginLeft: '0%' }}>Datas:</TextTitle>
 
                             {selectedDate && (
                                 <View>
