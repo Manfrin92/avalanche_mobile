@@ -23,6 +23,7 @@ import Input from '../../components/Input';
 import api from '../../services/api';
 import { HelpDataToShow } from '../../utils/Interfaces';
 import { useAuth } from '../../hooks/auth';
+import { ScreenNamesEnum } from '../../utils/enums';
 
 const MainScreen: React.FC = () => {
     const { user } = useAuth();
@@ -39,7 +40,7 @@ const MainScreen: React.FC = () => {
 
     useEffect(() => {
         getHelpsByUser();
-    }, []);
+    }, [getHelpsByUser]);
 
     return (
         <SafeAreaView style={{ flex: 1 }}>
@@ -80,7 +81,7 @@ const MainScreen: React.FC = () => {
 
             <View style={{ flexDirection: 'row', marginTop: '4%' }}>
                 <View style={{ width: '84%', height: '100%' }} />
-                <TouchableOpacity onPress={() => navigation.navigate('NewHelp')}>
+                <TouchableOpacity onPress={() => navigation.navigate(ScreenNamesEnum.NewHelp)}>
                     <Ionicons name="md-add-circle" size={60} color="#4A89DC" />
                 </TouchableOpacity>
             </View>

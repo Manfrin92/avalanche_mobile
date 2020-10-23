@@ -34,6 +34,7 @@ import getValidationsErrors from '../../utils/getValidationsErrors';
 import Input from '../../components/Input';
 import api from '../../services/api';
 import { useAuth } from '../../hooks/auth';
+import { ScreenNamesEnum } from '../../utils/enums';
 
 const NewHelp: React.FC = () => {
     const { user } = useAuth();
@@ -220,7 +221,7 @@ const NewHelp: React.FC = () => {
             });
 
             Alert.alert('Ajuda cadastrada com sucesso!');
-            navigation.navigate('Main');
+            navigation.navigate(ScreenNamesEnum.Main);
         } catch (e) {
             console.log(e.response.data);
             if (e && e.response && e.response.data) {
@@ -328,7 +329,7 @@ const NewHelp: React.FC = () => {
                                     width={33}
                                     buttonText="VOLTAR"
                                     buttonType="goBack"
-                                    onPress={() => navigation.navigate('LoginRegister')}
+                                    onPress={() => navigation.navigate(ScreenNamesEnum.LoginRegister)}
                                 />
                                 <Button
                                     title="next"

@@ -44,7 +44,7 @@ export const ViewButton = styled.View`
 
 export const Title = styled.Text`
     font-size: 24px;
-    color: #e82b43;
+    color: #434a54;
     font-family: sans-serif;
     margin: 0px 0 24px;
 `;
@@ -71,7 +71,7 @@ export const RedBoldText = styled.Text`
     line-height: 22px;
     letter-spacing: -0.01px;
     font-family: sans-serif;
-    color: #da4453;
+    color: #f08902;
     align-self: center;
 `;
 
@@ -80,7 +80,7 @@ export const TextName = styled.Text`
     line-height: 22px;
     letter-spacing: -0.01px;
     font-family: sans-serif;
-    color: #da4453;
+    color: #f08902;
     align-self: center;
 `;
 
@@ -110,7 +110,7 @@ export const StageText = styled.Text`
 
 export const TextInput = styled.TextInput`
     flex: 1;
-    color: #da4453;
+    color: #f08902;
     font-size: 16px;
     font-family: sans-serif;
 `;
@@ -128,7 +128,7 @@ export const InputContainer = styled.View<ContainerProps>`
     border-radius: 10px;
     margin-bottom: 8px;
     border-width: 2px;
-    border-color: #da4453;
+    border-color: #f08902;
 
     flex-direction: row;
     align-items: center;

@@ -30,6 +30,7 @@ import getValidationsErrors from '../../utils/getValidationsErrors';
 import Input from '../../components/Input';
 import api from '../../services/api';
 import { useAuth } from '../../hooks/auth';
+import { ScreenNamesEnum } from '../../utils/enums';
 
 const Menu: React.FC = () => {
     const navigation = useNavigation();
@@ -57,6 +58,7 @@ const Menu: React.FC = () => {
                         justifyContent: 'center',
                         marginRight: '4%',
                     }}
+                    onPress={() => navigation.navigate('Main')}
                 >
                     <AntDesign name="close" size={32} color="black" />
                 </TouchableOpacity>
@@ -95,7 +97,7 @@ const Menu: React.FC = () => {
                         <BoldText>Minhas ajudas</BoldText>
                     </View>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => navigation.navigate('UpdateRegister')}>
+                <TouchableOpacity onPress={() => navigation.navigate(ScreenNamesEnum.UpdateRegister)}>
                     <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: '8%' }}>
                         <FontAwesome5 style={{ width: '14%' }} name="user-alt" size={28} color="black" />
                         <Text>Meus dados</Text>
@@ -103,7 +105,7 @@ const Menu: React.FC = () => {
                 </TouchableOpacity>
                 <TouchableOpacity onPress={() => signOut()}>
                     <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: '8%' }}>
-                        <MaterialCommunityIcons style={{ width: '14%' }} name="logout" size={28} color="#DA4453" />
+                        <MaterialCommunityIcons style={{ width: '14%' }} name="logout" size={28} color="#F08902" />
                         <TextName>Sair</TextName>
                     </View>
                 </TouchableOpacity>

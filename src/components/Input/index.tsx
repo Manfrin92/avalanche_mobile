@@ -85,7 +85,7 @@ const Input: React.RefForwardingComponent<InputRef, InputProps> = (
                         <FontAwesome
                             style={{ marginRight: 15, marginTop: '35%' }}
                             onClick={getCep}
-                            color="#e82b43"
+                            color="#0A5F9A"
                             size={24}
                             name="search"
                         />

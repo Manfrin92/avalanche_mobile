@@ -40,14 +40,14 @@ export const ViewButton = styled.View`
 
 export const Title = styled.Text`
     font-size: 24px;
-    color: #e82b43;
+    color: #0A5F9A;
     font-family: sans-serif;
     margin: 0px 0 24px;
 `;
 
 export const Text = styled.Text`
     font-size: 12px;
-    color: #da4453;
+    color: #F08902;
     font-family: sans-serif;
     margin-bottom: 8%;
     align-self: center;
@@ -59,7 +59,7 @@ export const BoldText = styled.Text`
     font-size: 32px;
     text-align: center;
     margin-bottom: 18%;
-    color: #434a54;
+    color: #0A5F9A;
 `;
 
 export const StyledImage = styled.Image`
@@ -72,6 +72,6 @@ export const StyledText = styled.Text`
     font-family: sans-serif;
     font-size: 32px;
     text-align: center;
-    color: #434a54;
+    color: #0A5F9A;
     margin-bottom: 16%;
 `;

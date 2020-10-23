@@ -37,6 +37,7 @@ import getValidationsErrors from '../../utils/getValidationsErrors';
 import Input from '../../components/Input';
 import api from '../../services/api';
 import { useAuth } from '../../hooks/auth';
+import { ScreenNamesEnum } from '../../utils/enums';
 
 const UpdateRegister: React.FC = () => {
     const [selecting, setSelecting] = useState(true);
@@ -269,7 +270,6 @@ const UpdateRegister: React.FC = () => {
                 const receivedRawAddress = await api.post('/address/getAddressById', {
                     id: user.address,
                 });
-                console.log('enderco recebido ', receivedRawAddress.data);
                 if (receivedRawAddress && receivedRawAddress.data) {
                     if (mounted) {
                         setUserAddress({
@@ -302,7 +302,7 @@ const UpdateRegister: React.FC = () => {
     if (loading) {
         return (
             <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-                <ActivityIndicator size="large" color="#DA4453" />
+                <ActivityIndicator size="large" color="#F08902" />
             </View>
         );
     }
@@ -315,7 +315,7 @@ const UpdateRegister: React.FC = () => {
                         <View style={{ flexDirection: 'row', marginLeft: 19 }}>
                             <TouchableOpacity
                                 onPress={() => {
-                                    navigation.navigate('Main');
+                                    navigation.navigate(ScreenNamesEnum.Main);
                                 }}
                             >
                                 <AntDesign name="arrowleft" size={24} color="black" />
@@ -336,7 +336,7 @@ const UpdateRegister: React.FC = () => {
                                 style={{ width: 32, marginLeft: 1 }}
                                 name="face-profile"
                                 size={32}
-                                color="#434A54"
+                                color="#0A5F9A"
                             />
                             <NavigationText style={{ marginLeft: '2.5%' }}>Dados pessoais</NavigationText>
                         </TouchableOpacity>
@@ -351,7 +351,7 @@ const UpdateRegister: React.FC = () => {
                                 style={{ width: 32, marginLeft: 4 }}
                                 name="map-marker-alt"
                                 size={32}
-                                color="#434A54"
+                                color="#0A5F9A"
                             />
                             <NavigationText style={{ marginLeft: '2%' }}>Endereço</NavigationText>
                         </TouchableOpacity>

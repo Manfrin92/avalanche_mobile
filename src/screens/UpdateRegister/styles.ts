@@ -25,7 +25,7 @@ export const NavigationText = styled.Text`
     line-height: 22px;
     letter-spacing: -0.01px;
     font-family: sans-serif;
-    color: #434a54;
+    color: #0A5F9A;
     align-self: center;
     padding-left: 18px;
 `;
@@ -44,14 +44,14 @@ export const ViewButton = styled.View`
 
 export const Title = styled.Text`
     font-size: 24px;
-    color: #e82b43;
+    color: #0A5F9A;
     font-family: sans-serif;
     margin: 0px 0 24px;
 `;
 
 export const Text = styled.Text`
     font-size: 12px;
-    color: #da4453;
+    color: #F08902;
     font-family: sans-serif;
 `;
 
@@ -61,7 +61,7 @@ export const BoldText = styled.Text`
     line-height: 22px;
     letter-spacing: -0.01px;
     font-family: sans-serif;
-    color: #434a54;
+    color: #0A5F9A;
     align-self: center;
 `;
 
@@ -75,7 +75,7 @@ export const StyledText = styled.Text`
     font-family: sans-serif;
     font-size: 32px;
     text-align: center;
-    color: #434a54;
+    color: #0A5F9A;
     margin-bottom: 16%;
 `;
 
@@ -91,7 +91,7 @@ export const StageText = styled.Text`
 
 export const TextInput = styled.TextInput`
     flex: 1;
-    color: #da4453;
+    color: #F08902;
     font-size: 16px;
     font-family: sans-serif;
 `;
@@ -109,7 +109,7 @@ export const InputContainer = styled.View<ContainerProps>`
     border-radius: 10px;
     margin-bottom: 8px;
     border-width: 2px;
-    border-color: #da4453;
+    border-color: #F08902;
 
     flex-direction: row;
     align-items: center;

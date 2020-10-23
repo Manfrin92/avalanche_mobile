@@ -37,6 +37,7 @@ import {
     BoldText,
 } from './styles';
 import { useAuth } from '../../hooks/auth';
+import { ScreenNamesEnum } from '../../utils/enums';
 
 interface Navigation {
     navigate(screen: string): void;
@@ -94,7 +95,6 @@ const Login: React.FC = () => {
 
             await schema.validate(data, { abortEarly: false });
 
-            console.log('chamando funcao de login');
             signIn({
                 email: data.email.trim(),
                 password: data.password,
@@ -114,7 +114,7 @@ const Login: React.FC = () => {
 
     return (
         <SafeAreaView style={{ flex: 1 }}>
-            <HeaderNavigatorContainer onPress={() => navigation.navigate('LoginRegister')}>
+            <HeaderNavigatorContainer onPress={() => navigation.navigate(ScreenNamesEnum.LoginRegister)}>
                 <Feather name="arrow-left" size={22} color="#ACACAC" style={{ paddingLeft: 12 }} />
                 <NavigationText>Voltar</NavigationText>
             </HeaderNavigatorContainer>

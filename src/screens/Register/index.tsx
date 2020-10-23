@@ -25,6 +25,7 @@ import {
 import getValidationsErrors from '../../utils/getValidationsErrors';
 import Input from '../../components/Input';
 import api from '../../services/api';
+import { ScreenNamesEnum } from '../../utils/enums';
 
 const Register: React.FC = () => {
     const navigation = useNavigation();
@@ -370,7 +371,7 @@ const Register: React.FC = () => {
                                     width={33}
                                     buttonText="VOLTAR"
                                     buttonType="goBack"
-                                    onPress={() => navigation.navigate('LoginRegister')}
+                                    onPress={() => navigation.navigate(ScreenNamesEnum.LoginRegister)}
                                 />
                                 <Button
                                     title="next"

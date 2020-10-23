@@ -11,7 +11,7 @@ export const StyledText = styled.Text`
     font-size: 32px;
     text-align: center;
     margin-top: 8%;
-    color: #434a54;
+    color: #0a5f9a;
 `;
 
 export const BoldText = styled.Text`
@@ -19,7 +19,7 @@ export const BoldText = styled.Text`
     font-weight: bold;
     font-size: 32px;
     text-align: center;
-    color: #434a54;
+    color: #0a5f9a;
 `;
 
 export const FormView = styled.View`

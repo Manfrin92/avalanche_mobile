@@ -82,7 +82,8 @@ const AuthProvider: React.FC = ({ children }) => {
             if (err.response.data && err.response.data.message && err.response.data.message.message) {
                 Alert.alert('Cheque suas credenciais.');
             } else {
-                Alert.alert('Falha no login');
+                console.log(err);
+                Alert.alert('Falha no login, cheque suas credenciais');
             }
 
             return false;

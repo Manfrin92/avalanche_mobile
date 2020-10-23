@@ -7,14 +7,7 @@ import Button from '../../components/Button';
 import { StyledText, StyledImage, FormView, ButtonContainer, BoldText } from './styles';
 
 import Logo from '../../../assets/logo.png';
-
-interface Navigation {
-    navigate(screen: string): void;
-}
-
-interface LoginRegisterData {
-    navigation: Navigation;
-}
+import { ScreenNamesEnum } from '../../utils/enums';
 
 const LoginRegister: React.FC = () => {
     const navigation = useNavigation();
@@ -31,14 +24,14 @@ const LoginRegister: React.FC = () => {
                         title="enter"
                         buttonText="entrar"
                         buttonType="enter"
-                        onPress={() => navigation.navigate('Login')}
+                        onPress={() => navigation.navigate(ScreenNamesEnum.Login)}
                     />
 
                     <Button
                         title="register"
                         buttonText="cadastrar"
                         buttonType="register"
-                        onPress={() => navigation.navigate('Register')}
+                        onPress={() => navigation.navigate(ScreenNamesEnum.Register)}
                     />
                 </ButtonContainer>
             </FormView>
