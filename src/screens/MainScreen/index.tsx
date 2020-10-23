@@ -24,23 +24,31 @@ import api from '../../services/api';
 import { HelpDataToShow } from '../../utils/Interfaces';
 import { useAuth } from '../../hooks/auth';
 import { ScreenNamesEnum } from '../../utils/enums';
+import Loading from '../Loading';
 
 const MainScreen: React.FC = () => {
     const { user } = useAuth();
     const navigation = useNavigation();
     const [helps, setHelps] = useState([] as HelpDataToShow[]);
+    const [loading, setLoading] = useState(true);
 
     const getHelpsByUser = useCallback(async () => {
         const helpsRaw = await api.post('/help/findHelps', {
             userManagerId: user.id,
         });
 
-        setHelps(helpsRaw.data);
+        setHelps([...helpsRaw.data]);
+
+        setLoading(false);
     }, [user.id]);
 
     useEffect(() => {
         getHelpsByUser();
-    }, [getHelpsByUser]);
+    }, []);
+
+    if (loading) {
+        return <Loading />;
+    }
 
     return (
         <SafeAreaView style={{ flex: 1 }}>

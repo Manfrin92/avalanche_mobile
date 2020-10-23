@@ -9,6 +9,7 @@ export const maxAllowedImageSize = 30 * 1024 * 1024;
 export function goToUrl(url: string): void {
     Linking.canOpenURL(url).then((supported) => {
         if (!supported) {
+            Alert.alert('Não foi possível abrir link.');
             console.log(`Não foi possível abrir a URL ${url}`);
         }
         Linking.openURL(url);

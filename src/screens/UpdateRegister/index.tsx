@@ -1,14 +1,5 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
-import {
-    View,
-    Alert,
-    SafeAreaView,
-    Platform,
-    KeyboardAvoidingView,
-    ScrollView,
-    Text,
-    ActivityIndicator,
-} from 'react-native';
+import { View, Alert, SafeAreaView, Platform, KeyboardAvoidingView, ScrollView, Text } from 'react-native';
 import * as Yup from 'yup';
 
 import { useNavigation } from '@react-navigation/native';
@@ -38,6 +29,7 @@ import Input from '../../components/Input';
 import api from '../../services/api';
 import { useAuth } from '../../hooks/auth';
 import { ScreenNamesEnum } from '../../utils/enums';
+import Loading from '../Loading';
 
 const UpdateRegister: React.FC = () => {
     const [selecting, setSelecting] = useState(true);
@@ -300,11 +292,7 @@ const UpdateRegister: React.FC = () => {
     }, [user.address, updatedUser]);
 
     if (loading) {
-        return (
-            <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-                <ActivityIndicator size="large" color="#F08902" />
-            </View>
-        );
+        return <Loading />;
     }
 
     return (
@@ -312,16 +300,17 @@ const UpdateRegister: React.FC = () => {
             {selecting && (
                 <SafeAreaView style={{ flex: 1 }}>
                     <HeaderNavigatorContainer>
-                        <View style={{ flexDirection: 'row', marginLeft: 19 }}>
+                        <View style={{ flexDirection: 'row', marginLeft: 19, justifyContent: 'space-between' }}>
+                            <StyledImage source={Logo} />
+                            <NavigationText>Alteração de Cadastro</NavigationText>
                             <TouchableOpacity
                                 onPress={() => {
-                                    navigation.navigate(ScreenNamesEnum.Main);
+                                    navigation.navigate(ScreenNamesEnum.Menu);
                                 }}
+                                style={{ marginLeft: '36%' }}
                             >
                                 <AntDesign name="arrowleft" size={24} color="black" />
                             </TouchableOpacity>
-                            <StyledImage style={{ marginLeft: '10%' }} source={Logo} />
-                            <NavigationText>Alteração de Cadastro</NavigationText>
                         </View>
                     </HeaderNavigatorContainer>
                     <View style={{ marginTop: '10%', marginLeft: '10%' }}>
@@ -336,7 +325,7 @@ const UpdateRegister: React.FC = () => {
                                 style={{ width: 32, marginLeft: 1 }}
                                 name="face-profile"
                                 size={32}
-                                color="#0A5F9A"
+                                color="#434A54"
                             />
                             <NavigationText style={{ marginLeft: '2.5%' }}>Dados pessoais</NavigationText>
                         </TouchableOpacity>
@@ -351,7 +340,7 @@ const UpdateRegister: React.FC = () => {
                                 style={{ width: 32, marginLeft: 4 }}
                                 name="map-marker-alt"
                                 size={32}
-                                color="#0A5F9A"
+                                color="#434A54"
                             />
                             <NavigationText style={{ marginLeft: '2%' }}>Endereço</NavigationText>
                         </TouchableOpacity>

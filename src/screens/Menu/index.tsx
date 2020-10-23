@@ -31,10 +31,12 @@ import Input from '../../components/Input';
 import api from '../../services/api';
 import { useAuth } from '../../hooks/auth';
 import { ScreenNamesEnum } from '../../utils/enums';
+import { goToUrl } from '../../utils/AppUtil';
+import { abascUrl } from '../../utils/constants';
 
 const Menu: React.FC = () => {
     const navigation = useNavigation();
-    const { signOut } = useAuth();
+    const { signOut, user } = useAuth();
 
     return (
         <SafeAreaView style={{ flex: 1 }}>
@@ -74,12 +76,12 @@ const Menu: React.FC = () => {
                 }}
             >
                 <TextName>
-                    Olá, <RedBoldText>Usuário!</RedBoldText>
+                    Olá, <RedBoldText>{user.name}!</RedBoldText>
                 </TextName>
             </View>
 
             <View style={{ marginLeft: '6%', marginTop: '10%' }}>
-                <TouchableOpacity>
+                <TouchableOpacity onPress={() => goToUrl(abascUrl)}>
                     <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: '6%' }}>
                         <AntDesign style={{ width: '14%' }} name="questioncircleo" size={28} color="black" />
                         <Text>Como ajudar?</Text>
