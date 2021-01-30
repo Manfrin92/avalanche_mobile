@@ -60,8 +60,6 @@ const AuthProvider: React.FC = ({ children }) => {
                 password,
             });
 
-            console.log('entrou na funcao de login');
-
             const { token } = response.data;
             const { user } = response.data;
 
@@ -85,7 +83,7 @@ const AuthProvider: React.FC = ({ children }) => {
                 console.log(err);
                 Alert.alert('Falha no login, cheque suas credenciais');
             }
-
+            setLoading(false);
             return false;
         }
     }, []);

@@ -109,6 +109,7 @@ const Login: React.FC = () => {
             }
 
             Alert.alert('Erro na autenticação', 'Favor verificar seu e-mail e senha');
+            return;
         }
     }, []);
 
