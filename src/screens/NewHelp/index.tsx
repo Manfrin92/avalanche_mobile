@@ -21,7 +21,6 @@ import {
     HeaderNavigatorContainer,
     NavigationText,
     StyledImage,
-    StageText,
     BoldText,
     TextInput,
     InputContainer,
@@ -35,6 +34,7 @@ import Input from '../../components/Input';
 import api from '../../services/api';
 import { useAuth } from '../../hooks/auth';
 import { ScreenNamesEnum } from '../../utils/enums';
+import RegisterHeader from '../../components/RegisterHeader';
 
 const NewHelp: React.FC = () => {
     const { user } = useAuth();
@@ -237,15 +237,7 @@ const NewHelp: React.FC = () => {
             {formStage === '1' && (
                 <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
                     <SafeAreaView style={{ flex: 1 }}>
-                        <HeaderNavigatorContainer>
-                            <View style={{ flexDirection: 'row', marginLeft: 19 }}>
-                                <StyledImage source={Logo} />
-                                <NavigationText>
-                                    Nova <BoldText>Ajuda</BoldText>
-                                </NavigationText>
-                            </View>
-                            <StageText>{formStage}/4 </StageText>
-                        </HeaderNavigatorContainer>
+                        <RegisterHeader formCurrentStage={formStage} formTotalStages="4" />
 
                         <Form
                             onSubmit={handleFirstForm}
@@ -329,7 +321,7 @@ const NewHelp: React.FC = () => {
                                     width={33}
                                     buttonText="VOLTAR"
                                     buttonType="goBack"
-                                    onPress={() => navigation.navigate(ScreenNamesEnum.LoginRegister)}
+                                    onPress={() => navigation.navigate(ScreenNamesEnum.Main)}
                                 />
                                 <Button
                                     title="next"
@@ -348,15 +340,7 @@ const NewHelp: React.FC = () => {
             {formStage === '2' && (
                 <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
                     <SafeAreaView style={{ flex: 1 }}>
-                        <HeaderNavigatorContainer>
-                            <View style={{ flexDirection: 'row', marginLeft: 19 }}>
-                                <StyledImage source={Logo} />
-                                <NavigationText>
-                                    Nova <BoldText>Ajuda</BoldText>
-                                </NavigationText>
-                            </View>
-                            <StageText>{formStage}/4 </StageText>
-                        </HeaderNavigatorContainer>
+                        <RegisterHeader formCurrentStage={formStage} formTotalStages="4" />
 
                         <Form
                             onSubmit={handleSecondForm}
@@ -478,15 +462,7 @@ const NewHelp: React.FC = () => {
             {formStage === '3' && (
                 <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
                     <SafeAreaView style={{ flex: 1 }}>
-                        <HeaderNavigatorContainer>
-                            <View style={{ flexDirection: 'row', marginLeft: 19 }}>
-                                <StyledImage source={Logo} />
-                                <NavigationText>
-                                    Nova <BoldText>Ajuda</BoldText>
-                                </NavigationText>
-                            </View>
-                            <StageText>{formStage}/4 </StageText>
-                        </HeaderNavigatorContainer>
+                        <RegisterHeader formCurrentStage={formStage} formTotalStages="4" />
 
                         <ScrollView style={{ marginTop: '6%', marginRight: '6%', marginLeft: '6%' }}>
                             <TextTitle style={{ marginLeft: '0%' }}>Datas:</TextTitle>
