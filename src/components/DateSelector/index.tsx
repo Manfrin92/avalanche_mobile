@@ -31,7 +31,6 @@ const DateSelector: React.FC<DateSelectorData> = ({ setChosenDate }) => {
     }, []);
 
     useEffect(() => {
-        console.log('chamando ufncao: ', today);
         setChosenDate(today);
     }, []);
 

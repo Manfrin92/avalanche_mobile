@@ -1,5 +1,5 @@
-import React, { useEffect, useState, useRef, useCallback } from 'react';
-import { View, Alert, SafeAreaView, Platform, KeyboardAvoidingView, ScrollView } from 'react-native';
+import React, { useState, useRef, useCallback } from 'react';
+import { View, Alert, SafeAreaView, Platform, KeyboardAvoidingView, ScrollView, TextInput } from 'react-native';
 import * as Yup from 'yup';
 import { format } from 'date-fns-tz';
 
@@ -8,27 +8,13 @@ import { Form } from '@unform/mobile';
 import { FormHandles } from '@unform/core';
 import { MaterialCommunityIcons, Ionicons } from '@expo/vector-icons';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import Logo from '../../../assets/logo.png';
-import Button from '../../components/Button';
-import Selector from '../../components/Selector';
 import DateSelector from '../../components/DateSelector';
+import RegisterFooterButtons from '../../components/RegisterFooterButtons';
 
 import { HelpData, FirstFormHelpData, SecondFormHelpData } from '../../utils/Interfaces';
 import { testCPF, getAddressByCep } from '../../utils/AppUtil';
 
-import {
-    Container,
-    HeaderNavigatorContainer,
-    NavigationText,
-    StyledImage,
-    BoldText,
-    TextInput,
-    InputContainer,
-    TextTitle,
-    DateContainer,
-    DateText,
-    DescriptionText,
-} from './styles';
+import { TextTitle, DateContainer, DateText, DescriptionText } from './styles';
 import getValidationsErrors from '../../utils/getValidationsErrors';
 import Input from '../../components/Input';
 import api from '../../services/api';
@@ -65,7 +51,6 @@ const NewHelp: React.FC = () => {
 
     const handleSetChosenDate = useCallback(
         (childChosenDate: Date) => {
-            console.log('chegou a data: ', childChosenDate);
             setChosenDate(childChosenDate);
             help.helpDate = childChosenDate;
             setSelectedDate(true);
@@ -75,7 +60,7 @@ const NewHelp: React.FC = () => {
 
     const handleSearchAdressZipCode = useCallback(async (cep: string) => {
         if (cep === '' || cep.length < 8) {
-            Alert.alert('Digite um cep valido.');
+            Alert.alert('Digite um cep válido.');
         }
         const completeAddress = await getAddressByCep(cep);
 
@@ -124,8 +109,6 @@ const NewHelp: React.FC = () => {
                     description: data.description,
                     observation: data.observation ? data.observation : null,
                 });
-
-                console.log('ajuda até o momento: ', help);
 
                 setFormStage('2');
             } catch (e) {
@@ -243,6 +226,7 @@ const NewHelp: React.FC = () => {
                             onSubmit={handleFirstForm}
                             ref={firstFormRef}
                             style={{ flex: 1, justifyContent: 'flex-end' }}
+                            initialData={help}
                         >
                             <ScrollView style={{ marginTop: '6%' }}>
                                 <TextTitle>Quem receberá a ajuda:</TextTitle>
@@ -306,31 +290,14 @@ const NewHelp: React.FC = () => {
                                 />
                             </ScrollView>
 
-                            <View
-                                style={{
-                                    flexDirection: 'row',
-                                    justifyContent: 'space-between',
-                                    marginBottom: '4%',
-                                    marginTop: '1%',
-                                    marginRight: '6%',
-                                    marginLeft: '6%',
-                                }}
-                            >
-                                <Button
-                                    title="goBack"
-                                    width={33}
-                                    buttonText="VOLTAR"
-                                    buttonType="goBack"
-                                    onPress={() => navigation.navigate(ScreenNamesEnum.Main)}
-                                />
-                                <Button
-                                    title="next"
-                                    width={65}
-                                    buttonText="PRÓXIMO"
-                                    buttonType="enter"
-                                    onPress={() => firstFormRef.current?.submitForm()}
-                                />
-                            </View>
+                            <RegisterFooterButtons
+                                textBackButton="VOLTAR"
+                                titleBackButton="goBack"
+                                textForwardButton="PRÓXIMO"
+                                titleForwardButton="next"
+                                backFunction={() => navigation.navigate(ScreenNamesEnum.Main)}
+                                forwardFunction={() => firstFormRef.current?.submitForm()}
+                            />
                         </Form>
                     </SafeAreaView>
                 </KeyboardAvoidingView>
@@ -346,6 +313,7 @@ const NewHelp: React.FC = () => {
                             onSubmit={handleSecondForm}
                             ref={secondFormRef}
                             style={{ flex: 1, justifyContent: 'flex-end' }}
+                            initialData={help}
                         >
                             <ScrollView style={{ marginTop: '6%' }}>
                                 <TextTitle>Local das ajuda:</TextTitle>
@@ -428,31 +396,14 @@ const NewHelp: React.FC = () => {
                                 />
                             </ScrollView>
 
-                            <View
-                                style={{
-                                    flexDirection: 'row',
-                                    justifyContent: 'space-between',
-                                    marginBottom: '4%',
-                                    marginTop: '1%',
-                                    marginRight: '6%',
-                                    marginLeft: '6%',
-                                }}
-                            >
-                                <Button
-                                    title="goBack"
-                                    width={33}
-                                    buttonText="VOLTAR"
-                                    buttonType="goBack"
-                                    onPress={() => setFormStage('1')}
-                                />
-                                <Button
-                                    title="next"
-                                    width={65}
-                                    buttonText="PRÓXIMO"
-                                    buttonType="enter"
-                                    onPress={() => secondFormRef.current?.submitForm()}
-                                />
-                            </View>
+                            <RegisterFooterButtons
+                                textBackButton="VOLTAR"
+                                titleBackButton="goBack"
+                                textForwardButton="PRÓXIMO"
+                                titleForwardButton="next"
+                                backFunction={() => setFormStage('1')}
+                                forwardFunction={() => secondFormRef.current?.submitForm()}
+                            />
                         </Form>
                     </SafeAreaView>
                 </KeyboardAvoidingView>
@@ -494,31 +445,14 @@ const NewHelp: React.FC = () => {
                             )}
                         </ScrollView>
 
-                        <View
-                            style={{
-                                flexDirection: 'row',
-                                justifyContent: 'space-between',
-                                marginBottom: '4%',
-                                marginTop: '2%',
-                                marginRight: '6%',
-                                marginLeft: '6%',
-                            }}
-                        >
-                            <Button
-                                title="goBack"
-                                width={33}
-                                buttonText="VOLTAR"
-                                buttonType="goBack"
-                                onPress={() => setFormStage('2')}
-                            />
-                            <Button
-                                title="next"
-                                width={65}
-                                buttonText="PRÓXIMO"
-                                buttonType="enter"
-                                onPress={() => setFormStage('4')}
-                            />
-                        </View>
+                        <RegisterFooterButtons
+                            textBackButton="VOLTAR"
+                            titleBackButton="goBack"
+                            textForwardButton="PRÓXIMO"
+                            titleForwardButton="next"
+                            backFunction={() => setFormStage('2')}
+                            forwardFunction={() => setFormStage('4')}
+                        />
                     </SafeAreaView>
                 </KeyboardAvoidingView>
             )}
@@ -527,14 +461,7 @@ const NewHelp: React.FC = () => {
             {formStage === '4' && (
                 <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
                     <SafeAreaView style={{ flex: 1 }}>
-                        <HeaderNavigatorContainer>
-                            <View style={{ flexDirection: 'row', marginLeft: 19 }}>
-                                <StyledImage source={Logo} />
-                                <NavigationText>
-                                    Nova <BoldText>Data</BoldText>
-                                </NavigationText>
-                            </View>
-                        </HeaderNavigatorContainer>
+                        <RegisterHeader isNewDate formCurrentStage={formStage} formTotalStages="4" />
 
                         <ScrollView style={{ marginTop: '6%' }}>
                             <View>
@@ -545,31 +472,15 @@ const NewHelp: React.FC = () => {
                         <TouchableOpacity style={{ alignSelf: 'flex-end', marginBottom: '6%', marginRight: '6%' }}>
                             <Ionicons name="md-trash" size={72} color="#F6BB42" />
                         </TouchableOpacity>
-                        <View
-                            style={{
-                                flexDirection: 'row',
-                                justifyContent: 'space-between',
-                                marginBottom: '4%',
-                                marginTop: '1%',
-                                marginRight: '6%',
-                                marginLeft: '6%',
-                            }}
-                        >
-                            <Button
-                                title="goBack"
-                                width={33}
-                                buttonText="VOLTAR"
-                                buttonType="goBack"
-                                onPress={() => setFormStage('3')}
-                            />
-                            <Button
-                                title="next"
-                                width={65}
-                                buttonText="ADICIONAR DATA"
-                                buttonType="enter"
-                                onPress={() => handleCreateHelp()}
-                            />
-                        </View>
+
+                        <RegisterFooterButtons
+                            textBackButton="VOLTAR"
+                            titleBackButton="goBack"
+                            textForwardButton="PRÓXIMO"
+                            titleForwardButton="next"
+                            backFunction={() => setFormStage('3')}
+                            forwardFunction={() => handleCreateHelp()}
+                        />
                     </SafeAreaView>
                 </KeyboardAvoidingView>
             )}

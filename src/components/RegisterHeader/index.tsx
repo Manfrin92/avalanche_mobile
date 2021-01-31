@@ -7,16 +7,24 @@ import { HeaderNavigatorContainer, StyledImage, NavigationText, BoldText, StageT
 interface RegisterHeaderProps {
     formCurrentStage: string;
     formTotalStages: string;
+    isNewDate?: boolean;
 }
 
-const RegisterHeader: React.FC<RegisterHeaderProps> = ({ formCurrentStage, formTotalStages }) => {
+const RegisterHeader: React.FC<RegisterHeaderProps> = ({ formCurrentStage, formTotalStages, isNewDate }) => {
     return (
         <HeaderNavigatorContainer>
             <View style={{ flexDirection: 'row', marginLeft: 19 }}>
                 <StyledImage source={Logo} />
-                <NavigationText>
-                    Nova <BoldText>Ajuda</BoldText>
-                </NavigationText>
+
+                {isNewDate ? (
+                    <NavigationText>
+                        Nova <BoldText>Ajuda</BoldText>
+                    </NavigationText>
+                ) : (
+                    <NavigationText>
+                        Nova <BoldText>Data</BoldText>
+                    </NavigationText>
+                )}
             </View>
             <StageText>
                 {formCurrentStage}/{formTotalStages}

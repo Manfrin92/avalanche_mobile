@@ -1,51 +1,18 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
-import {
-    View,
-    TextInput,
-    Alert,
-    SafeAreaView,
-    TouchableOpacity,
-    NativeModules,
-    Platform,
-    Keyboard,
-    KeyboardAvoidingView,
-    ScrollView,
-} from 'react-native';
+import { TextInput, Alert, SafeAreaView, Keyboard } from 'react-native';
 import * as Yup from 'yup';
 import { Form } from '@unform/mobile';
 import { FormHandles } from '@unform/core';
-import { Feather, SimpleLineIcons } from '@expo/vector-icons';
-import * as Network from 'expo-network';
-
 import { useNavigation } from '@react-navigation/native';
+
 import Logo from '../../../assets/logo.png';
 import Button from '../../components/Button';
 import Input from '../../components/Input/LoginInput';
+import LoginHeader from '../../components/LoginHeader';
 import getValidationsErrors from '../../utils/getValidationsErrors';
-import { goToUrl } from '../../utils/AppUtil';
-
-import {
-    Container,
-    StyledImage,
-    StyledText,
-    HeaderNavigatorContainer,
-    NavigationText,
-    Content,
-    Title,
-    ViewButton,
-    Text,
-    BoldText,
-} from './styles';
 import { useAuth } from '../../hooks/auth';
 import { ScreenNamesEnum } from '../../utils/enums';
-
-interface Navigation {
-    navigate(screen: string): void;
-}
-
-interface LoginRegisterData {
-    navigation: Navigation;
-}
+import { Container, StyledImage, StyledText, ViewButton, Text, BoldText } from './styles';
 
 interface SignInFormData {
     email: string;
@@ -115,10 +82,8 @@ const Login: React.FC = () => {
 
     return (
         <SafeAreaView style={{ flex: 1 }}>
-            <HeaderNavigatorContainer onPress={() => navigation.navigate(ScreenNamesEnum.LoginRegister)}>
-                <Feather name="arrow-left" size={22} color="#ACACAC" style={{ paddingLeft: 12 }} />
-                <NavigationText>Voltar</NavigationText>
-            </HeaderNavigatorContainer>
+            <LoginHeader navigateToLoginRegister={() => navigation.navigate(ScreenNamesEnum.LoginRegister)} />
+
             <Container>
                 <StyledImage style={{ display: keyboardOpen ? 'none' : null }} source={Logo} />
                 <StyledText>

@@ -1,29 +1,14 @@
 import React, { useCallback, useState, useEffect } from 'react';
-import { View, Alert, SafeAreaView, ScrollView } from 'react-native';
+import { SafeAreaView, ScrollView } from 'react-native';
+import { useNavigation, useIsFocused } from '@react-navigation/native';
 
-import { NavigationContainer, useNavigation } from '@react-navigation/native';
-import { Entypo, Ionicons } from '@expo/vector-icons';
-import { TouchableOpacity } from 'react-native-gesture-handler';
-import Logo from '../../../assets/logo.png';
-
-import HelpItem from '../../components/HelpItem';
-
-import {
-    Container,
-    HeaderNavigatorContainer,
-    NavigationText,
-    StyledImage,
-    StageText,
-    BoldText,
-    TextInput,
-    InputContainer,
-} from './styles';
-import getValidationsErrors from '../../utils/getValidationsErrors';
-import Input from '../../components/Input';
 import api from '../../services/api';
+import MainHeader from '../../components/MainHeader';
+import HelpItem from '../../components/HelpItem';
+import NewHelpButton from '../../components/NewHelpButton';
 import { HelpDataToShow } from '../../utils/Interfaces';
-import { useAuth } from '../../hooks/auth';
 import { ScreenNamesEnum } from '../../utils/enums';
+import { useAuth } from '../../hooks/auth';
 import Loading from '../Loading';
 
 const MainScreen: React.FC = () => {
@@ -31,20 +16,20 @@ const MainScreen: React.FC = () => {
     const navigation = useNavigation();
     const [helps, setHelps] = useState([] as HelpDataToShow[]);
     const [loading, setLoading] = useState(true);
+    const isFocused = useIsFocused();
 
     const getHelpsByUser = useCallback(async () => {
         const helpsRaw = await api.post('/help/findHelps', {
             userManagerId: user.id,
         });
-
         setHelps([...helpsRaw.data]);
-
         setLoading(false);
     }, [user.id]);
 
     useEffect(() => {
         getHelpsByUser();
-    }, []);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isFocused]);
 
     if (loading) {
         return <Loading />;
@@ -52,33 +37,7 @@ const MainScreen: React.FC = () => {
 
     return (
         <SafeAreaView style={{ flex: 1 }}>
-            <HeaderNavigatorContainer>
-                <View
-                    style={{
-                        flex: 1,
-                        flexDirection: 'row',
-                        marginLeft: 19,
-                        alignItems: 'center',
-                        justifyContent: 'flex-start',
-                    }}
-                >
-                    <StyledImage source={Logo} />
-                    <NavigationText>
-                        Minhas <BoldText>Ajudas</BoldText>
-                    </NavigationText>
-                </View>
-                <TouchableOpacity
-                    style={{
-                        flex: 1,
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        marginRight: '4%',
-                    }}
-                    onPress={() => navigation.navigate('Menu')}
-                >
-                    <Entypo name="menu" size={40} color="black" />
-                </TouchableOpacity>
-            </HeaderNavigatorContainer>
+            <MainHeader navigateToMenu={() => navigation.navigate(ScreenNamesEnum.Menu)} />
 
             <ScrollView>
                 {helps.length > 0 &&
@@ -87,12 +46,7 @@ const MainScreen: React.FC = () => {
                     })}
             </ScrollView>
 
-            <View style={{ flexDirection: 'row', marginTop: '4%' }}>
-                <View style={{ width: '84%', height: '100%' }} />
-                <TouchableOpacity onPress={() => navigation.navigate(ScreenNamesEnum.NewHelp)}>
-                    <Ionicons name="md-add-circle" size={60} color="#4A89DC" />
-                </TouchableOpacity>
-            </View>
+            <NewHelpButton navigateToNewHelp={() => navigation.navigate(ScreenNamesEnum.NewHelp)} />
         </SafeAreaView>
     );
 };

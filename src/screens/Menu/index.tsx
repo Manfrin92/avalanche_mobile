@@ -1,15 +1,8 @@
 import React from 'react';
-import { View, Alert, SafeAreaView, ScrollView } from 'react-native';
+import { View, SafeAreaView } from 'react-native';
 
 import { useNavigation } from '@react-navigation/native';
-import {
-    Entypo,
-    AntDesign,
-    Ionicons,
-    SimpleLineIcons,
-    FontAwesome5,
-    MaterialCommunityIcons,
-} from '@expo/vector-icons';
+import { AntDesign, Ionicons, SimpleLineIcons, FontAwesome5, MaterialCommunityIcons } from '@expo/vector-icons';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import Logo from '../../../assets/logo.png';
 
@@ -26,9 +19,7 @@ import {
     RedBoldText,
     Text,
 } from './styles';
-import getValidationsErrors from '../../utils/getValidationsErrors';
-import Input from '../../components/Input';
-import api from '../../services/api';
+
 import { useAuth } from '../../hooks/auth';
 import { ScreenNamesEnum } from '../../utils/enums';
 import { goToUrl } from '../../utils/AppUtil';
