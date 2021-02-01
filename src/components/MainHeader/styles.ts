@@ -15,7 +15,7 @@ export const HeaderNavigatorContainer = styled.View`
 export const HeaderLeftContainer = styled.View`
     flex: 1;
     flex-direction: row;
-    margin-left: 19;
+    margin-left: 19px;
     align-items: center;
     justify-content: flex-start;
 `;
