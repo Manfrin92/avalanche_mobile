@@ -1,33 +1,32 @@
 import React from 'react';
-import { View } from 'react-native';
 import Logo from '../../../assets/logo.png';
 
-import { HeaderNavigatorContainer, StyledImage, NavigationText, BoldText, StageText } from './styles';
+import {
+    HeaderNavigatorContainer,
+    HeaderLeftContainer,
+    NavigationText,
+    BoldText,
+    StyledImage,
+    StageText,
+} from './styles';
 
 interface RegisterHeaderProps {
-    formCurrentStage: string;
-    formTotalStages: string;
-    isNewDate?: boolean;
+    formStage: string;
+    formLength: string;
 }
 
-const RegisterHeader: React.FC<RegisterHeaderProps> = ({ formCurrentStage, formTotalStages, isNewDate }) => {
+const RegisterHeader: React.FC<RegisterHeaderProps> = ({ formStage, formLength }) => {
     return (
         <HeaderNavigatorContainer>
-            <View style={{ flexDirection: 'row', marginLeft: 19 }}>
+            <HeaderLeftContainer>
                 <StyledImage source={Logo} />
-
-                {isNewDate ? (
-                    <NavigationText>
-                        Nova <BoldText>Ajuda</BoldText>
-                    </NavigationText>
-                ) : (
-                    <NavigationText>
-                        Nova <BoldText>Data</BoldText>
-                    </NavigationText>
-                )}
-            </View>
+                <NavigationText>
+                    Cadastro {formStage === '2' && <BoldText> Endereço</BoldText>}
+                    {formStage === '3' && <BoldText>Habilidades</BoldText>}
+                </NavigationText>
+            </HeaderLeftContainer>
             <StageText>
-                {formCurrentStage}/{formTotalStages}
+                {formStage}/{formLength}{' '}
             </StageText>
         </HeaderNavigatorContainer>
     );

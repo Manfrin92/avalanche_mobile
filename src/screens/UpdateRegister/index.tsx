@@ -5,7 +5,7 @@ import * as Yup from 'yup';
 import { useNavigation } from '@react-navigation/native';
 import { Form } from '@unform/mobile';
 import { FormHandles } from '@unform/core';
-import { AntDesign, MaterialCommunityIcons, FontAwesome5 } from '@expo/vector-icons';
+import { MaterialCommunityIcons, FontAwesome5 } from '@expo/vector-icons';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import Logo from '../../../assets/logo.png';
 import Button from '../../components/Button';
@@ -14,22 +14,14 @@ import Selector from '../../components/Selector';
 import { UserData, FirstFormUpdateData, SecondFormData, AddressFromURL, Address } from '../../utils/Interfaces';
 import { testCPF, getAddressByCep } from '../../utils/AppUtil';
 
-import {
-    Container,
-    HeaderNavigatorContainer,
-    NavigationText,
-    StyledImage,
-    StageText,
-    BoldText,
-    TextInput,
-    InputContainer,
-} from './styles';
+import { HeaderNavigatorContainer, NavigationText, StyledImage, StageText, BoldText } from './styles';
 import getValidationsErrors from '../../utils/getValidationsErrors';
 import Input from '../../components/Input';
 import api from '../../services/api';
 import { useAuth } from '../../hooks/auth';
 import { ScreenNamesEnum } from '../../utils/enums';
 import Loading from '../Loading';
+import UpdateRegisterHeader from '../../components/UpdateRegisterHeader';
 
 const UpdateRegister: React.FC = () => {
     const [selecting, setSelecting] = useState(true);
@@ -299,20 +291,12 @@ const UpdateRegister: React.FC = () => {
         <>
             {selecting && (
                 <SafeAreaView style={{ flex: 1 }}>
-                    <HeaderNavigatorContainer>
-                        <View style={{ flexDirection: 'row', marginLeft: 19, justifyContent: 'space-between' }}>
-                            <StyledImage source={Logo} />
-                            <NavigationText>Alteração de Cadastro</NavigationText>
-                            <TouchableOpacity
-                                onPress={() => {
-                                    navigation.navigate(ScreenNamesEnum.Menu);
-                                }}
-                                style={{ marginLeft: '36%' }}
-                            >
-                                <AntDesign name="arrowleft" size={24} color="black" />
-                            </TouchableOpacity>
-                        </View>
-                    </HeaderNavigatorContainer>
+                    <UpdateRegisterHeader
+                        navigateToMenu={() => {
+                            navigation.navigate(ScreenNamesEnum.Menu);
+                        }}
+                    />
+
                     <View style={{ marginTop: '10%', marginLeft: '10%' }}>
                         <TouchableOpacity
                             style={{ flexDirection: 'row' }}

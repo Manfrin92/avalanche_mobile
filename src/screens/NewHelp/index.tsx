@@ -20,7 +20,7 @@ import Input from '../../components/Input';
 import api from '../../services/api';
 import { useAuth } from '../../hooks/auth';
 import { ScreenNamesEnum } from '../../utils/enums';
-import RegisterHeader from '../../components/RegisterHeader';
+import HelpHeader from '../../components/HelpHeader';
 
 const NewHelp: React.FC = () => {
     const { user } = useAuth();
@@ -220,7 +220,7 @@ const NewHelp: React.FC = () => {
             {formStage === '1' && (
                 <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
                     <SafeAreaView style={{ flex: 1 }}>
-                        <RegisterHeader formCurrentStage={formStage} formTotalStages="4" />
+                        <HelpHeader formCurrentStage={formStage} formTotalStages="4" />
 
                         <Form
                             onSubmit={handleFirstForm}
@@ -307,7 +307,7 @@ const NewHelp: React.FC = () => {
             {formStage === '2' && (
                 <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
                     <SafeAreaView style={{ flex: 1 }}>
-                        <RegisterHeader formCurrentStage={formStage} formTotalStages="4" />
+                        <HelpHeader formCurrentStage={formStage} formTotalStages="4" />
 
                         <Form
                             onSubmit={handleSecondForm}
@@ -413,7 +413,7 @@ const NewHelp: React.FC = () => {
             {formStage === '3' && (
                 <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
                     <SafeAreaView style={{ flex: 1 }}>
-                        <RegisterHeader formCurrentStage={formStage} formTotalStages="4" />
+                        <HelpHeader formCurrentStage={formStage} formTotalStages="4" />
 
                         <ScrollView style={{ marginTop: '6%', marginRight: '6%', marginLeft: '6%' }}>
                             <TextTitle style={{ marginLeft: '0%' }}>Datas:</TextTitle>
@@ -461,7 +461,7 @@ const NewHelp: React.FC = () => {
             {formStage === '4' && (
                 <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
                     <SafeAreaView style={{ flex: 1 }}>
-                        <RegisterHeader isNewDate formCurrentStage={formStage} formTotalStages="4" />
+                        <HelpHeader isNewDate formCurrentStage={formStage} formTotalStages="4" />
 
                         <ScrollView style={{ marginTop: '6%' }}>
                             <View>

@@ -1,31 +1,21 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
-import { View, Alert, SafeAreaView, Platform, KeyboardAvoidingView, ScrollView } from 'react-native';
+import { View, Alert, SafeAreaView, Platform, KeyboardAvoidingView, ScrollView, TextInput } from 'react-native';
 import * as Yup from 'yup';
 
 import { useNavigation } from '@react-navigation/native';
 import { Form } from '@unform/mobile';
 import { FormHandles } from '@unform/core';
-import Logo from '../../../assets/logo.png';
 import Button from '../../components/Button';
 import Selector from '../../components/Selector';
 
 import { UserData, FirstFormData, SecondFormData, AddressFromURL } from '../../utils/Interfaces';
 import { testCPF, getAddressByCep } from '../../utils/AppUtil';
 
-import {
-    Container,
-    HeaderNavigatorContainer,
-    NavigationText,
-    StyledImage,
-    StageText,
-    BoldText,
-    TextInput,
-    InputContainer,
-} from './styles';
 import getValidationsErrors from '../../utils/getValidationsErrors';
 import Input from '../../components/Input';
 import api from '../../services/api';
 import { ScreenNamesEnum } from '../../utils/enums';
+import RegisterHeader from '../../components/RegisterHeader';
 
 const Register: React.FC = () => {
     const navigation = useNavigation();
@@ -250,20 +240,20 @@ const Register: React.FC = () => {
             }
         }
 
-        if (secondFormRef.current) {
-            if (formStage === '2') {
-                if (mounted) {
-                    secondFormRef.current.setData({
-                        ...user,
-                    });
-                }
-            }
-        }
+        // if (secondFormRef.current) {
+        //     if (formStage === '2') {
+        //         if (mounted) {
+        //             secondFormRef.current.setData({
+        //                 ...user,
+        //             });
+        //         }
+        //     }
+        // }
 
         return () => {
             mounted = false;
         };
-    }, [formStage]);
+    }, [formStage, user]);
 
     return (
         <>
@@ -271,21 +261,13 @@ const Register: React.FC = () => {
             {formStage === '1' && (
                 <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
                     <SafeAreaView style={{ flex: 1 }}>
-                        <HeaderNavigatorContainer>
-                            <View style={{ flexDirection: 'row', marginLeft: 19 }}>
-                                <StyledImage source={Logo} />
-                                <NavigationText>
-                                    Cadastro {formStage === '2' && <BoldText> Endereço</BoldText>}
-                                    {formStage === '3' && <BoldText>Habilidades</BoldText>}
-                                </NavigationText>
-                            </View>
-                            <StageText>{formStage}/3 </StageText>
-                        </HeaderNavigatorContainer>
+                        <RegisterHeader formStage={formStage} formLength="3" />
 
                         <Form
                             onSubmit={handleFirstForm}
                             ref={firstFormRef}
                             style={{ flex: 1, justifyContent: 'flex-end' }}
+                            initialData={user}
                         >
                             <ScrollView style={{ marginTop: '6%' }}>
                                 <Input
@@ -390,21 +372,13 @@ const Register: React.FC = () => {
             {formStage === '2' && (
                 <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
                     <SafeAreaView style={{ flex: 1 }}>
-                        <HeaderNavigatorContainer>
-                            <View style={{ flexDirection: 'row', marginLeft: 19 }}>
-                                <StyledImage source={Logo} />
-                                <NavigationText>
-                                    Cadastro {formStage === '2' && <BoldText>Endereço</BoldText>}
-                                    {formStage === '3' && <BoldText>Habilidades</BoldText>}
-                                </NavigationText>
-                            </View>
-                            <StageText>{formStage}/3 </StageText>
-                        </HeaderNavigatorContainer>
+                        <RegisterHeader formLength="3" formStage={formStage} />
 
                         <Form
                             onSubmit={handleSecondForm}
                             ref={secondFormRef}
                             style={{ flex: 1, justifyContent: 'flex-end' }}
+                            initialData={user}
                         >
                             <ScrollView style={{ marginTop: '6%' }}>
                                 <Input
@@ -520,16 +494,7 @@ const Register: React.FC = () => {
             {formStage === '3' && (
                 <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
                     <SafeAreaView style={{ flex: 1 }}>
-                        <HeaderNavigatorContainer>
-                            <View style={{ flexDirection: 'row', marginLeft: 19 }}>
-                                <StyledImage source={Logo} />
-                                <NavigationText>
-                                    Cadastro {formStage === '2' && <BoldText> Endereço</BoldText>}
-                                    {formStage === '3' && <BoldText>Habilidades</BoldText>}
-                                </NavigationText>
-                            </View>
-                            <StageText>{formStage}/3 </StageText>
-                        </HeaderNavigatorContainer>
+                        <RegisterHeader formStage={formStage} formLength="3" />
 
                         <ScrollView style={{ marginTop: '6%', marginRight: '6%', marginLeft: '6%' }}>
                             <Selector

@@ -12,11 +12,6 @@ export const HeaderNavigatorContainer = styled.View`
     justify-content: space-between;
 `;
 
-export const HeaderLeftContainer = styled.View`
-    flex-direction: row;
-    margin-left: 19;
-`;
-
 export const StyledImage = styled.Image`
     width: 36px;
     height: 33px;
@@ -33,16 +28,6 @@ export const BoldText = styled.Text`
     align-self: center;
 `;
 
-export const NavigationText = styled.Text`
-    font-size: 22px;
-    line-height: 22px;
-    letter-spacing: -0.01px;
-    font-family: sans-serif;
-    color: #0a5f9a;
-    align-self: center;
-    padding-left: 18px;
-`;
-
 export const StageText = styled.Text`
     font-family: sans-serif;
     font-size: 22px;
@@ -51,4 +36,13 @@ export const StageText = styled.Text`
     text-align: center;
     color: #4a89dc;
     margin-right: 4%;
+`;
+export const NavigationText = styled.Text`
+    font-size: 22px;
+    line-height: 22px;
+    letter-spacing: -0.01px;
+    font-family: sans-serif;
+    color: #434a54;
+    align-self: center;
+    padding-left: 18px;
 `;

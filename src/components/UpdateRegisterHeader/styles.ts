@@ -12,9 +12,10 @@ export const HeaderNavigatorContainer = styled.View`
     justify-content: space-between;
 `;
 
-export const HeaderLeftContainer = styled.View`
+export const Container = styled.View`
     flex-direction: row;
     margin-left: 19;
+    justify-content: space-between;
 `;
 
 export const StyledImage = styled.Image`
