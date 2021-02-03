@@ -8,6 +8,11 @@ export const Container = styled.View`
     margin-right: 6%;
 `;
 
+export const OptionsContainer = styled.View`
+    margin-top: 10%;
+    margin-left: 10%;
+`;
+
 export const HeaderNavigatorContainer = styled.View`
     flex-direction: row;
     background-color: transparent;

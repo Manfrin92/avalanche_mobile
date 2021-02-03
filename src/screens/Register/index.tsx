@@ -16,6 +16,7 @@ import Input from '../../components/Input';
 import api from '../../services/api';
 import { ScreenNamesEnum } from '../../utils/enums';
 import RegisterHeader from '../../components/RegisterHeader';
+import RegisterFooterButtons from '../../components/RegisterFooterButtons';
 
 const Register: React.FC = () => {
     const navigation = useNavigation();
@@ -240,16 +241,6 @@ const Register: React.FC = () => {
             }
         }
 
-        // if (secondFormRef.current) {
-        //     if (formStage === '2') {
-        //         if (mounted) {
-        //             secondFormRef.current.setData({
-        //                 ...user,
-        //             });
-        //         }
-        //     }
-        // }
-
         return () => {
             mounted = false;
         };
@@ -338,31 +329,14 @@ const Register: React.FC = () => {
                                 />
                             </ScrollView>
 
-                            <View
-                                style={{
-                                    flexDirection: 'row',
-                                    justifyContent: 'space-between',
-                                    marginBottom: '4%',
-                                    marginTop: '1%',
-                                    marginRight: '6%',
-                                    marginLeft: '6%',
-                                }}
-                            >
-                                <Button
-                                    title="goBack"
-                                    width={33}
-                                    buttonText="VOLTAR"
-                                    buttonType="goBack"
-                                    onPress={() => navigation.navigate(ScreenNamesEnum.LoginRegister)}
-                                />
-                                <Button
-                                    title="next"
-                                    width={65}
-                                    buttonText="CONFIRMAR"
-                                    buttonType="enter"
-                                    onPress={() => firstFormRef.current?.submitForm()}
-                                />
-                            </View>
+                            <RegisterFooterButtons
+                                forwardFunction={() => firstFormRef.current?.submitForm()}
+                                titleBackButton="goBack"
+                                textBackButton="VOLTAR"
+                                titleForwardButton="next"
+                                textForwardButton="CONFIRMAR"
+                                backFunction={() => navigation.navigate(ScreenNamesEnum.LoginRegister)}
+                            />
                         </Form>
                     </SafeAreaView>
                 </KeyboardAvoidingView>
@@ -460,31 +434,14 @@ const Register: React.FC = () => {
                                 />
                             </ScrollView>
 
-                            <View
-                                style={{
-                                    flexDirection: 'row',
-                                    justifyContent: 'space-between',
-                                    marginBottom: '4%',
-                                    marginTop: '1%',
-                                    marginRight: '6%',
-                                    marginLeft: '6%',
-                                }}
-                            >
-                                <Button
-                                    title="goBack"
-                                    width={33}
-                                    buttonText="VOLTAR"
-                                    buttonType="goBack"
-                                    onPress={() => setFormStage('1')}
-                                />
-                                <Button
-                                    title="next"
-                                    width={65}
-                                    buttonText="CONFIRMAR"
-                                    buttonType="enter"
-                                    onPress={() => secondFormRef.current?.submitForm()}
-                                />
-                            </View>
+                            <RegisterFooterButtons
+                                forwardFunction={() => secondFormRef.current?.submitForm()}
+                                titleBackButton="goBack"
+                                textBackButton="VOLTAR"
+                                titleForwardButton="next"
+                                textForwardButton="CONFIRMAR"
+                                backFunction={() => setFormStage('1')}
+                            />
                         </Form>
                     </SafeAreaView>
                 </KeyboardAvoidingView>
@@ -550,31 +507,14 @@ const Register: React.FC = () => {
                             />
                         </ScrollView>
 
-                        <View
-                            style={{
-                                flexDirection: 'row',
-                                justifyContent: 'space-between',
-                                marginBottom: '4%',
-                                marginTop: '2%',
-                                marginRight: '6%',
-                                marginLeft: '6%',
-                            }}
-                        >
-                            <Button
-                                title="goBack"
-                                width={33}
-                                buttonText="VOLTAR"
-                                buttonType="goBack"
-                                onPress={() => setFormStage('2')}
-                            />
-                            <Button
-                                title="next"
-                                width={65}
-                                buttonText={formStage !== '3' ? 'PRÓXIMO' : 'CADASTRAR'}
-                                buttonType="enter"
-                                onPress={() => handleCreateUser()}
-                            />
-                        </View>
+                        <RegisterFooterButtons
+                            forwardFunction={() => handleCreateUser()}
+                            titleBackButton="goBack"
+                            textBackButton="VOLTAR"
+                            titleForwardButton="next"
+                            textForwardButton={formStage !== '3' ? 'PRÓXIMO' : 'CADASTRAR'}
+                            backFunction={() => setFormStage('2')}
+                        />
                     </SafeAreaView>
                 </KeyboardAvoidingView>
             )}

@@ -6,7 +6,6 @@ import { useNavigation } from '@react-navigation/native';
 import { Form } from '@unform/mobile';
 import { FormHandles } from '@unform/core';
 import { MaterialCommunityIcons, FontAwesome5 } from '@expo/vector-icons';
-import { TouchableOpacity } from 'react-native-gesture-handler';
 import Logo from '../../../assets/logo.png';
 import Button from '../../components/Button';
 import Selector from '../../components/Selector';
@@ -14,7 +13,14 @@ import Selector from '../../components/Selector';
 import { UserData, FirstFormUpdateData, SecondFormData, AddressFromURL, Address } from '../../utils/Interfaces';
 import { testCPF, getAddressByCep } from '../../utils/AppUtil';
 
-import { HeaderNavigatorContainer, NavigationText, StyledImage, StageText, BoldText } from './styles';
+import {
+    HeaderNavigatorContainer,
+    NavigationText,
+    StyledImage,
+    StageText,
+    BoldText,
+    OptionsContainer,
+} from './styles';
 import getValidationsErrors from '../../utils/getValidationsErrors';
 import Input from '../../components/Input';
 import api from '../../services/api';
@@ -22,6 +28,9 @@ import { useAuth } from '../../hooks/auth';
 import { ScreenNamesEnum } from '../../utils/enums';
 import Loading from '../Loading';
 import UpdateRegisterHeader from '../../components/UpdateRegisterHeader';
+import UpdateOption from '../../components/UpdateOption';
+import UpdateRegisterOptionHeader from '../../components/UpdateRegisterOptionHeader';
+import RegisterFooterButtons from '../../components/RegisterFooterButtons';
 
 const UpdateRegister: React.FC = () => {
     const [selecting, setSelecting] = useState(true);
@@ -297,13 +306,11 @@ const UpdateRegister: React.FC = () => {
                         }}
                     />
 
-                    <View style={{ marginTop: '10%', marginLeft: '10%' }}>
-                        <TouchableOpacity
-                            style={{ flexDirection: 'row' }}
-                            onPress={() => {
-                                setFormStage('1');
-                                setSelecting(false);
-                            }}
+                    <OptionsContainer>
+                        <UpdateOption
+                            optionText="Dados pessoais"
+                            setFormStage={() => setFormStage('1')}
+                            setSelecting={() => setSelecting(false)}
                         >
                             <MaterialCommunityIcons
                                 style={{ width: 32, marginLeft: 1 }}
@@ -311,14 +318,12 @@ const UpdateRegister: React.FC = () => {
                                 size={32}
                                 color="#434A54"
                             />
-                            <NavigationText style={{ marginLeft: '2.5%' }}>Dados pessoais</NavigationText>
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                            style={{ flexDirection: 'row', marginTop: '6%' }}
-                            onPress={() => {
-                                setFormStage('2');
-                                setSelecting(false);
-                            }}
+                        </UpdateOption>
+
+                        <UpdateOption
+                            optionText="Endereço"
+                            setFormStage={() => setFormStage('2')}
+                            setSelecting={() => setSelecting(false)}
                         >
                             <FontAwesome5
                                 style={{ width: 32, marginLeft: 4 }}
@@ -326,9 +331,8 @@ const UpdateRegister: React.FC = () => {
                                 size={32}
                                 color="#434A54"
                             />
-                            <NavigationText style={{ marginLeft: '2%' }}>Endereço</NavigationText>
-                        </TouchableOpacity>
-                    </View>
+                        </UpdateOption>
+                    </OptionsContainer>
                 </SafeAreaView>
             )}
 
@@ -336,15 +340,7 @@ const UpdateRegister: React.FC = () => {
             {formStage === '1' && !selecting && (
                 <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
                     <SafeAreaView style={{ flex: 1 }}>
-                        <HeaderNavigatorContainer>
-                            <View style={{ flexDirection: 'row', marginLeft: 19 }}>
-                                <StyledImage source={Logo} />
-                                <NavigationText>
-                                    Cadastro {formStage === '2' && <BoldText> Endereço</BoldText>}
-                                </NavigationText>
-                            </View>
-                            <StageText>{formStage}/2 </StageText>
-                        </HeaderNavigatorContainer>
+                        <UpdateRegisterOptionHeader formStage={formStage} />
 
                         <Form
                             initialData={user}
@@ -389,33 +385,14 @@ const UpdateRegister: React.FC = () => {
                                 />
                             </ScrollView>
 
-                            <View
-                                style={{
-                                    flexDirection: 'row',
-                                    justifyContent: 'space-between',
-                                    marginBottom: '4%',
-                                    marginTop: '1%',
-                                    marginRight: '6%',
-                                    marginLeft: '6%',
-                                }}
-                            >
-                                <Button
-                                    title="goBack"
-                                    width={33}
-                                    buttonText="VOLTAR"
-                                    buttonType="goBack"
-                                    onPress={() => {
-                                        setSelecting(true);
-                                    }}
-                                />
-                                <Button
-                                    title="next"
-                                    width={65}
-                                    buttonText="CONFIRMAR"
-                                    buttonType="enter"
-                                    onPress={() => firstFormRef.current?.submitForm()}
-                                />
-                            </View>
+                            <RegisterFooterButtons
+                                backFunction={() => setSelecting(true)}
+                                forwardFunction={() => firstFormRef.current?.submitForm()}
+                                textForwardButton="CONFIRMAR"
+                                textBackButton="VOLTAR"
+                                titleBackButton="goBack"
+                                titleForwardButton="next"
+                            />
                         </Form>
                     </SafeAreaView>
                 </KeyboardAvoidingView>
@@ -425,15 +402,7 @@ const UpdateRegister: React.FC = () => {
             {formStage === '2' && !selecting && (
                 <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
                     <SafeAreaView style={{ flex: 1 }}>
-                        <HeaderNavigatorContainer>
-                            <View style={{ flexDirection: 'row', marginLeft: 19 }}>
-                                <StyledImage source={Logo} />
-                                <NavigationText>
-                                    Cadastro {formStage === '2' && <BoldText>Endereço</BoldText>}
-                                </NavigationText>
-                            </View>
-                            <StageText>{formStage}/2 </StageText>
-                        </HeaderNavigatorContainer>
+                        <UpdateRegisterOptionHeader formStage={formStage} />
 
                         <Form
                             initialData={userAddress}
@@ -521,31 +490,14 @@ const UpdateRegister: React.FC = () => {
                                 />
                             </ScrollView>
 
-                            <View
-                                style={{
-                                    flexDirection: 'row',
-                                    justifyContent: 'space-between',
-                                    marginBottom: '4%',
-                                    marginTop: '1%',
-                                    marginRight: '6%',
-                                    marginLeft: '6%',
-                                }}
-                            >
-                                <Button
-                                    title="goBack"
-                                    width={33}
-                                    buttonText="VOLTAR"
-                                    buttonType="goBack"
-                                    onPress={() => setSelecting(true)}
-                                />
-                                <Button
-                                    title="next"
-                                    width={65}
-                                    buttonText="CONFIRMAR"
-                                    buttonType="enter"
-                                    onPress={() => secondFormRef.current?.submitForm()}
-                                />
-                            </View>
+                            <RegisterFooterButtons
+                                backFunction={() => setSelecting(true)}
+                                forwardFunction={() => secondFormRef.current?.submitForm()}
+                                textForwardButton="CONFIRMAR"
+                                textBackButton="VOLTAR"
+                                titleBackButton="goBack"
+                                titleForwardButton="next"
+                            />
                         </Form>
                     </SafeAreaView>
                 </KeyboardAvoidingView>
