@@ -54,7 +54,6 @@ const AuthProvider: React.FC = ({ children }) => {
 
     const signIn = useCallback(async ({ email, password }) => {
         try {
-            setLoading(true);
             const response = await api.post('/user/logIn', {
                 email,
                 password,
@@ -73,18 +72,14 @@ const AuthProvider: React.FC = ({ children }) => {
             setData({ token, user });
             setLoading(false);
         } catch (err) {
-            console.log('ssignin: ', err);
             if (err.message && err.message.toLowerCase().includes('network error')) {
                 Alert.alert('Falha ao acessar a netword error API');
             }
             if (err.response.data && err.response.data.message && err.response.data.message.message) {
                 Alert.alert('Cheque suas credenciais.');
             } else {
-                console.log(err);
                 Alert.alert('Falha no login, cheque suas credenciais');
             }
-            setLoading(false);
-            return false;
         }
     }, []);
 
