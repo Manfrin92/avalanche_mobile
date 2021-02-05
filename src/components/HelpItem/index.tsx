@@ -5,9 +5,8 @@ import { MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { HelpDataToShow } from '../../utils/Interfaces';
 
 import { HelpTitle, HelpDescription, HelpBoldDescription } from './styles';
-import api from '../../services/api';
 
-const HelpItem: React.FC<HelpDataToShow> = ({ id, title, ...rest }) => {
+const HelpItem: React.FC<HelpDataToShow> = ({ id, title, ExcludeHelp, ...rest }) => {
     return (
         <View {...rest} style={{ marginTop: '8%' }}>
             <View
@@ -27,17 +26,7 @@ const HelpItem: React.FC<HelpDataToShow> = ({ id, title, ...rest }) => {
                             },
                             {
                                 text: 'Sim',
-                                onPress: async () => {
-                                    try {
-                                        await api.delete('help', {
-                                            id,
-                                        });
-
-                                        Alert.alert('Ajuda excluída com sucesso');
-                                    } catch (e) {
-                                        Alert.alert('Falha ao excluir ajuda');
-                                    }
-                                },
+                                onPress: () => ExcludeHelp(),
                             },
                         ])
                     }

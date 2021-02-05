@@ -1,5 +1,5 @@
 import React, { useCallback, useState, useEffect } from 'react';
-import { SafeAreaView, ScrollView } from 'react-native';
+import { Alert, SafeAreaView, ScrollView } from 'react-native';
 import { useNavigation, useIsFocused } from '@react-navigation/native';
 
 import api from '../../services/api';
@@ -18,16 +18,56 @@ const MainScreen: React.FC = () => {
     const [loading, setLoading] = useState(true);
     const isFocused = useIsFocused();
 
+    const handleExcludeHelp = useCallback(
+        async (id: string) => {
+            try {
+                Alert.alert('Excluir ajuda', 'Realmente deseja excluir a ajuda?', [
+                    {
+                        text: 'Não',
+                        style: 'cancel',
+                    },
+                    {
+                        text: 'Sim',
+                        onPress: async () => {
+                            setLoading(true);
+                            await api.delete('help', {
+                                data: {
+                                    id,
+                                },
+                            });
+
+                            const newHelps = helps.filter((help) => help.id !== id);
+
+                            setHelps(newHelps);
+                            setLoading(false);
+                        },
+                    },
+                ]);
+            } catch (e) {
+                Alert.alert('Não foi possível deletar a ajuda');
+                // // console.log(e);
+            }
+        },
+        [helps],
+    );
+
     const getHelpsByUser = useCallback(async () => {
-        const helpsRaw = await api.post('/help/findHelps', {
-            userManagerId: user.id,
-        });
-        setHelps([...helpsRaw.data]);
-        setLoading(false);
-    }, [user.id]);
+        try {
+            if (user && user.id) {
+                const helpsRaw = await api.post('/help/findHelps', {
+                    userManagerId: user.id,
+                });
+                setHelps([...helpsRaw.data]);
+                setLoading(false);
+            }
+        } catch (e) {
+            console.log(e);
+        }
+    }, [user]);
 
     useEffect(() => {
         getHelpsByUser();
+
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isFocused]);
 
@@ -42,7 +82,14 @@ const MainScreen: React.FC = () => {
             <ScrollView>
                 {helps.length > 0 &&
                     helps.map((help) => {
-                        return <HelpItem key={help.id} id={help.id} title={help.title} />;
+                        return (
+                            <HelpItem
+                                ExcludeHelp={() => handleExcludeHelp(help.id)}
+                                key={help.id}
+                                id={help.id}
+                                title={help.title}
+                            />
+                        );
                     })}
             </ScrollView>
 

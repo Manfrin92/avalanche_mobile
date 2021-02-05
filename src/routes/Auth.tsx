@@ -21,6 +21,7 @@ const AuthRoutes: React.FC = () => (
         <Auth.Screen name="LoginRegister" component={LoginRegister} />
         <Auth.Screen name="Login" component={Login} />
         <Auth.Screen name="Register" component={Register} />
+        <Auth.Screen name="Main" component={MainScreen} />
     </Auth.Navigator>
 );
 

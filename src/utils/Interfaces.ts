@@ -103,6 +103,7 @@ export interface HelpDataToShow {
     addressCountry?: string;
     helpDateId?: string;
     helpDate?: Date;
+    ExcludeHelp(): Promise<void>;
 }
 
 export interface Address {

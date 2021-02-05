@@ -66,6 +66,8 @@ const Login: React.FC = () => {
                 email: data.email.trim(),
                 password: data.password,
             });
+
+            navigation.navigate(ScreenNamesEnum.Main);
         } catch (err) {
             if (err instanceof Yup.ValidationError) {
                 const errors = getValidationsErrors(err);
