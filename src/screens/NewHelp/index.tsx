@@ -1,5 +1,14 @@
 import React, { useState, useRef, useCallback } from 'react';
-import { View, Alert, SafeAreaView, Platform, KeyboardAvoidingView, ScrollView, TextInput } from 'react-native';
+import {
+    View,
+    Alert,
+    SafeAreaView,
+    Platform,
+    KeyboardAvoidingView,
+    ScrollView,
+    TextInput,
+    Image,
+} from 'react-native';
 import * as Yup from 'yup';
 import { format } from 'date-fns-tz';
 
@@ -14,19 +23,28 @@ import RegisterFooterButtons from '../../components/RegisterFooterButtons';
 import { HelpData, FirstFormHelpData, SecondFormHelpData } from '../../utils/Interfaces';
 import { testCPF, getAddressByCep } from '../../utils/AppUtil';
 
-import { TextTitle, DateContainer, DateText, DescriptionText } from './styles';
+import {
+    TextTitle,
+    DateContainer,
+    DateText,
+    DescriptionText,
+    HelpTitle,
+    HelpDescription,
+    HelpSubTitle,
+} from './styles';
 import getValidationsErrors from '../../utils/getValidationsErrors';
 import Input from '../../components/Input';
 import api from '../../services/api';
 import { useAuth } from '../../hooks/auth';
 import { ScreenNamesEnum } from '../../utils/enums';
 import HelpHeader from '../../components/HelpHeader';
+import helpImage from '../../../assets/helpImage.jpg';
 
 const NewHelp: React.FC = () => {
     const { user } = useAuth();
     const navigation = useNavigation();
     const [help, setHelp] = useState({} as HelpData);
-    const [formStage, setFormStage] = useState<'1' | '2' | '3' | '4'>('1');
+    const [formStage, setFormStage] = useState<'1' | '2' | '3' | '4' | '5'>('1');
     // PRIMEIRO FORM
     const firstFormRef = useRef<FormHandles>(null);
     const fullNameRef = useRef<TextInput>(null);
@@ -197,10 +215,9 @@ const NewHelp: React.FC = () => {
 
             await api.post('helpDate/add', {
                 ...help,
-                userVolunteer: user.id,
                 help: HelpIdRaw.data,
                 date: chosenDate,
-                type: 'ride',
+                type: 'helpDateRide',
             });
 
             Alert.alert('Ajuda cadastrada com sucesso!');
@@ -220,7 +237,7 @@ const NewHelp: React.FC = () => {
             {formStage === '1' && (
                 <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
                     <SafeAreaView style={{ flex: 1 }}>
-                        <HelpHeader formCurrentStage={formStage} formTotalStages="4" />
+                        <HelpHeader formCurrentStage={formStage} formTotalStages="5" />
 
                         <Form
                             onSubmit={handleFirstForm}
@@ -307,7 +324,7 @@ const NewHelp: React.FC = () => {
             {formStage === '2' && (
                 <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
                     <SafeAreaView style={{ flex: 1 }}>
-                        <HelpHeader formCurrentStage={formStage} formTotalStages="4" />
+                        <HelpHeader formCurrentStage={formStage} formTotalStages="5" />
 
                         <Form
                             onSubmit={handleSecondForm}
@@ -413,7 +430,7 @@ const NewHelp: React.FC = () => {
             {formStage === '3' && (
                 <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
                     <SafeAreaView style={{ flex: 1 }}>
-                        <HelpHeader formCurrentStage={formStage} formTotalStages="4" />
+                        <HelpHeader formCurrentStage={formStage} formTotalStages="5" />
 
                         <ScrollView style={{ marginTop: '6%', marginRight: '6%', marginLeft: '6%' }}>
                             <TextTitle style={{ marginLeft: '0%' }}>Datas:</TextTitle>
@@ -461,7 +478,7 @@ const NewHelp: React.FC = () => {
             {formStage === '4' && (
                 <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
                     <SafeAreaView style={{ flex: 1 }}>
-                        <HelpHeader isNewDate formCurrentStage={formStage} formTotalStages="4" />
+                        <HelpHeader isNewDate formCurrentStage={formStage} formTotalStages="5" />
 
                         <ScrollView style={{ marginTop: '6%' }}>
                             <View>
@@ -479,6 +496,53 @@ const NewHelp: React.FC = () => {
                             textForwardButton="PRÓXIMO"
                             titleForwardButton="next"
                             backFunction={() => setFormStage('3')}
+                            forwardFunction={() => setFormStage('5')}
+                        />
+                    </SafeAreaView>
+                </KeyboardAvoidingView>
+            )}
+
+            {/* FIFTH PART */}
+            {formStage === '5' && (
+                <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+                    <SafeAreaView style={{ flex: 1 }}>
+                        <HelpHeader isNewDate formCurrentStage={formStage} formTotalStages="5" />
+
+                        <ScrollView style={{ marginTop: '6%' }}>
+                            <HelpTitle style={{ marginLeft: '3%' }}>Ajuda a {help.name}</HelpTitle>
+                            <Image
+                                style={{ width: 350, height: 200, alignSelf: 'center', marginTop: '3%' }}
+                                source={helpImage}
+                            />
+                            <View style={{ margin: '3%' }}>
+                                <HelpSubTitle>Título: {help.title}</HelpSubTitle>
+
+                                <HelpDescription>{help.description} </HelpDescription>
+
+                                <HelpSubTitle>Local: </HelpSubTitle>
+
+                                <HelpDescription style={{ marginTop: '3%' }}>
+                                    {help.addressStreet} {help.addressNumber}, {help.addressArea},{' '}
+                                    {help.addressCity} {help.addressState}{' '}
+                                </HelpDescription>
+                                <HelpDescription>CEP: {help.addressZipCode} </HelpDescription>
+
+                                <HelpSubTitle style={{ marginTop: '3%' }}>Data: </HelpSubTitle>
+                                <HelpDescription style={{ marginTop: '3%' }}>
+                                    {format(chosenDate, 'dd/MM/yyyy')} {help.title}
+                                </HelpDescription>
+
+                                <HelpSubTitle style={{ marginTop: '3%' }}>Organizador: </HelpSubTitle>
+                                <HelpDescription style={{ marginTop: '3%' }}>{user.name} </HelpDescription>
+                            </View>
+                        </ScrollView>
+
+                        <RegisterFooterButtons
+                            textBackButton="VOLTAR"
+                            titleBackButton="goBack"
+                            textForwardButton="PUBLICAR"
+                            titleForwardButton="next"
+                            backFunction={() => setFormStage('4')}
                             forwardFunction={() => handleCreateHelp()}
                         />
                     </SafeAreaView>

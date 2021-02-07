@@ -151,3 +151,25 @@ export const InputContainer = styled.View<ContainerProps>`
             border-color: #c53030;
         `}
 `;
+
+export const HelpTitle = styled.Text`
+    font-family: sans-serif;
+    font-size: 22px;
+    font-weight: bold;
+    line-height: 23px;
+    color: #4a89dc;
+`;
+
+export const HelpSubTitle = styled.Text`
+    font-family: sans-serif;
+    font-size: 16px;
+    font-weight: bold;
+    color: #434a54;
+`;
+
+export const HelpDescription = styled.Text`
+    font-family: sans-serif;
+    font-size: 14px;
+    color: #434a54;
+    margin-top: 3%;
+`;

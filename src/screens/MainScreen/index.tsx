@@ -35,9 +35,7 @@ const MainScreen: React.FC = () => {
                                     id,
                                 },
                             });
-
                             const newHelps = helps.filter((help) => help.id !== id);
-
                             setHelps(newHelps);
                             setLoading(false);
                         },
@@ -67,7 +65,6 @@ const MainScreen: React.FC = () => {
 
     useEffect(() => {
         getHelpsByUser();
-
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isFocused]);
 

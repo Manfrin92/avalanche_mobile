@@ -6,7 +6,7 @@ import { HelpDataToShow } from '../../utils/Interfaces';
 
 import { HelpTitle, HelpDescription, HelpBoldDescription } from './styles';
 
-const HelpItem: React.FC<HelpDataToShow> = ({ id, title, ExcludeHelp, ...rest }) => {
+const HelpItem: React.FC<HelpDataToShow> = ({ title, ExcludeHelp, ...rest }) => {
     return (
         <View {...rest} style={{ marginTop: '8%' }}>
             <View
