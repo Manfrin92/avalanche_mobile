@@ -1,3 +1,4 @@
+import { StyleSheet } from 'react-native';
 import styled, { css } from 'styled-components/native';
 
 export const Container = styled.View`
@@ -172,4 +173,104 @@ export const HelpDescription = styled.Text`
     font-size: 14px;
     color: #434a54;
     margin-top: 3%;
+`;
+
+interface TermsProps {
+    isAccepted: boolean;
+}
+
+export const Square = styled.View<TermsProps>`
+    width: 24px;
+    height: 24px;
+    border-radius: 3px;
+    border-color: #f9f9f9;
+    border-width: 1px;
+    background-color: #f9f9f9;
+    justify-content: center;
+    align-items: center;
+
+    ${(props: TermsProps) =>
+        props.isAccepted &&
+        css`
+            width: 24px;
+            height: 24px;
+            border-width: 2px;
+            border-color: #00a57c;
+        `}
+`;
+
+export const styles = StyleSheet.create({
+    menuContainer: {
+        width: '88%',
+        height: 42,
+        alignSelf: 'center',
+        marginBottom: 8,
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderWidth: 2,
+        borderColor: '#fff',
+        backgroundColor: '#acacac',
+        borderRadius: 8,
+    },
+    menuWrapper: {
+        borderRadius: 10,
+        width: 140,
+        // paddingRight: 15,
+        justifyContent: 'center',
+        alignItems: 'stretch',
+        backgroundColor: '#f9f9f9',
+        flex: 1,
+    },
+    menuCentralWrapper: {
+        borderRadius: 10,
+        width: '40%',
+        // paddingRight: 15,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#f9f9f9',
+        flex: 1,
+    },
+    menuBankWrapper: {
+        borderRadius: 10,
+        width: '100%',
+        // paddingRight: 15,
+        justifyContent: 'center',
+        alignItems: 'stretch',
+        backgroundColor: '#f9f9f9',
+        flex: 1,
+    },
+
+    menuOption: {
+        justifyContent: 'center',
+        alignItems: 'flex-start',
+        height: 50,
+    },
+});
+
+export const menuSelectedTextAvailable = {
+    triggerText: {
+        color: '#f6f6f6',
+        fontSize: 16,
+        lineHeight: 17,
+    },
+    triggerTouchable: {
+        style: {
+            flex: 1,
+        },
+    },
+    triggerWrapper: {
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: 350,
+        height: 32,
+        borderRadius: 10,
+    },
+};
+
+export const Label = styled.Text`
+    font-family: sans-serif;
+    font-size: 12px;
+    line-height: 13px;
+    color: #fff;
+    padding: 5px;
 `;

@@ -8,15 +8,16 @@ import {
     ScrollView,
     TextInput,
     Image,
+    TouchableOpacity,
 } from 'react-native';
 import * as Yup from 'yup';
 import { format } from 'date-fns-tz';
+import { Menu, MenuOptions, MenuOption, MenuTrigger } from 'react-native-popup-menu';
 
 import { useNavigation } from '@react-navigation/native';
 import { Form } from '@unform/mobile';
 import { FormHandles } from '@unform/core';
 import { MaterialCommunityIcons, Ionicons } from '@expo/vector-icons';
-import { TouchableOpacity } from 'react-native-gesture-handler';
 import DateSelector from '../../components/DateSelector';
 import RegisterFooterButtons from '../../components/RegisterFooterButtons';
 
@@ -31,6 +32,10 @@ import {
     HelpTitle,
     HelpDescription,
     HelpSubTitle,
+    Square,
+    Text,
+    styles,
+    menuSelectedTextAvailable,
 } from './styles';
 import getValidationsErrors from '../../utils/getValidationsErrors';
 import Input from '../../components/Input';
@@ -49,10 +54,14 @@ const NewHelp: React.FC = () => {
     const firstFormRef = useRef<FormHandles>(null);
     const fullNameRef = useRef<TextInput>(null);
     const emailRef = useRef<TextInput>(null);
+    const needyPhoneRef = useRef<TextInput>(null);
     const titleRef = useRef<TextInput>(null);
     const descriptionRef = useRef<TextInput>(null);
+    const helpHourRef = useRef<TextInput>(null);
     const observationRef = useRef<TextInput>(null);
     const repeatPasswordRef = useRef<TextInput>(null);
+    const [isAccepted, setIsAccepted] = useState(false);
+    const [selectedHelpType, setSelectedHelpType] = useState('');
     // SEGUNDO FORM
     const secondFormRef = useRef<FormHandles>(null);
     const addressZipCodeRef = useRef<TextInput>(null);
@@ -267,9 +276,37 @@ const NewHelp: React.FC = () => {
                                     keyboardType="email-address"
                                     returnKeyType="next"
                                     onSubmitEditing={() => {
+                                        needyPhoneRef.current?.focus();
+                                    }}
+                                />
+
+                                <Input
+                                    ref={needyPhoneRef}
+                                    labelName="Telefone"
+                                    name="needyPhone"
+                                    keyboardType="number-pad"
+                                    returnKeyType="next"
+                                    onSubmitEditing={() => {
                                         titleRef.current?.focus();
                                     }}
                                 />
+
+                                <TouchableOpacity
+                                    style={{
+                                        flexDirection: 'row',
+                                        marginLeft: '6%',
+                                        marginTop: '3%',
+                                        alignItems: 'center',
+                                    }}
+                                    onPress={() => setIsAccepted(!isAccepted)}
+                                >
+                                    <Square isAccepted={isAccepted}>
+                                        {isAccepted && (
+                                            <MaterialCommunityIcons name="check-bold" size={18} color="#00A57C" />
+                                        )}
+                                    </Square>
+                                    <Text style={{ marginLeft: '3%', fontSize: 16 }}>Exibir contato</Text>
+                                </TouchableOpacity>
 
                                 <TextTitle style={{ marginTop: '4%' }}>Informações sobre a ajuda:</TextTitle>
                                 <Input
@@ -292,9 +329,45 @@ const NewHelp: React.FC = () => {
                                     name="description"
                                     returnKeyType="next"
                                     onSubmitEditing={() => {
+                                        helpHourRef.current?.focus();
+                                    }}
+                                />
+
+                                <Input
+                                    ref={helpHourRef}
+                                    labelName="Horário da ajuda ex: 15:30"
+                                    name="helpHour"
+                                    returnKeyType="next"
+                                    keyboardType="number-pad"
+                                    maxLength={5}
+                                    onSubmitEditing={() => {
                                         observationRef.current?.focus();
                                     }}
                                 />
+
+                                <Text style={{ marginLeft: '6%' }}>Selecione o tipo da ajuda</Text>
+
+                                <Menu style={styles.menuContainer}>
+                                    <MenuTrigger
+                                        customStyles={menuSelectedTextAvailable}
+                                        text={selectedHelpType}
+                                    />
+
+                                    <MenuOptions
+                                        customStyles={{
+                                            optionsContainer: styles.menuWrapper,
+                                        }}
+                                    >
+                                        <MenuOption
+                                            style={styles.menuOption}
+                                            onSelect={() => {
+                                                console.log('ok');
+                                            }}
+                                        >
+                                            <Text>name</Text>
+                                        </MenuOption>
+                                    </MenuOptions>
+                                </Menu>
 
                                 <Input
                                     ref={observationRef}
