@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
 import {
     View,
     Alert,
@@ -11,7 +11,7 @@ import {
     TouchableOpacity,
 } from 'react-native';
 import * as Yup from 'yup';
-import { format } from 'date-fns-tz';
+import { getDate, getDay, getMonth, getYear, setDay, setMonth, setYear, format, setDate } from 'date-fns';
 import { Menu, MenuOptions, MenuOption, MenuTrigger } from 'react-native-popup-menu';
 
 import { useNavigation } from '@react-navigation/native';
@@ -22,7 +22,7 @@ import DateSelector from '../../components/DateSelector';
 import RegisterFooterButtons from '../../components/RegisterFooterButtons';
 
 import { HelpData, FirstFormHelpData, SecondFormHelpData } from '../../utils/Interfaces';
-import { testCPF, getAddressByCep } from '../../utils/AppUtil';
+import { getAddressByCep } from '../../utils/AppUtil';
 
 import {
     TextTitle,
@@ -45,10 +45,23 @@ import { ScreenNamesEnum } from '../../utils/enums';
 import HelpHeader from '../../components/HelpHeader';
 import helpImage from '../../../assets/helpImage.jpg';
 
+interface SkillType {
+    id: string;
+    name: string;
+}
+
+interface NeedyInCreation {
+    name: string;
+    email?: string;
+    phoneNumber: string;
+    showContact?: boolean;
+}
+
 const NewHelp: React.FC = () => {
     const { user } = useAuth();
     const navigation = useNavigation();
     const [help, setHelp] = useState({} as HelpData);
+    const [needyInCreation, setNeedyInCreation] = useState({} as NeedyInCreation);
     const [formStage, setFormStage] = useState<'1' | '2' | '3' | '4' | '5'>('1');
     // PRIMEIRO FORM
     const firstFormRef = useRef<FormHandles>(null);
@@ -57,11 +70,12 @@ const NewHelp: React.FC = () => {
     const needyPhoneRef = useRef<TextInput>(null);
     const titleRef = useRef<TextInput>(null);
     const descriptionRef = useRef<TextInput>(null);
-    const helpHourRef = useRef<TextInput>(null);
+    const dateHourRef = useRef<TextInput>(null);
     const observationRef = useRef<TextInput>(null);
-    const repeatPasswordRef = useRef<TextInput>(null);
-    const [isAccepted, setIsAccepted] = useState(false);
-    const [selectedHelpType, setSelectedHelpType] = useState('');
+    const [showContact, setShowContact] = useState(true);
+    const [helpedDateTypes, setHelpedDateTypes] = useState<SkillType[]>();
+    const [selectedHelpedDateType, setSelectedHelpedDateType] = useState<SkillType>();
+
     // SEGUNDO FORM
     const secondFormRef = useRef<FormHandles>(null);
     const addressZipCodeRef = useRef<TextInput>(null);
@@ -78,11 +92,20 @@ const NewHelp: React.FC = () => {
 
     const handleSetChosenDate = useCallback(
         (childChosenDate: Date) => {
+            const newDate = new Date();
+            const onlyDay = getDate(childChosenDate);
+            const onlyMonth = getMonth(childChosenDate);
+            const usingDay = setDate(newDate, onlyDay);
+            const usingMonth = setMonth(usingDay, onlyMonth);
+
+            const formatedFinalDate = `${format(usingMonth, 'yyyy-MM-dd')} ${help.dateHour}`;
+
             setChosenDate(childChosenDate);
-            help.helpDate = childChosenDate;
+            setHelp({ ...help, helpDate: formatedFinalDate });
+
             setSelectedDate(true);
         },
-        [help.helpDate],
+        [help],
     );
 
     const handleSearchAdressZipCode = useCallback(async (cep: string) => {
@@ -119,22 +142,33 @@ const NewHelp: React.FC = () => {
 
                 const schema = Yup.object().shape({
                     name: Yup.string().required('Nome do necessitado obrigatório'),
-                    email: Yup.string()
-                        .email('Digite um email válido')
-                        .required('Email do necessitado obrigatório'),
                     title: Yup.string().required('Título da ajuda obrigatório'),
                     description: Yup.string().required('Descrição obrigatória'),
+                    dateHour: Yup.string().required('Horário da ajuda obrigatória'),
                 });
 
                 await schema.validate(data, { abortEarly: false });
 
+                if (
+                    Number(data.dateHour.replace(/\D/g, '').substr(0, 2)) > 24 ||
+                    Number(data.dateHour.replace(/\D/g, '').substr(2, 2)) < 0 ||
+                    Number(data.dateHour.replace(/\D/g, '').substr(2, 2)) > 59
+                ) {
+                    return Alert.alert('O formato do horário deve estar dentro de 24 horas e 59 minutos.');
+                }
+
                 setHelp({
                     ...help,
-                    name: data.name,
-                    email: data.email,
                     title: data.title,
                     description: data.description,
                     observation: data.observation ? data.observation : null,
+                    dateHour: `${data.dateHour}:00`,
+                });
+
+                setNeedyInCreation({
+                    name: data.name,
+                    email: data.email,
+                    phoneNumber: data.phoneNumber,
                 });
 
                 setFormStage('2');
@@ -206,27 +240,11 @@ const NewHelp: React.FC = () => {
 
     const handleCreateHelp = useCallback(async () => {
         try {
-            const addressIdRaw = await api.post('address/add', {
-                addressZipCode: help.addressZipCode,
-                addressStreet: help.addressStreet,
-                addressNumber: help.addressNumber ? Number(help.addressNumber) : null,
-                addressComplement: help.addressComplement,
-                addressArea: help.addressArea,
-                addressCity: help.addressCity,
-                addressState: help.addressState,
-            });
-
-            const HelpIdRaw = await api.post('help/add', {
+            await api.post('help/add', {
                 ...help,
-                address: addressIdRaw.data,
+                helpDate: help.helpDate.substr(0, 19),
                 userManager: user.id,
-            });
-
-            await api.post('helpDate/add', {
-                ...help,
-                help: HelpIdRaw.data,
-                date: chosenDate,
-                type: 'helpDateRide',
+                ...needyInCreation,
             });
 
             Alert.alert('Ajuda cadastrada com sucesso!');
@@ -238,7 +256,38 @@ const NewHelp: React.FC = () => {
             }
             Alert.alert('Erro no cadastro');
         }
-    }, [help, navigation, user.id, chosenDate]);
+    }, [help, navigation, user.id, needyInCreation]);
+
+    useEffect(() => {
+        let mounted = true;
+
+        async function getHelpTypes(): Promise<void> {
+            await api
+                .get('type/helpedDate')
+                .then((response) => {
+                    if (mounted) {
+                        setHelpedDateTypes(response.data);
+                        setSelectedHelpedDateType(response.data[0]);
+                        setHelp({
+                            ...help,
+                            helpedDateTypeId: help.helpedDateTypeId ? help.helpedDateTypeId : response.data[0].id,
+                        });
+                    }
+                })
+                .catch((e) => {
+                    Alert.alert('Houve um erro ao buscar tipos de ajudas');
+                    // // console.log('Houve um erro ao buscar os dados!', e);
+                });
+        }
+
+        if (mounted) {
+            getHelpTypes();
+        }
+
+        return () => {
+            mounted = false;
+        };
+    }, []);
 
     return (
         <>
@@ -252,7 +301,7 @@ const NewHelp: React.FC = () => {
                             onSubmit={handleFirstForm}
                             ref={firstFormRef}
                             style={{ flex: 1, justifyContent: 'flex-end' }}
-                            initialData={help}
+                            initialData={{ ...help, ...needyInCreation }}
                         >
                             <ScrollView style={{ marginTop: '6%' }}>
                                 <TextTitle>Quem receberá a ajuda:</TextTitle>
@@ -283,7 +332,8 @@ const NewHelp: React.FC = () => {
                                 <Input
                                     ref={needyPhoneRef}
                                     labelName="Telefone"
-                                    name="needyPhone"
+                                    name="phoneNumber"
+                                    maxLength={15}
                                     keyboardType="number-pad"
                                     returnKeyType="next"
                                     onSubmitEditing={() => {
@@ -298,10 +348,13 @@ const NewHelp: React.FC = () => {
                                         marginTop: '3%',
                                         alignItems: 'center',
                                     }}
-                                    onPress={() => setIsAccepted(!isAccepted)}
+                                    onPress={() => {
+                                        setNeedyInCreation({ ...needyInCreation, showContact: !showContact });
+                                        setShowContact(!showContact);
+                                    }}
                                 >
-                                    <Square isAccepted={isAccepted}>
-                                        {isAccepted && (
+                                    <Square isAccepted={showContact}>
+                                        {showContact && (
                                             <MaterialCommunityIcons name="check-bold" size={18} color="#00A57C" />
                                         )}
                                     </Square>
@@ -329,14 +382,14 @@ const NewHelp: React.FC = () => {
                                     name="description"
                                     returnKeyType="next"
                                     onSubmitEditing={() => {
-                                        helpHourRef.current?.focus();
+                                        dateHourRef.current?.focus();
                                     }}
                                 />
 
                                 <Input
-                                    ref={helpHourRef}
+                                    ref={dateHourRef}
                                     labelName="Horário da ajuda ex: 15:30"
-                                    name="helpHour"
+                                    name="dateHour"
                                     returnKeyType="next"
                                     keyboardType="number-pad"
                                     maxLength={5}
@@ -347,27 +400,33 @@ const NewHelp: React.FC = () => {
 
                                 <Text style={{ marginLeft: '6%' }}>Selecione o tipo da ajuda</Text>
 
-                                <Menu style={styles.menuContainer}>
-                                    <MenuTrigger
-                                        customStyles={menuSelectedTextAvailable}
-                                        text={selectedHelpType}
-                                    />
+                                {selectedHelpedDateType && helpedDateTypes && (
+                                    <Menu style={styles.menuContainer}>
+                                        <MenuTrigger
+                                            customStyles={menuSelectedTextAvailable}
+                                            text={selectedHelpedDateType.name}
+                                        />
 
-                                    <MenuOptions
-                                        customStyles={{
-                                            optionsContainer: styles.menuWrapper,
-                                        }}
-                                    >
-                                        <MenuOption
-                                            style={styles.menuOption}
-                                            onSelect={() => {
-                                                console.log('ok');
+                                        <MenuOptions
+                                            customStyles={{
+                                                optionsContainer: styles.menuWrapper,
                                             }}
                                         >
-                                            <Text>name</Text>
-                                        </MenuOption>
-                                    </MenuOptions>
-                                </Menu>
+                                            {helpedDateTypes.map((helpedDateType) => (
+                                                <MenuOption
+                                                    key={helpedDateType.id}
+                                                    style={styles.menuOption}
+                                                    onSelect={() => {
+                                                        setHelp({ ...help, helpedDateTypeId: helpedDateType.id });
+                                                        setSelectedHelpedDateType(helpedDateType);
+                                                    }}
+                                                >
+                                                    <Text>{helpedDateType.name}</Text>
+                                                </MenuOption>
+                                            ))}
+                                        </MenuOptions>
+                                    </Menu>
+                                )}
 
                                 <Input
                                     ref={observationRef}
@@ -517,11 +576,7 @@ const NewHelp: React.FC = () => {
                                                 justifyContent: 'space-between',
                                             }}
                                         >
-                                            <DateText>
-                                                {format(chosenDate, 'dd/MM', {
-                                                    timeZone: 'America/Sao_Paulo',
-                                                })}
-                                            </DateText>
+                                            <DateText>{format(chosenDate, 'dd/MM')}</DateText>
                                             <DescriptionText>{help.title}</DescriptionText>
                                             <MaterialCommunityIcons
                                                 style={{ marginLeft: '6%' }}
@@ -582,7 +637,7 @@ const NewHelp: React.FC = () => {
                         <HelpHeader isNewDate formCurrentStage={formStage} formTotalStages="5" />
 
                         <ScrollView style={{ marginTop: '6%' }}>
-                            <HelpTitle style={{ marginLeft: '3%' }}>Ajuda a {help.name}</HelpTitle>
+                            <HelpTitle style={{ marginLeft: '3%' }}>Ajuda para {needyInCreation.name}</HelpTitle>
                             <Image
                                 style={{ width: 350, height: 200, alignSelf: 'center', marginTop: '3%' }}
                                 source={helpImage}
@@ -592,7 +647,7 @@ const NewHelp: React.FC = () => {
 
                                 <HelpDescription>{help.description} </HelpDescription>
 
-                                <HelpSubTitle>Local: </HelpSubTitle>
+                                <HelpSubTitle style={{ marginTop: '3%' }}>Local: </HelpSubTitle>
 
                                 <HelpDescription style={{ marginTop: '3%' }}>
                                     {help.addressStreet} {help.addressNumber}, {help.addressArea},{' '}
@@ -602,7 +657,7 @@ const NewHelp: React.FC = () => {
 
                                 <HelpSubTitle style={{ marginTop: '3%' }}>Data: </HelpSubTitle>
                                 <HelpDescription style={{ marginTop: '3%' }}>
-                                    {format(chosenDate, 'dd/MM/yyyy')} {help.title}
+                                    {format(chosenDate, 'dd/MM/yyyy')} às {help.dateHour.substr(0, 5)} horas.
                                 </HelpDescription>
 
                                 <HelpSubTitle style={{ marginTop: '3%' }}>Organizador: </HelpSubTitle>

@@ -54,6 +54,7 @@ const AuthProvider: React.FC = ({ children }) => {
 
     const signIn = useCallback(async ({ email, password }) => {
         try {
+            setLoading(true);
             const response = await api.post('/user/logIn', {
                 email,
                 password,
@@ -80,6 +81,7 @@ const AuthProvider: React.FC = ({ children }) => {
             } else {
                 Alert.alert('Falha no login, cheque suas credenciais');
             }
+            setLoading(false);
         }
     }, []);
 

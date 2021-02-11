@@ -51,10 +51,10 @@ export interface AddressFromURL {
 }
 
 export interface HelpData {
-    name: string;
-    email: string;
     title: string;
     description: string;
+    dateHour: string;
+    helpedDateTypeId: string;
     observation?: string | null;
     addressZipCode: string;
     addressStreet: string;
@@ -65,14 +65,16 @@ export interface HelpData {
     addressArea: string;
     addressCountry: string;
     helpDateId: string;
-    helpDate: Date;
+    helpDate: string;
 }
 
 export interface FirstFormHelpData {
     name: string;
     email: string;
+    phoneNumber: string;
     title: string;
     description: string;
+    dateHour: string;
     observation?: string | null;
 }
 

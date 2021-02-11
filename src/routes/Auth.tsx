@@ -18,8 +18,8 @@ const AuthRoutes: React.FC = () => (
             cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
         }}
     >
-        <Auth.Screen name="LoginRegister" component={LoginRegister} />
         <Auth.Screen name="Login" component={Login} />
+        <Auth.Screen name="LoginRegister" component={LoginRegister} />
         <Auth.Screen name="Register" component={Register} />
         <Auth.Screen name="Main" component={MainScreen} />
     </Auth.Navigator>
