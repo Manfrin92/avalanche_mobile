@@ -71,6 +71,7 @@ export interface HelpData {
 export interface FirstFormHelpData {
     name: string;
     email: string;
+    dddPhoneNumber: string;
     phoneNumber: string;
     title: string;
     description: string;

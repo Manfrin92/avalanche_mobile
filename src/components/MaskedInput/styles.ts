@@ -2,24 +2,22 @@ import styled, { css } from 'styled-components/native';
 
 interface ContainerProps {
     isErrored: boolean;
-    height?: number;
     width?: number;
-    marginBottom: number;
+    marginBottom?: number;
 }
 
 export const Container = styled.View<ContainerProps>`
     flex-direction: row;
-    height: ${(props) => (props.height ? '150px' : '55px')};
+    height: 55px;
     margin: 0 6% 1% 6%;
     background-color: #acacac;
     border-width: 2px;
     border-style: solid;
     border-color: #fff;
     border-radius: 8px;
-
-    /* border-top-width: 0; */
-    align-items: stretch;
+    align-items: center;
     justify-content: flex-start;
+    padding-left: 5px;
 
     ${(props) =>
         props.isErrored &&
@@ -35,31 +33,27 @@ export const Container = styled.View<ContainerProps>`
         props.width &&
         css`
             width: ${props.width}%;
-            margin-right: 0%;
-            margin-left: 0%;
+            margin-right: 0;
+            margin-left: 0;
+            margin-bottom: 0;
+            margin-right: 0;
+            flex-direction: column;
         `}
 
     ${(props) =>
         props.marginBottom &&
         css`
-            margin-bottom: ${props.marginBottom}px;
-        `}
-
-        ${(props) =>
-        props.width &&
-        css`
-            height: ${props.height}%;
+            margin-bottom: ${props.marginBottom}%;
         `}
 `;
 
 export const TextInput = styled.TextInput`
     flex: 1;
-    font-family: sans-serif;
     font-size: 20px;
     color: #ffffff;
-    background-color: #acacac;
     padding-left: 10px;
-    /* margin-right: 80px; */
+    background-color: transparent;
+    width: 100%;
 `;
 
 export const Label = styled.Text`

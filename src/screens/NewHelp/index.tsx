@@ -11,7 +11,7 @@ import {
     TouchableOpacity,
 } from 'react-native';
 import * as Yup from 'yup';
-import { getDate, getDay, getMonth, getYear, setDay, setMonth, setYear, format, setDate } from 'date-fns';
+import { getDate, getMonth, setMonth, format, setDate } from 'date-fns';
 import { Menu, MenuOptions, MenuOption, MenuTrigger } from 'react-native-popup-menu';
 
 import { useNavigation } from '@react-navigation/native';
@@ -44,6 +44,8 @@ import { useAuth } from '../../hooks/auth';
 import { ScreenNamesEnum } from '../../utils/enums';
 import HelpHeader from '../../components/HelpHeader';
 import helpImage from '../../../assets/helpImage.jpg';
+import MaskedInput from '../../components/MaskedInput';
+import { cepPattern, hourPattern } from '../../utils/RegexPatterns';
 
 interface SkillType {
     id: string;
@@ -53,7 +55,8 @@ interface SkillType {
 interface NeedyInCreation {
     name: string;
     email?: string;
-    phoneNumber: string;
+    dddPhoneNumber?: string;
+    phoneNumber?: string;
     showContact?: boolean;
 }
 
@@ -67,6 +70,7 @@ const NewHelp: React.FC = () => {
     const firstFormRef = useRef<FormHandles>(null);
     const fullNameRef = useRef<TextInput>(null);
     const emailRef = useRef<TextInput>(null);
+    const dddPhoneRef = useRef<TextInput>(null);
     const needyPhoneRef = useRef<TextInput>(null);
     const titleRef = useRef<TextInput>(null);
     const descriptionRef = useRef<TextInput>(null);
@@ -162,12 +166,13 @@ const NewHelp: React.FC = () => {
                     title: data.title,
                     description: data.description,
                     observation: data.observation ? data.observation : null,
-                    dateHour: `${data.dateHour}:00`,
+                    dateHour: `${data.dateHour}`,
                 });
 
                 setNeedyInCreation({
                     name: data.name,
                     email: data.email,
+                    dddPhoneNumber: data.dddPhoneNumber,
                     phoneNumber: data.phoneNumber,
                 });
 
@@ -242,9 +247,12 @@ const NewHelp: React.FC = () => {
         try {
             await api.post('help/add', {
                 ...help,
-                helpDate: help.helpDate.substr(0, 19),
-                userManager: user.id,
                 ...needyInCreation,
+                helpDate: help.helpDate.substr(0, 19),
+                addressZipCode: help.addressZipCode.replace(/\D/g, ''),
+                userManager: user.id,
+                dateHour: `${help.dateHour}:00`,
+                phoneNumber: needyInCreation.phoneNumber ? needyInCreation.phoneNumber.replace(/\D/g, '') : null,
             });
 
             Alert.alert('Ajuda cadastrada com sucesso!');
@@ -289,6 +297,39 @@ const NewHelp: React.FC = () => {
         };
     }, []);
 
+    useEffect(() => {
+        if (formStage === '1') {
+            if (needyInCreation && needyInCreation.phoneNumber) {
+                if (firstFormRef && firstFormRef.current) {
+                    firstFormRef.current.setData({
+                        ...needyInCreation,
+                        ...help,
+                        phoneNumber: needyInCreation.phoneNumber,
+                    });
+                }
+            }
+            if (help && help.dateHour) {
+                if (firstFormRef && firstFormRef.current) {
+                    firstFormRef.current.setData({
+                        ...needyInCreation,
+                        ...help,
+                        dateHour: help.dateHour.replace(hourPattern.Regex, hourPattern.Mask),
+                    });
+                }
+            }
+        } else if (formStage === '2') {
+            if (help && help.addressZipCode) {
+                if (secondFormRef && secondFormRef.current) {
+                    secondFormRef.current.setData({
+                        ...needyInCreation,
+                        ...help,
+                        addressZipCode: help.addressZipCode.replace(cepPattern.Regex, cepPattern.Mask),
+                    });
+                }
+            }
+        }
+    }, [formStage]);
+
     return (
         <>
             {/* FIRST PART */}
@@ -325,16 +366,29 @@ const NewHelp: React.FC = () => {
                                     keyboardType="email-address"
                                     returnKeyType="next"
                                     onSubmitEditing={() => {
-                                        needyPhoneRef.current?.focus();
+                                        dddPhoneRef.current?.focus();
                                     }}
                                 />
 
                                 <Input
-                                    ref={needyPhoneRef}
-                                    labelName="Telefone"
-                                    name="phoneNumber"
-                                    maxLength={15}
+                                    ref={dddPhoneRef}
+                                    labelName="DDD"
+                                    name="dddPhoneNumber"
+                                    maxLength={2}
                                     keyboardType="number-pad"
+                                    returnKeyType="next"
+                                    onSubmitEditing={() => {
+                                        needyPhoneRef.current?.focus();
+                                    }}
+                                />
+
+                                <MaskedInput
+                                    maskName="phone"
+                                    ref={needyPhoneRef}
+                                    maxLength={10}
+                                    keyboardType="number-pad"
+                                    name="phoneNumber"
+                                    labelName="Telefone"
                                     returnKeyType="next"
                                     onSubmitEditing={() => {
                                         titleRef.current?.focus();
@@ -386,13 +440,14 @@ const NewHelp: React.FC = () => {
                                     }}
                                 />
 
-                                <Input
+                                <MaskedInput
+                                    maskName="hourPattern"
                                     ref={dateHourRef}
-                                    labelName="Horário da ajuda ex: 15:30"
-                                    name="dateHour"
-                                    returnKeyType="next"
-                                    keyboardType="number-pad"
                                     maxLength={5}
+                                    keyboardType="number-pad"
+                                    name="dateHour"
+                                    labelName="Horário da ajuda ex: 15:30"
+                                    returnKeyType="next"
                                     onSubmitEditing={() => {
                                         observationRef.current?.focus();
                                     }}
@@ -466,13 +521,14 @@ const NewHelp: React.FC = () => {
                         >
                             <ScrollView style={{ marginTop: '6%' }}>
                                 <TextTitle>Local das ajuda:</TextTitle>
-                                <Input
+
+                                <MaskedInput
+                                    maskName="cep"
                                     ref={addressZipCodeRef}
-                                    maxLength={8}
-                                    autoCapitalize="words"
-                                    labelName="CEP"
-                                    name="addressZipCode"
+                                    maxLength={10}
                                     keyboardType="number-pad"
+                                    name="addressZipCode"
+                                    labelName="CEP"
                                     returnKeyType="next"
                                     onEndEditing={(e) => {
                                         handleSearchAdressZipCode(e.nativeEvent.text.replace(/\D/g, ''));
@@ -482,6 +538,7 @@ const NewHelp: React.FC = () => {
                                         handleSearchAdressZipCode(e.nativeEvent.text.replace(/\D/g, ''))
                                     }
                                 />
+
                                 <Input
                                     ref={addressStreetRef}
                                     labelName="Rua"
