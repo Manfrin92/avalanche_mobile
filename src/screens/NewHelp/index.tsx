@@ -94,6 +94,45 @@ const NewHelp: React.FC = () => {
     const [chosenDate, setChosenDate] = useState<Date>(today);
     const [selectedDate, setSelectedDate] = useState(false);
 
+    // const getCentral = useCallback(async (): Promise<void> => {
+    //     await api
+    //         .get<CentralTableData>(`/central/${centralId}`)
+    //         .then((response) => {
+    //             if (response.data.addressState) {
+    //                 response.data.addressState = {
+    //                     id: response.data.addressState,
+    //                     label: response.data.addressState,
+    //                 };
+    //             }
+    //             setCentralData(response.data);
+    //             setLoading(false);
+    //             setTimeout(() => {
+    //                 formRef.current?.setFieldValue(
+    //                     'allowRegistration',
+    //                     response.data.allowRegistration ? 'true' : 'false',
+    //                 );
+    //             }, 300);
+    //         })
+    //         .catch(() => {
+    //             toast.error('Houve um erro ao buscar dados!');
+    //         });
+    // }, [centralId]);
+
+    // useEffect(() => {
+    //     if (!edit) {
+    //         setLoading(false);
+    //         setTimeout(() => {
+    //             const nameInput = formRef.current?.getFieldRef('name');
+    //             if (nameInput) {
+    //                 nameInput.focus();
+    //             }
+    //             formRef.current?.setFieldValue('allowRegistration', 'false');
+    //         }, 500);
+    //     } else {
+    //         getCentral();
+    //     }
+    // }, [edit, getCentral]);
+
     const handleSetChosenDate = useCallback(
         (childChosenDate: Date) => {
             const newDate = new Date();
