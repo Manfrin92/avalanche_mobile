@@ -85,6 +85,12 @@ const MainScreen: React.FC = () => {
                                 key={help.id}
                                 id={help.id}
                                 title={help.title}
+                                navigate={() =>
+                                    navigation.navigate(ScreenNamesEnum.NewHelp, {
+                                        helpId: help.id,
+                                        editing: true,
+                                    })
+                                }
                             />
                         );
                     })}

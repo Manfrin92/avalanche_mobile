@@ -2,11 +2,29 @@ import React from 'react';
 import { View, TouchableOpacity, Alert } from 'react-native';
 import { MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons';
 
-import { HelpDataToShow } from '../../utils/Interfaces';
-
 import { HelpTitle, HelpDescription, HelpBoldDescription } from './styles';
 
-const HelpItem: React.FC<HelpDataToShow> = ({ title, ExcludeHelp, ...rest }) => {
+interface HelpItemProps {
+    id: string;
+    email?: string;
+    title?: string;
+    description?: string | null;
+    observation?: string | null;
+    addressZipCode?: string;
+    addressStreet?: string;
+    addressNumber?: string;
+    addressCity?: string;
+    addressState?: string;
+    addressComplement?: string;
+    addressArea?: string;
+    addressCountry?: string;
+    helpDateId?: string;
+    helpDate?: Date;
+    ExcludeHelp(): Promise<void>;
+    navigate(): void;
+}
+
+const HelpItem: React.FC<HelpItemProps> = ({ title, ExcludeHelp, navigate, ...rest }) => {
     return (
         <View {...rest} style={{ marginTop: '8%' }}>
             <View
@@ -44,7 +62,7 @@ const HelpItem: React.FC<HelpDataToShow> = ({ title, ExcludeHelp, ...rest }) => 
                         </HelpDescription>
                     </View>
                 </TouchableOpacity>
-                <TouchableOpacity style={{ marginRight: '4%' }}>
+                <TouchableOpacity onPress={() => navigate()} style={{ marginRight: '4%' }}>
                     <MaterialCommunityIcons name="pencil" size={40} color="#F6BB42" />
                 </TouchableOpacity>
             </View>

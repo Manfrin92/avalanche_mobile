@@ -60,7 +60,16 @@ interface NeedyInCreation {
     showContact?: boolean;
 }
 
-const NewHelp: React.FC = () => {
+export interface NewHelpProps {
+    route: {
+        params: {
+            helpId?: string;
+            editing?: boolean;
+        };
+    };
+}
+
+const NewHelp: React.FC<NewHelpProps> = ({ route }) => {
     const { user } = useAuth();
     const navigation = useNavigation();
     const [help, setHelp] = useState({} as HelpData);
@@ -327,7 +336,7 @@ const NewHelp: React.FC = () => {
                 });
         }
 
-        if (mounted) {
+        if (mounted && route && route.params && route.params.editing) {
             getHelpTypes();
         }
 
@@ -337,37 +346,51 @@ const NewHelp: React.FC = () => {
     }, []);
 
     useEffect(() => {
-        if (formStage === '1') {
-            if (needyInCreation && needyInCreation.phoneNumber) {
-                if (firstFormRef && firstFormRef.current) {
-                    firstFormRef.current.setData({
-                        ...needyInCreation,
-                        ...help,
-                        phoneNumber: needyInCreation.phoneNumber,
-                    });
+        if (route && route.params && !route.params.editing) {
+            if (formStage === '1') {
+                if (needyInCreation && needyInCreation.phoneNumber) {
+                    if (firstFormRef && firstFormRef.current) {
+                        firstFormRef.current.setData({
+                            ...needyInCreation,
+                            ...help,
+                            phoneNumber: needyInCreation.phoneNumber,
+                        });
+                    }
+                }
+                if (help && help.dateHour) {
+                    if (firstFormRef && firstFormRef.current) {
+                        firstFormRef.current.setData({
+                            ...needyInCreation,
+                            ...help,
+                            dateHour: help.dateHour.replace(hourPattern.Regex, hourPattern.Mask),
+                        });
+                    }
+                }
+            } else if (formStage === '2') {
+                if (help && help.addressZipCode) {
+                    if (secondFormRef && secondFormRef.current) {
+                        secondFormRef.current.setData({
+                            ...needyInCreation,
+                            ...help,
+                            addressZipCode: help.addressZipCode.replace(cepPattern.Regex, cepPattern.Mask),
+                        });
+                    }
                 }
             }
-            if (help && help.dateHour) {
-                if (firstFormRef && firstFormRef.current) {
-                    firstFormRef.current.setData({
-                        ...needyInCreation,
-                        ...help,
-                        dateHour: help.dateHour.replace(hourPattern.Regex, hourPattern.Mask),
+        } else if (route && route.params && route.params.helpId) {
+            try {
+                api.get(`/help/getHelpRelatedInfo/${route.params.helpId}`)
+                    .then((response) => {
+                        console.log('Resposta: ', response.data);
+                    })
+                    .catch((e) => {
+                        console.log(e);
                     });
-                }
-            }
-        } else if (formStage === '2') {
-            if (help && help.addressZipCode) {
-                if (secondFormRef && secondFormRef.current) {
-                    secondFormRef.current.setData({
-                        ...needyInCreation,
-                        ...help,
-                        addressZipCode: help.addressZipCode.replace(cepPattern.Regex, cepPattern.Mask),
-                    });
-                }
+            } catch (e) {
+                console.log(e);
             }
         }
-    }, [formStage]);
+    }, [formStage, route]);
 
     return (
         <>
