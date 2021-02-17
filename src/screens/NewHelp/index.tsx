@@ -99,8 +99,7 @@ const NewHelp: React.FC<NewHelpProps> = ({ route }) => {
     const addressCityRef = useRef<TextInput>(null);
     const addressStateRef = useRef<TextInput>(null);
     // TERCEIRO FORM
-    const today = new Date(Date.now());
-    const [chosenDate, setChosenDate] = useState<Date>(today);
+    const [chosenDate, setChosenDate] = useState<Date>();
     const [selectedDate, setSelectedDate] = useState(false);
 
     // const getCentral = useCallback(async (): Promise<void> => {
@@ -345,8 +344,87 @@ const NewHelp: React.FC<NewHelpProps> = ({ route }) => {
         };
     }, []);
 
+    const getHelpRelatedInfo = useCallback(
+        (helpId: string) => {
+            try {
+                api.get(`/help/getHelpRelatedInfo/${helpId}`)
+                    .then((response) => {
+                        setHelp({
+                            ...help,
+                            title: response.data.title,
+                            description: response.data.description,
+                            observation: response.data.observation ? response.data.observation : null,
+                            dateHour: `${response.data.dateHour}`,
+                            addressArea: response.data.addressArea,
+                            addressCity: response.data.addressCity,
+                            addressComplement: response.data.addressComplement
+                                ? response.data.addressComplement
+                                : '',
+                            addressState: response.data.addressState,
+                            addressStreet: response.data.addressStreet,
+                            addressNumber: String(response.data.addressNumber),
+                            addressZipCode: response.data.addressZipCode,
+                        });
+
+                        setNeedyInCreation({
+                            ...needyInCreation,
+                            name: response.data.name,
+                            email: response.data.email,
+                            dddPhoneNumber: response.data.dddPhoneNumber,
+                            phoneNumber: response.data.phoneNumber,
+                        });
+
+                        setChosenDate(new Date(response.data.date));
+
+                        if (firstFormRef && firstFormRef.current) {
+                            firstFormRef.current.setData({
+                                title: response.data.title,
+                                description: response.data.description,
+                                observation: response.data.observation ? response.data.observation : null,
+                                addressArea: response.data.addressArea,
+                                addressCity: response.data.addressCity,
+                                addressComplement: response.data.addressComplement
+                                    ? response.data.addressComplement
+                                    : '',
+                                addressNumber: response.data.addressNumber,
+                                addressState: response.data.addressState,
+                                addressZipCode: response.data.addressZipCode,
+                                name: response.data.name,
+                                email: response.data.email,
+                                dddPhoneNumber: response.data.dddPhoneNumber,
+                                phoneNumber: response.data.phoneNumber,
+                                dateHour: `${response.data.dateHour}`,
+                            });
+                        }
+
+                        if (secondFormRef && secondFormRef.current) {
+                            secondFormRef.current.setData({
+                                addressArea: response.data.addressArea,
+                                addressCity: response.data.addressCity,
+                                addressComplement: response.data.addressComplement,
+                                addressState: response.data.addressState,
+                                addressStreet: response.data.addressStreet,
+                                addressNumber: String(response.data.addressNumber),
+                                addressZipCode: response.data.addressZipCode.replace(
+                                    cepPattern.Regex,
+                                    cepPattern.Mask,
+                                ),
+                            });
+                        }
+                    })
+                    .catch((e) => {
+                        console.log(e);
+                    });
+            } catch (e) {
+                console.log(e);
+            }
+        },
+        [help, needyInCreation],
+    );
+
     useEffect(() => {
         if (route && route.params && !route.params.editing) {
+            setChosenDate(new Date(Date.now()));
             if (formStage === '1') {
                 if (needyInCreation && needyInCreation.phoneNumber) {
                     if (firstFormRef && firstFormRef.current) {
@@ -377,17 +455,47 @@ const NewHelp: React.FC<NewHelpProps> = ({ route }) => {
                     }
                 }
             }
-        } else if (route && route.params && route.params.helpId) {
-            try {
-                api.get(`/help/getHelpRelatedInfo/${route.params.helpId}`)
-                    .then((response) => {
-                        console.log('Resposta: ', response.data);
-                    })
-                    .catch((e) => {
-                        console.log(e);
-                    });
-            } catch (e) {
-                console.log(e);
+        }
+    }, [formStage, route]);
+
+    useEffect(() => {
+        if (route && route.params && route.params.helpId && route.params.editing) {
+            getHelpRelatedInfo(route.params.helpId);
+        }
+    }, []);
+
+    useEffect(() => {
+        if (route && route.params && route.params.editing && help.addressZipCode) {
+            if (formStage === '1') {
+                if (needyInCreation && needyInCreation.phoneNumber) {
+                    if (firstFormRef && firstFormRef.current) {
+                        firstFormRef.current.setData({
+                            ...needyInCreation,
+                            ...help,
+                            phoneNumber: needyInCreation.phoneNumber,
+                        });
+                    }
+                }
+                if (help && help.dateHour) {
+                    console.log('helpdate ', help.dateHour);
+                    if (firstFormRef && firstFormRef.current) {
+                        firstFormRef.current.setData({
+                            ...needyInCreation,
+                            ...help,
+                            dateHour: help.dateHour,
+                        });
+                    }
+                }
+            } else if (formStage === '2') {
+                if (help && help.addressZipCode) {
+                    if (secondFormRef && secondFormRef.current) {
+                        secondFormRef.current.setData({
+                            ...needyInCreation,
+                            ...help,
+                            addressZipCode: help.addressZipCode.replace(cepPattern.Regex, cepPattern.Mask),
+                        });
+                    }
+                }
             }
         }
     }, [formStage, route]);
@@ -686,7 +794,7 @@ const NewHelp: React.FC<NewHelpProps> = ({ route }) => {
                         <ScrollView style={{ marginTop: '6%', marginRight: '6%', marginLeft: '6%' }}>
                             <TextTitle style={{ marginLeft: '0%' }}>Datas:</TextTitle>
 
-                            {selectedDate && (
+                            {selectedDate && chosenDate && (
                                 <View>
                                     <TouchableOpacity>
                                         <DateContainer
@@ -729,7 +837,7 @@ const NewHelp: React.FC<NewHelpProps> = ({ route }) => {
 
                         <ScrollView style={{ marginTop: '6%' }}>
                             <View>
-                                <DateSelector setChosenDate={handleSetChosenDate} />
+                                <DateSelector setChosenDate={handleSetChosenDate} initialDate={chosenDate} />
                             </View>
                         </ScrollView>
 
@@ -776,7 +884,8 @@ const NewHelp: React.FC<NewHelpProps> = ({ route }) => {
 
                                 <HelpSubTitle style={{ marginTop: '3%' }}>Data: </HelpSubTitle>
                                 <HelpDescription style={{ marginTop: '3%' }}>
-                                    {format(chosenDate, 'dd/MM/yyyy')} às {help.dateHour.substr(0, 5)} horas.
+                                    {chosenDate && format(chosenDate, 'dd/MM/yyyy')} às{' '}
+                                    {help.dateHour.substr(0, 5)} horas.
                                 </HelpDescription>
 
                                 <HelpSubTitle style={{ marginTop: '3%' }}>Organizador: </HelpSubTitle>

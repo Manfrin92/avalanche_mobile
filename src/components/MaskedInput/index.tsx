@@ -16,7 +16,7 @@ import { Container, TextInput, Label, LabelContainer } from './styles';
 interface InputProps extends TextInputProps {
     name: string;
     iconName?: string;
-    maskName?: 'phone' | 'cpf' | 'cep';
+    maskName?: 'phone' | 'cpf' | 'cep' | 'hourPattern';
     width?: number;
     cepIcon?: boolean;
     getCep?: (e: any) => Promise<void>;

@@ -1,22 +1,20 @@
-import React, { useContext, useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 
-import { Alert, TouchableOpacity, View, Platform } from 'react-native';
+import { TouchableOpacity, View, Platform } from 'react-native';
 import { fromUnixTime } from 'date-fns';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { format } from 'date-fns-tz';
 import { Container, Text, SelectorContainer, ActionText } from './styles';
-import { formatFirstDateToFilter } from '../../utils/AppUtil';
 
 interface DateSelectorData {
     setChosenDate(date: Date): void;
+    initialDate?: Date;
 }
 
-const DateSelector: React.FC<DateSelectorData> = ({ setChosenDate }) => {
+const DateSelector: React.FC<DateSelectorData> = ({ setChosenDate, initialDate }) => {
     const today = new Date(Date.now());
     const [showFirstDate, setFirstDate] = useState(false);
-    const [selectedDate, setSelectedDate] = useState(today);
-
-    const todayFormatedToFilter = formatFirstDateToFilter(today);
+    const [selectedDate, setSelectedDate] = useState(initialDate || today);
 
     const handleSetDateInThePicker = useCallback((event, date) => {
         if (event && event.nativeEvent && event.nativeEvent.timestamp) {
@@ -31,7 +29,7 @@ const DateSelector: React.FC<DateSelectorData> = ({ setChosenDate }) => {
     }, []);
 
     useEffect(() => {
-        setChosenDate(today);
+        setChosenDate(initialDate || today);
     }, []);
 
     return (
