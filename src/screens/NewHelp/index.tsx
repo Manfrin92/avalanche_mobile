@@ -46,6 +46,7 @@ import HelpHeader from '../../components/HelpHeader';
 import helpImage from '../../../assets/helpImage.jpg';
 import MaskedInput from '../../components/MaskedInput';
 import { cepPattern, hourPattern } from '../../utils/RegexPatterns';
+import Loading from '../Loading';
 
 interface SkillType {
     id: string;
@@ -496,7 +497,7 @@ const NewHelp: React.FC<NewHelpProps> = ({ route }) => {
     }, [formStage, route]);
 
     if (loading) {
-        return <View />;
+        return <Loading />;
     }
 
     return (
