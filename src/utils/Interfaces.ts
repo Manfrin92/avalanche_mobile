@@ -66,6 +66,8 @@ export interface HelpData {
     addressCountry: string;
     helpDateId: string;
     helpDate: string;
+    helpId: string;
+    addressId: string;
 }
 
 export interface FirstFormHelpData {

@@ -58,6 +58,7 @@ interface NeedyInCreation {
     dddPhoneNumber?: string;
     phoneNumber?: string;
     showContact?: boolean;
+    needyId?: string;
 }
 
 export interface NewHelpProps {
@@ -75,6 +76,7 @@ const NewHelp: React.FC<NewHelpProps> = ({ route }) => {
     const [help, setHelp] = useState({} as HelpData);
     const [needyInCreation, setNeedyInCreation] = useState({} as NeedyInCreation);
     const [formStage, setFormStage] = useState<'1' | '2' | '3' | '4' | '5'>('1');
+    const [loading, setLoading] = useState(false);
     // PRIMEIRO FORM
     const firstFormRef = useRef<FormHandles>(null);
     const fullNameRef = useRef<TextInput>(null);
@@ -101,45 +103,6 @@ const NewHelp: React.FC<NewHelpProps> = ({ route }) => {
     // TERCEIRO FORM
     const [chosenDate, setChosenDate] = useState<Date>();
     const [selectedDate, setSelectedDate] = useState(false);
-
-    // const getCentral = useCallback(async (): Promise<void> => {
-    //     await api
-    //         .get<CentralTableData>(`/central/${centralId}`)
-    //         .then((response) => {
-    //             if (response.data.addressState) {
-    //                 response.data.addressState = {
-    //                     id: response.data.addressState,
-    //                     label: response.data.addressState,
-    //                 };
-    //             }
-    //             setCentralData(response.data);
-    //             setLoading(false);
-    //             setTimeout(() => {
-    //                 formRef.current?.setFieldValue(
-    //                     'allowRegistration',
-    //                     response.data.allowRegistration ? 'true' : 'false',
-    //                 );
-    //             }, 300);
-    //         })
-    //         .catch(() => {
-    //             toast.error('Houve um erro ao buscar dados!');
-    //         });
-    // }, [centralId]);
-
-    // useEffect(() => {
-    //     if (!edit) {
-    //         setLoading(false);
-    //         setTimeout(() => {
-    //             const nameInput = formRef.current?.getFieldRef('name');
-    //             if (nameInput) {
-    //                 nameInput.focus();
-    //             }
-    //             formRef.current?.setFieldValue('allowRegistration', 'false');
-    //         }, 500);
-    //     } else {
-    //         getCentral();
-    //     }
-    // }, [edit, getCentral]);
 
     const handleSetChosenDate = useCallback(
         (childChosenDate: Date) => {
@@ -300,6 +263,7 @@ const NewHelp: React.FC<NewHelpProps> = ({ route }) => {
                 userManager: user.id,
                 dateHour: `${help.dateHour}:00`,
                 phoneNumber: needyInCreation.phoneNumber ? needyInCreation.phoneNumber.replace(/\D/g, '') : null,
+                helpedDateTypeId: help.helpedDateTypeId ? help.helpedDateTypeId : selectedHelpedDateType,
             });
 
             Alert.alert('Ajuda cadastrada com sucesso!');
@@ -311,7 +275,31 @@ const NewHelp: React.FC<NewHelpProps> = ({ route }) => {
             }
             Alert.alert('Erro no cadastro');
         }
-    }, [help, navigation, user.id, needyInCreation]);
+    }, [help, navigation, user.id, needyInCreation, selectedHelpedDateType]);
+
+    const handleUpdateHelp = useCallback(async () => {
+        try {
+            await api.put('help', {
+                ...help,
+                ...needyInCreation,
+                helpDate: help.helpDate.substr(0, 19),
+                addressZipCode: help.addressZipCode.replace(/\D/g, ''),
+                userManager: user.id,
+                dateHour: `${help.dateHour}:00`,
+                phoneNumber: needyInCreation.phoneNumber ? needyInCreation.phoneNumber.replace(/\D/g, '') : null,
+                helpedDateTypeId: help.helpedDateTypeId ? help.helpedDateTypeId : selectedHelpedDateType,
+            });
+
+            Alert.alert('Ajuda atualizada com sucesso!');
+            navigation.navigate(ScreenNamesEnum.Main);
+        } catch (e) {
+            console.log(e.response.data);
+            if (e && e.response && e.response.data) {
+                Alert.alert(e.response.data);
+            }
+            Alert.alert('Erro no cadastro');
+        }
+    }, [help, navigation, user.id, needyInCreation, selectedHelpedDateType]);
 
     useEffect(() => {
         let mounted = true;
@@ -335,7 +323,7 @@ const NewHelp: React.FC<NewHelpProps> = ({ route }) => {
                 });
         }
 
-        if (mounted && route && route.params && route.params.editing) {
+        if (mounted) {
             getHelpTypes();
         }
 
@@ -351,6 +339,9 @@ const NewHelp: React.FC<NewHelpProps> = ({ route }) => {
                     .then((response) => {
                         setHelp({
                             ...help,
+                            helpId: response.data.helpId,
+                            helpDateId: response.data.helpDateId,
+                            addressId: response.data.addressId,
                             title: response.data.title,
                             description: response.data.description,
                             observation: response.data.observation ? response.data.observation : null,
@@ -368,10 +359,12 @@ const NewHelp: React.FC<NewHelpProps> = ({ route }) => {
 
                         setNeedyInCreation({
                             ...needyInCreation,
+                            needyId: response.data.needyId,
                             name: response.data.name,
                             email: response.data.email,
                             dddPhoneNumber: response.data.dddPhoneNumber,
                             phoneNumber: response.data.phoneNumber,
+                            showContact: response.data.showContact,
                         });
 
                         setChosenDate(new Date(response.data.date));
@@ -411,6 +404,8 @@ const NewHelp: React.FC<NewHelpProps> = ({ route }) => {
                                 ),
                             });
                         }
+
+                        setLoading(false);
                     })
                     .catch((e) => {
                         console.log(e);
@@ -460,6 +455,7 @@ const NewHelp: React.FC<NewHelpProps> = ({ route }) => {
 
     useEffect(() => {
         if (route && route.params && route.params.helpId && route.params.editing) {
+            setLoading(true);
             getHelpRelatedInfo(route.params.helpId);
         }
     }, []);
@@ -477,7 +473,6 @@ const NewHelp: React.FC<NewHelpProps> = ({ route }) => {
                     }
                 }
                 if (help && help.dateHour) {
-                    console.log('helpdate ', help.dateHour);
                     if (firstFormRef && firstFormRef.current) {
                         firstFormRef.current.setData({
                             ...needyInCreation,
@@ -499,6 +494,10 @@ const NewHelp: React.FC<NewHelpProps> = ({ route }) => {
             }
         }
     }, [formStage, route]);
+
+    if (loading) {
+        return <View />;
+    }
 
     return (
         <>
@@ -625,7 +624,7 @@ const NewHelp: React.FC<NewHelpProps> = ({ route }) => {
 
                                 <Text style={{ marginLeft: '6%' }}>Selecione o tipo da ajuda</Text>
 
-                                {selectedHelpedDateType && helpedDateTypes && (
+                                {helpedDateTypes && selectedHelpedDateType && (
                                     <Menu style={styles.menuContainer}>
                                         <MenuTrigger
                                             customStyles={menuSelectedTextAvailable}
@@ -880,7 +879,9 @@ const NewHelp: React.FC<NewHelpProps> = ({ route }) => {
                                     {help.addressStreet} {help.addressNumber}, {help.addressArea},{' '}
                                     {help.addressCity} {help.addressState}{' '}
                                 </HelpDescription>
-                                <HelpDescription>CEP: {help.addressZipCode} </HelpDescription>
+                                <HelpDescription>
+                                    CEP: {help.addressZipCode.replace(cepPattern.Regex, cepPattern.Mask)}{' '}
+                                </HelpDescription>
 
                                 <HelpSubTitle style={{ marginTop: '3%' }}>Data: </HelpSubTitle>
                                 <HelpDescription style={{ marginTop: '3%' }}>
@@ -899,7 +900,11 @@ const NewHelp: React.FC<NewHelpProps> = ({ route }) => {
                             textForwardButton="PUBLICAR"
                             titleForwardButton="next"
                             backFunction={() => setFormStage('4')}
-                            forwardFunction={() => handleCreateHelp()}
+                            forwardFunction={() =>
+                                route && route.params && route.params.editing && route.params.editing
+                                    ? handleUpdateHelp()
+                                    : handleCreateHelp()
+                            }
                         />
                     </SafeAreaView>
                 </KeyboardAvoidingView>
