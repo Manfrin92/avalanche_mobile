@@ -197,7 +197,7 @@ const Register: React.FC = () => {
 
     const handleCreateUser = useCallback(async () => {
         try {
-            const addressIdRaw = await api.post('address/add', {
+            const addressIdRaw = await api.post('address', {
                 addressZipCode: user.addressZipCode,
                 addressStreet: user.addressStreet,
                 addressNumber: user.addressNumber ? Number(user.addressNumber) : null,
@@ -207,7 +207,7 @@ const Register: React.FC = () => {
                 addressState: user.addressState,
             });
 
-            await api.post('user/add', {
+            await api.post('user', {
                 name: user.name,
                 email: user.email,
                 cpf: user.cpf,

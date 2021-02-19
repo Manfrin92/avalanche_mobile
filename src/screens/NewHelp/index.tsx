@@ -76,7 +76,8 @@ const NewHelp: React.FC<NewHelpProps> = ({ route }) => {
     const navigation = useNavigation();
     const [help, setHelp] = useState({} as HelpData);
     const [needyInCreation, setNeedyInCreation] = useState({} as NeedyInCreation);
-    const [formStage, setFormStage] = useState<'1' | '2' | '3' | '4' | '5'>('1');
+    const [formStage, setFormStage] = useState<'0' | '1' | '2' | '3' | '4' | '5'>('0');
+    const [needyStage, setNeedyStage] = useState<'1' | '2'>('1');
     const [loading, setLoading] = useState(false);
     // PRIMEIRO FORM
     const firstFormRef = useRef<FormHandles>(null);
@@ -256,7 +257,7 @@ const NewHelp: React.FC<NewHelpProps> = ({ route }) => {
 
     const handleCreateHelp = useCallback(async () => {
         try {
-            await api.post('help/add', {
+            await api.post('help', {
                 ...help,
                 ...needyInCreation,
                 helpDate: help.helpDate.substr(0, 19),
@@ -894,6 +895,30 @@ const NewHelp: React.FC<NewHelpProps> = ({ route }) => {
                                 <HelpDescription style={{ marginTop: '3%' }}>{user.name} </HelpDescription>
                             </View>
                         </ScrollView>
+
+                        <RegisterFooterButtons
+                            textBackButton="VOLTAR"
+                            titleBackButton="goBack"
+                            textForwardButton="PUBLICAR"
+                            titleForwardButton="next"
+                            backFunction={() => setFormStage('4')}
+                            forwardFunction={() =>
+                                route && route.params && route.params.editing && route.params.editing
+                                    ? handleUpdateHelp()
+                                    : handleCreateHelp()
+                            }
+                        />
+                    </SafeAreaView>
+                </KeyboardAvoidingView>
+            )}
+
+            {/* FIND NEEDY */}
+            {formStage === '0' && needyStage === '1' && (
+                <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+                    <SafeAreaView style={{ flex: 1 }}>
+                        <HelpHeader isFindNecessity isNewDate={false} />
+
+                        <ScrollView style={{ marginTop: '6%' }} />
 
                         <RegisterFooterButtons
                             textBackButton="VOLTAR"

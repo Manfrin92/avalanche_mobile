@@ -52,9 +52,7 @@ const MainScreen: React.FC = () => {
     const getHelpsByUser = useCallback(async () => {
         try {
             if (user && user.id) {
-                const helpsRaw = await api.post('/help/findHelps', {
-                    userManagerId: user.id,
-                });
+                const helpsRaw = await api.get(`/help/${user.id}`);
                 setHelps([...helpsRaw.data]);
                 setLoading(false);
             }

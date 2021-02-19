@@ -181,7 +181,7 @@ const UpdateRegister: React.FC = () => {
 
                 await schema.validate(data, { abortEarly: false });
 
-                const addressIdRaw = await api.post('address/add', {
+                const addressIdRaw = await api.post('address', {
                     addressZipCode: data.addressZipCode,
                     addressStreet: data.addressStreet,
                     addressNumber: data.addressNumber ? Number(data.addressNumber) : null,
@@ -260,9 +260,7 @@ const UpdateRegister: React.FC = () => {
         let mounted = true;
         async function getAddress(): Promise<void> {
             try {
-                const receivedRawAddress = await api.post('/address/getAddressById', {
-                    id: user.address,
-                });
+                const receivedRawAddress = await api.get(`/address/${user.address}`);
                 if (receivedRawAddress && receivedRawAddress.data) {
                     if (mounted) {
                         setUserAddress({

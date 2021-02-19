@@ -5,30 +5,46 @@ import Logo from '../../../assets/logo.png';
 import { HeaderNavigatorContainer, StyledImage, NavigationText, BoldText, StageText } from './styles';
 
 interface HelpHeaderProps {
-    formCurrentStage: string;
-    formTotalStages: string;
+    formCurrentStage?: string;
+    formTotalStages?: string;
     isNewDate?: boolean;
+    isFindNecessity?: boolean;
 }
 
-const HelpHeader: React.FC<HelpHeaderProps> = ({ formCurrentStage, formTotalStages, isNewDate }) => {
+const HelpHeader: React.FC<HelpHeaderProps> = ({
+    formCurrentStage,
+    formTotalStages,
+    isNewDate,
+    isFindNecessity,
+}) => {
     return (
         <HeaderNavigatorContainer>
             <View style={{ flexDirection: 'row', marginLeft: 19 }}>
                 <StyledImage source={Logo} />
 
-                {isNewDate ? (
+                {!isFindNecessity &&
+                    (isNewDate ? (
+                        <NavigationText>
+                            Nova <BoldText>Ajuda</BoldText>
+                        </NavigationText>
+                    ) : (
+                        <NavigationText>
+                            Nova <BoldText>Data</BoldText>
+                        </NavigationText>
+                    ))}
+
+                {isFindNecessity && (
                     <NavigationText>
-                        Nova <BoldText>Ajuda</BoldText>
-                    </NavigationText>
-                ) : (
-                    <NavigationText>
-                        Nova <BoldText>Data</BoldText>
+                        Localizar <BoldText>Necessitado</BoldText>
                     </NavigationText>
                 )}
             </View>
-            <StageText>
-                {formCurrentStage}/{formTotalStages}
-            </StageText>
+
+            {!isFindNecessity && (
+                <StageText>
+                    {formCurrentStage}/{formTotalStages}
+                </StageText>
+            )}
         </HeaderNavigatorContainer>
     );
 };
