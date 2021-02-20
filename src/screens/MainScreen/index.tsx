@@ -30,14 +30,15 @@ const MainScreen: React.FC = () => {
                         text: 'Sim',
                         onPress: async () => {
                             setLoading(true);
-                            await api.delete('help', {
-                                data: {
-                                    id,
-                                },
-                            });
-                            const newHelps = helps.filter((help) => help.id !== id);
-                            setHelps(newHelps);
-                            setLoading(false);
+                            try {
+                                await api.delete(`help/${id}`);
+                                const newHelps = helps.filter((help) => help.id !== id);
+                                setHelps(newHelps);
+                                setLoading(false);
+                            } catch (e) {
+                                setLoading(false);
+                                Alert.alert('Falha ao excluir ajuda.');
+                            }
                         },
                     },
                 ]);
