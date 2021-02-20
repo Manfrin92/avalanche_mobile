@@ -2,6 +2,7 @@ export interface UserData {
     name: string;
     email: string;
     cpf: string;
+    ddd: string;
     phoneNumber: string;
     password: string;
     repeatPassword: string;
@@ -20,6 +21,7 @@ export interface FirstFormData {
     name: string;
     email: string;
     cpf: string;
+    ddd: string;
     phoneNumber: string;
     password: string;
     repeatPassword: string;
@@ -29,6 +31,7 @@ export interface FirstFormUpdateData {
     name: string;
     email: string;
     cpf: string;
+    ddd: string;
     phoneNumber: string;
 }
 

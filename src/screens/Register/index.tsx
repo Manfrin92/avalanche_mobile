@@ -17,6 +17,7 @@ import api from '../../services/api';
 import { ScreenNamesEnum } from '../../utils/enums';
 import RegisterHeader from '../../components/RegisterHeader';
 import RegisterFooterButtons from '../../components/RegisterFooterButtons';
+import MaskedInput from '../../components/MaskedInput';
 
 const Register: React.FC = () => {
     const navigation = useNavigation();
@@ -38,6 +39,7 @@ const Register: React.FC = () => {
     const fullNameRef = useRef<TextInput>(null);
     const emailRef = useRef<TextInput>(null);
     const cpfRef = useRef<TextInput>(null);
+    const dddRef = useRef<TextInput>(null);
     const phoneNumberRef = useRef<TextInput>(null);
     const passwordRef = useRef<TextInput>(null);
     const repeatPasswordRef = useRef<TextInput>(null);
@@ -128,6 +130,7 @@ const Register: React.FC = () => {
                     name: data.name,
                     email: data.email,
                     cpf: data.cpf,
+                    ddd: data.ddd,
                     phoneNumber: data.phoneNumber,
                     password: data.password,
                 });
@@ -197,7 +200,13 @@ const Register: React.FC = () => {
 
     const handleCreateUser = useCallback(async () => {
         try {
-            const addressIdRaw = await api.post('address', {
+            await api.post('user', {
+                name: user.name,
+                email: user.email,
+                cpf: user.cpf,
+                password: user.password,
+                ddd: user.ddd,
+                phoneNumber: user.phoneNumber,
                 addressZipCode: user.addressZipCode,
                 addressStreet: user.addressStreet,
                 addressNumber: user.addressNumber ? Number(user.addressNumber) : null,
@@ -205,15 +214,6 @@ const Register: React.FC = () => {
                 addressArea: user.addressArea,
                 addressCity: user.addressCity,
                 addressState: user.addressState,
-            });
-
-            await api.post('user', {
-                name: user.name,
-                email: user.email,
-                cpf: user.cpf,
-                password: user.password,
-                phoneNumber: user.phoneNumber,
-                address: addressIdRaw.data,
             });
 
             Alert.alert('Usuário criado com sucesso!');
@@ -283,12 +283,26 @@ const Register: React.FC = () => {
                                         cpfRef.current?.focus();
                                     }}
                                 />
-                                <Input
+
+                                <MaskedInput
+                                    maskName="cpf"
                                     ref={cpfRef}
-                                    maxLength={11}
+                                    maxLength={14}
                                     autoCapitalize="words"
                                     labelName="CPF"
                                     name="cpf"
+                                    keyboardType="number-pad"
+                                    returnKeyType="next"
+                                    onSubmitEditing={() => {
+                                        dddRef.current?.focus();
+                                    }}
+                                />
+
+                                <Input
+                                    ref={dddRef}
+                                    maxLength={2}
+                                    labelName="DDD"
+                                    name="ddd"
                                     keyboardType="number-pad"
                                     returnKeyType="next"
                                     onSubmitEditing={() => {
@@ -296,9 +310,10 @@ const Register: React.FC = () => {
                                     }}
                                 />
 
-                                <Input
+                                <MaskedInput
+                                    maskName="phone"
                                     ref={phoneNumberRef}
-                                    maxLength={11}
+                                    maxLength={10}
                                     labelName="TELEFONE"
                                     name="phoneNumber"
                                     keyboardType="number-pad"
@@ -307,6 +322,7 @@ const Register: React.FC = () => {
                                         passwordRef.current?.focus();
                                     }}
                                 />
+
                                 <Input
                                     secureTextEntry
                                     ref={passwordRef}
@@ -355,9 +371,10 @@ const Register: React.FC = () => {
                             initialData={user}
                         >
                             <ScrollView style={{ marginTop: '6%' }}>
-                                <Input
+                                <MaskedInput
+                                    maskName="cep"
                                     ref={addressZipCodeRef}
-                                    maxLength={8}
+                                    maxLength={10}
                                     autoCapitalize="words"
                                     labelName="CEP"
                                     name="addressZipCode"

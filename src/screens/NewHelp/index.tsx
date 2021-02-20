@@ -69,6 +69,7 @@ interface ReturnedNeedy {
     name: string;
     email: string;
     showContact: true;
+    ddd: string;
     phoneNumber: string;
 }
 
@@ -282,6 +283,7 @@ const NewHelp: React.FC<NewHelpProps> = ({ route }) => {
                 addressZipCode: help.addressZipCode.replace(/\D/g, ''),
                 userManager: user.id,
                 dateHour: `${help.dateHour}:00`,
+                ddd: needyInCreation.dddPhoneNumber ? needyInCreation.dddPhoneNumber : null,
                 phoneNumber: needyInCreation.phoneNumber ? needyInCreation.phoneNumber.replace(/\D/g, '') : null,
                 helpedDateTypeId: help.helpedDateTypeId ? help.helpedDateTypeId : selectedHelpedDateType,
             });
@@ -359,11 +361,12 @@ const NewHelp: React.FC<NewHelpProps> = ({ route }) => {
                             needyId: response.data.needyId,
                             name: response.data.name,
                             email: response.data.email,
-                            dddPhoneNumber: response.data.dddPhoneNumber,
+                            dddPhoneNumber: response.data.ddd,
                             phoneNumber: response.data.phoneNumber,
                             showContact: response.data.showContact,
                         });
 
+                        setSelectedDate(true);
                         setChosenDate(new Date(response.data.date));
 
                         if (firstFormRef && firstFormRef.current) {
@@ -438,9 +441,10 @@ const NewHelp: React.FC<NewHelpProps> = ({ route }) => {
         }
     }, [help, navigation, user.id, needyInCreation, selectedHelpedDateType]);
 
+    // Creating not editing, every render
     useEffect(() => {
-        if (route && route.params && !route.params.editing) {
-            setChosenDate(new Date(Date.now()));
+        if (route && route.params === undefined) {
+            // setChosenDate(new Date(Date.now()));
             if (formStage === '1') {
                 if (needyInCreation && needyInCreation.phoneNumber) {
                     if (firstFormRef && firstFormRef.current) {
@@ -474,6 +478,7 @@ const NewHelp: React.FC<NewHelpProps> = ({ route }) => {
         }
     }, [formStage, route]);
 
+    // Editing first time opening
     useEffect(() => {
         if (route && route.params && route.params.helpId && route.params.editing) {
             setLoading(true);
@@ -481,6 +486,7 @@ const NewHelp: React.FC<NewHelpProps> = ({ route }) => {
         }
     }, []);
 
+    // Editing every change in array
     useEffect(() => {
         if (route && route.params && route.params.editing && help.addressZipCode) {
             if (formStage === '1') {
@@ -529,8 +535,10 @@ const NewHelp: React.FC<NewHelpProps> = ({ route }) => {
                 //     email: findNeedyFormRef.current.getFieldValue('nameEmailSearch'),
                 // });
                 // setReturnedNeedies([data]);
+                setLoading(true);
                 const { data } = await api.get('/needy');
                 setReturnedNeedies([...data]);
+                setLoading(false);
             } catch (e) {
                 console.log('erro busca: ', e);
                 Alert.alert('Erro', 'Falha ao buscar necessitado.');
@@ -544,8 +552,8 @@ const NewHelp: React.FC<NewHelpProps> = ({ route }) => {
             email: selectedNeedy.email ? selectedNeedy.email : undefined,
             needyId: selectedNeedy.id,
             showContact: selectedNeedy.showContact,
-            dddPhoneNumber: selectedNeedy.phoneNumber ? selectedNeedy.phoneNumber.substr(0, 2) : undefined,
-            phoneNumber: selectedNeedy.phoneNumber ? selectedNeedy.phoneNumber.substr(2) : undefined,
+            dddPhoneNumber: selectedNeedy.ddd ? selectedNeedy.ddd : undefined,
+            phoneNumber: selectedNeedy.phoneNumber ? selectedNeedy.phoneNumber : undefined,
         });
         setFormStage('1');
     }, [selectedNeedy]);
@@ -956,7 +964,9 @@ const NewHelp: React.FC<NewHelpProps> = ({ route }) => {
                             <View style={{ margin: '3%' }}>
                                 <HelpSubTitle>Título: {help.title}</HelpSubTitle>
 
-                                <HelpDescription>{help.description} </HelpDescription>
+                                <HelpDescription>
+                                    {help.description} {'\n'} Obs: {help.observation ? help.observation : ''}
+                                </HelpDescription>
 
                                 <HelpSubTitle style={{ marginTop: '3%' }}>Local: </HelpSubTitle>
 
