@@ -47,6 +47,8 @@ import helpImage from '../../../assets/helpImage.jpg';
 import MaskedInput from '../../components/MaskedInput';
 import { cepPattern, hourPattern } from '../../utils/RegexPatterns';
 import Loading from '../Loading';
+import NeedySelector from '../../components/NeedySelector';
+import Button from '../../components/Button';
 
 interface SkillType {
     id: string;
@@ -60,6 +62,14 @@ interface NeedyInCreation {
     phoneNumber?: string;
     showContact?: boolean;
     needyId?: string;
+}
+
+interface ReturnedNeedy {
+    id: string;
+    name: string;
+    email: string;
+    showContact: true;
+    phoneNumber: string;
 }
 
 export interface NewHelpProps {
@@ -76,8 +86,7 @@ const NewHelp: React.FC<NewHelpProps> = ({ route }) => {
     const navigation = useNavigation();
     const [help, setHelp] = useState({} as HelpData);
     const [needyInCreation, setNeedyInCreation] = useState({} as NeedyInCreation);
-    const [formStage, setFormStage] = useState<'0' | '1' | '2' | '3' | '4' | '5'>('0');
-    const [needyStage, setNeedyStage] = useState<'1' | '2'>('1');
+    const [formStage, setFormStage] = useState<'0' | '1' | '2' | '3' | '4' | '5'>('1');
     const [loading, setLoading] = useState(false);
     // PRIMEIRO FORM
     const firstFormRef = useRef<FormHandles>(null);
@@ -105,6 +114,12 @@ const NewHelp: React.FC<NewHelpProps> = ({ route }) => {
     // TERCEIRO FORM
     const [chosenDate, setChosenDate] = useState<Date>();
     const [selectedDate, setSelectedDate] = useState(false);
+
+    // NEEDY SEARCH
+    const findNeedyFormRef = useRef<FormHandles>(null);
+    const nameEmailSearchRef = useRef<TextInput>(null);
+    const [selectedNeedy, setSelectedNeedy] = useState({} as ReturnedNeedy);
+    const [returnedNeedies, setReturnedNeedies] = useState<ReturnedNeedy[]>([]);
 
     const handleSetChosenDate = useCallback(
         (childChosenDate: Date) => {
@@ -160,7 +175,9 @@ const NewHelp: React.FC<NewHelpProps> = ({ route }) => {
                     name: Yup.string().required('Nome do necessitado obrigatório'),
                     title: Yup.string().required('Título da ajuda obrigatório'),
                     description: Yup.string().required('Descrição obrigatória'),
-                    dateHour: Yup.string().required('Horário da ajuda obrigatória'),
+                    dateHour: Yup.string()
+                        .required('Horário da ajuda obrigatória')
+                        .min(5, 'Colocar no padrão 14:35'),
                 });
 
                 await schema.validate(data, { abortEarly: false });
@@ -182,6 +199,7 @@ const NewHelp: React.FC<NewHelpProps> = ({ route }) => {
                 });
 
                 setNeedyInCreation({
+                    ...needyInCreation,
                     name: data.name,
                     email: data.email,
                     dddPhoneNumber: data.dddPhoneNumber,
@@ -205,7 +223,7 @@ const NewHelp: React.FC<NewHelpProps> = ({ route }) => {
                 Alert.alert('Erro na autenticação', 'Cheque as credenciais');
             }
         },
-        [help],
+        [help, needyInCreation],
     );
 
     const handleSecondForm = useCallback(
@@ -279,30 +297,6 @@ const NewHelp: React.FC<NewHelpProps> = ({ route }) => {
         }
     }, [help, navigation, user.id, needyInCreation, selectedHelpedDateType]);
 
-    const handleUpdateHelp = useCallback(async () => {
-        try {
-            await api.put('help', {
-                ...help,
-                ...needyInCreation,
-                helpDate: help.helpDate.substr(0, 19),
-                addressZipCode: help.addressZipCode.replace(/\D/g, ''),
-                userManager: user.id,
-                dateHour: `${help.dateHour}:00`,
-                phoneNumber: needyInCreation.phoneNumber ? needyInCreation.phoneNumber.replace(/\D/g, '') : null,
-                helpedDateTypeId: help.helpedDateTypeId ? help.helpedDateTypeId : selectedHelpedDateType,
-            });
-
-            Alert.alert('Ajuda atualizada com sucesso!');
-            navigation.navigate(ScreenNamesEnum.Main);
-        } catch (e) {
-            console.log(e.response.data);
-            if (e && e.response && e.response.data) {
-                Alert.alert(e.response.data);
-            }
-            Alert.alert('Erro no cadastro');
-        }
-    }, [help, navigation, user.id, needyInCreation, selectedHelpedDateType]);
-
     useEffect(() => {
         let mounted = true;
 
@@ -350,17 +344,18 @@ const NewHelp: React.FC<NewHelpProps> = ({ route }) => {
                             dateHour: `${response.data.dateHour}`,
                             addressArea: response.data.addressArea,
                             addressCity: response.data.addressCity,
-                            addressComplement: response.data.addressComplement
-                                ? response.data.addressComplement
-                                : '',
+                            addressComplement:
+                                String(response.data.addressComplement) !== 'null'
+                                    ? response.data.addressComplement
+                                    : '',
                             addressState: response.data.addressState,
                             addressStreet: response.data.addressStreet,
-                            addressNumber: String(response.data.addressNumber),
+                            addressNumber:
+                                String(response.data.addressNumber) !== 'null' ? response.data.addressNumber : '',
                             addressZipCode: response.data.addressZipCode,
                         });
 
                         setNeedyInCreation({
-                            ...needyInCreation,
                             needyId: response.data.needyId,
                             name: response.data.name,
                             email: response.data.email,
@@ -416,8 +411,32 @@ const NewHelp: React.FC<NewHelpProps> = ({ route }) => {
                 console.log(e);
             }
         },
-        [help, needyInCreation],
+        [help],
     );
+
+    const handleUpdateHelp = useCallback(async () => {
+        try {
+            await api.put('help', {
+                ...help,
+                ...needyInCreation,
+                helpDate: help.helpDate.substr(0, 19),
+                addressZipCode: help.addressZipCode.replace(/\D/g, ''),
+                userManager: user.id,
+                dateHour: `${help.dateHour}:00`,
+                phoneNumber: needyInCreation.phoneNumber ? needyInCreation.phoneNumber.replace(/\D/g, '') : null,
+                helpedDateTypeId: help.helpedDateTypeId ? help.helpedDateTypeId : selectedHelpedDateType,
+            });
+
+            Alert.alert('Ajuda atualizada com sucesso!');
+            navigation.navigate(ScreenNamesEnum.Main);
+        } catch (e) {
+            console.log(e.response.data);
+            if (e && e.response && e.response.data) {
+                Alert.alert(e.response.data);
+            }
+            Alert.alert('Erro no cadastro');
+        }
+    }, [help, navigation, user.id, needyInCreation, selectedHelpedDateType]);
 
     useEffect(() => {
         if (route && route.params && !route.params.editing) {
@@ -497,6 +516,40 @@ const NewHelp: React.FC<NewHelpProps> = ({ route }) => {
         }
     }, [formStage, route]);
 
+    const handleNeedySearch = useCallback(async () => {
+        if (
+            findNeedyFormRef &&
+            findNeedyFormRef.current &&
+            findNeedyFormRef.current.getFieldValue('nameEmailSearch')
+        ) {
+            try {
+                //  Quando essa rota estiver buscando aprox. descomentar
+                // const { data } = await api.post('/needy/getNeedyByEmailOrName', {
+                //     name: findNeedyFormRef.current.getFieldValue('nameEmailSearch'),
+                //     email: findNeedyFormRef.current.getFieldValue('nameEmailSearch'),
+                // });
+                // setReturnedNeedies([data]);
+                const { data } = await api.get('/needy');
+                setReturnedNeedies([...data]);
+            } catch (e) {
+                console.log('erro busca: ', e);
+                Alert.alert('Erro', 'Falha ao buscar necessitado.');
+            }
+        }
+    }, []);
+
+    const handleNeedySelected = useCallback(() => {
+        setNeedyInCreation({
+            name: selectedNeedy.name,
+            email: selectedNeedy.email ? selectedNeedy.email : undefined,
+            needyId: selectedNeedy.id,
+            showContact: selectedNeedy.showContact,
+            dddPhoneNumber: selectedNeedy.phoneNumber ? selectedNeedy.phoneNumber.substr(0, 2) : undefined,
+            phoneNumber: selectedNeedy.phoneNumber ? selectedNeedy.phoneNumber.substr(2) : undefined,
+        });
+        setFormStage('1');
+    }, [selectedNeedy]);
+
     if (loading) {
         return <Loading />;
     }
@@ -519,6 +572,8 @@ const NewHelp: React.FC<NewHelpProps> = ({ route }) => {
                                 <TextTitle>Quem receberá a ajuda:</TextTitle>
 
                                 <Input
+                                    searchIcon
+                                    searchClick={() => setFormStage('0')}
                                     ref={fullNameRef}
                                     labelName="Nome"
                                     autoCapitalize="words"
@@ -553,18 +608,32 @@ const NewHelp: React.FC<NewHelpProps> = ({ route }) => {
                                     }}
                                 />
 
-                                <MaskedInput
-                                    maskName="phone"
-                                    ref={needyPhoneRef}
-                                    maxLength={10}
-                                    keyboardType="number-pad"
-                                    name="phoneNumber"
-                                    labelName="Telefone"
-                                    returnKeyType="next"
-                                    onSubmitEditing={() => {
-                                        titleRef.current?.focus();
-                                    }}
-                                />
+                                {route && route.params && route.params.editing ? (
+                                    <Input
+                                        ref={needyPhoneRef}
+                                        maxLength={10}
+                                        keyboardType="number-pad"
+                                        name="phoneNumber"
+                                        labelName="Telefone"
+                                        returnKeyType="next"
+                                        onSubmitEditing={() => {
+                                            titleRef.current?.focus();
+                                        }}
+                                    />
+                                ) : (
+                                    <MaskedInput
+                                        maskName="phone"
+                                        ref={needyPhoneRef}
+                                        maxLength={10}
+                                        keyboardType="number-pad"
+                                        name="phoneNumber"
+                                        labelName="Telefone"
+                                        returnKeyType="next"
+                                        onSubmitEditing={() => {
+                                            titleRef.current?.focus();
+                                        }}
+                                    />
+                                )}
 
                                 <TouchableOpacity
                                     style={{
@@ -611,18 +680,32 @@ const NewHelp: React.FC<NewHelpProps> = ({ route }) => {
                                     }}
                                 />
 
-                                <MaskedInput
-                                    maskName="hourPattern"
-                                    ref={dateHourRef}
-                                    maxLength={5}
-                                    keyboardType="number-pad"
-                                    name="dateHour"
-                                    labelName="Horário da ajuda ex: 15:30"
-                                    returnKeyType="next"
-                                    onSubmitEditing={() => {
-                                        observationRef.current?.focus();
-                                    }}
-                                />
+                                {route && route.params && route.params.editing ? (
+                                    <Input
+                                        ref={dateHourRef}
+                                        maxLength={5}
+                                        keyboardType="number-pad"
+                                        name="dateHour"
+                                        labelName="Horário da ajuda ex: 15:30"
+                                        returnKeyType="next"
+                                        onSubmitEditing={() => {
+                                            observationRef.current?.focus();
+                                        }}
+                                    />
+                                ) : (
+                                    <MaskedInput
+                                        maskName="hourPattern"
+                                        ref={dateHourRef}
+                                        maxLength={5}
+                                        keyboardType="number-pad"
+                                        name="dateHour"
+                                        labelName="Horário da ajuda ex: 15:30"
+                                        returnKeyType="next"
+                                        onSubmitEditing={() => {
+                                            observationRef.current?.focus();
+                                        }}
+                                    />
+                                )}
 
                                 <Text style={{ marginLeft: '6%' }}>Selecione o tipo da ajuda</Text>
 
@@ -913,25 +996,59 @@ const NewHelp: React.FC<NewHelpProps> = ({ route }) => {
             )}
 
             {/* FIND NEEDY */}
-            {formStage === '0' && needyStage === '1' && (
+            {formStage === '0' && (
                 <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
                     <SafeAreaView style={{ flex: 1 }}>
                         <HelpHeader isFindNecessity isNewDate={false} />
 
-                        <ScrollView style={{ marginTop: '6%' }} />
+                        <Form
+                            onSubmit={handleNeedySearch}
+                            ref={findNeedyFormRef}
+                            style={{ flex: 1, justifyContent: 'flex-end' }}
+                            initialData={{ nameEmailSearch: needyInCreation.name ? needyInCreation.name : '' }}
+                        >
+                            <ScrollView style={{ marginTop: '6%' }}>
+                                <Input
+                                    ref={nameEmailSearchRef}
+                                    labelName="Nome / E-mail"
+                                    autoCapitalize="words"
+                                    name="nameEmailSearch"
+                                    keyboardType="default"
+                                    returnKeyType="done"
+                                    onSubmitEditing={handleNeedySearch}
+                                />
+                                <View style={{ alignItems: 'center', justifyContent: 'center', marginTop: '2%' }}>
+                                    <Button
+                                        width={88}
+                                        buttonText="PESQUISAR"
+                                        buttonType="enter"
+                                        onPress={handleNeedySearch}
+                                        title="search"
+                                    />
+                                </View>
+                                <View style={{ marginTop: '10%' }}>
+                                    {returnedNeedies &&
+                                        returnedNeedies.length > 0 &&
+                                        returnedNeedies.map((returnedNeedy) => (
+                                            <NeedySelector
+                                                id={returnedNeedy.id}
+                                                handleNeedySelected={() => setSelectedNeedy(returnedNeedy)}
+                                                selected={returnedNeedy.name === selectedNeedy.name}
+                                                needyName={returnedNeedy.name}
+                                            />
+                                        ))}
+                                </View>
+                            </ScrollView>
 
-                        <RegisterFooterButtons
-                            textBackButton="VOLTAR"
-                            titleBackButton="goBack"
-                            textForwardButton="PUBLICAR"
-                            titleForwardButton="next"
-                            backFunction={() => setFormStage('4')}
-                            forwardFunction={() =>
-                                route && route.params && route.params.editing && route.params.editing
-                                    ? handleUpdateHelp()
-                                    : handleCreateHelp()
-                            }
-                        />
+                            <RegisterFooterButtons
+                                textBackButton="VOLTAR"
+                                titleBackButton="goBack"
+                                textForwardButton="SELECIONAR"
+                                titleForwardButton="next"
+                                backFunction={() => setFormStage('1')}
+                                forwardFunction={() => handleNeedySelected()}
+                            />
+                        </Form>
                     </SafeAreaView>
                 </KeyboardAvoidingView>
             )}

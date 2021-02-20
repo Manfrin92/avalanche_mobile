@@ -29,7 +29,7 @@ export const NavigationText = styled.Text`
     font-size: 22px;
     line-height: 22px;
     letter-spacing: -0.01px;
-    font-family: sans-serif;
+
     color: #434a54;
     align-self: center;
     padding-left: 18px;
@@ -50,14 +50,13 @@ export const ViewButton = styled.View`
 export const Title = styled.Text`
     font-size: 24px;
     color: #434a54;
-    font-family: sans-serif;
+
     margin: 0px 0 24px;
 `;
 
 export const Text = styled.Text`
     font-size: 12px;
     color: #f08902;
-    font-family: sans-serif;
 `;
 
 export const BoldText = styled.Text`
@@ -65,7 +64,7 @@ export const BoldText = styled.Text`
     font-weight: bold;
     line-height: 22px;
     letter-spacing: -0.01px;
-    font-family: sans-serif;
+
     color: #434a54;
     align-self: center;
 `;
@@ -77,7 +76,6 @@ export const StyledImage = styled.Image`
 `;
 
 export const StyledText = styled.Text`
-    font-family: sans-serif;
     font-size: 32px;
     text-align: center;
     color: #434a54;
@@ -85,7 +83,6 @@ export const StyledText = styled.Text`
 `;
 
 export const StageText = styled.Text`
-    font-family: sans-serif;
     font-size: 22px;
     align-self: center;
     line-height: 22px;
@@ -98,7 +95,6 @@ export const TextInput = styled.TextInput`
     flex: 1;
     color: #f08902;
     font-size: 16px;
-    font-family: sans-serif;
 `;
 
 interface ContainerProps {
