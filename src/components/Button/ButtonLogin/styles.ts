@@ -12,7 +12,6 @@ export const Container = styled(RectButton)`
     align-items: center;
 `;
 export const ButtonText = styled.Text`
-    font-family: sans-serif;
     color: #312e38;
     font-size: 18px;
 `;

@@ -48,7 +48,6 @@ export const StyledButton = styled.TouchableOpacity`
 `;
 
 export const Text = styled.Text<ButtonProps>`
-    font-family: sans-serif;
     font-size: 16px;
     line-height: 20px;
     text-align: center;
@@ -74,7 +73,6 @@ export const Text = styled.Text<ButtonProps>`
 `;
 
 export const BoldText = styled.Text`
-    font-family: sans-serif;
     font-size: 16px;
     line-height: 20px;
     text-align: center;

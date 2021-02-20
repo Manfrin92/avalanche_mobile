@@ -20,7 +20,6 @@ export const SelectorContainer = styled.View`
 `;
 
 export const Text = styled.Text`
-    font-family: sans-serif;
     font-size: 16px;
     line-height: 20px;
     text-align: center;
@@ -28,7 +27,6 @@ export const Text = styled.Text`
 `;
 
 export const ActionText = styled.Text`
-    font-family: sans-serif;
     font-size: 16px;
     line-height: 20px;
     text-align: center;

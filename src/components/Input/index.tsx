@@ -15,6 +15,8 @@ interface InputProps extends TextInputProps {
     getCep?: (e: any) => Promise<void>;
     labelName?: string;
     marginBottom?: number;
+    searchIcon?: boolean;
+    searchClick?(): void;
 }
 
 interface InputValueReference {
@@ -26,7 +28,7 @@ interface InputRef {
 }
 
 const Input: React.RefForwardingComponent<InputRef, InputProps> = (
-    { name, iconName, height, width, cepIcon, getCep, labelName, marginBottom, ...rest },
+    { name, iconName, height, width, cepIcon, getCep, labelName, marginBottom, searchIcon, searchClick, ...rest },
     ref,
 ) => {
     const inputElementRef = useRef<any>(null);
@@ -90,6 +92,17 @@ const Input: React.RefForwardingComponent<InputRef, InputProps> = (
                             name="search"
                         />
                     </View>
+                )}
+
+                {searchIcon && searchClick && (
+                    <TouchableOpacity style={{ marginRight: 0 }} onPress={searchClick}>
+                        <FontAwesome
+                            style={{ marginRight: 15, marginTop: '35%' }}
+                            color="#0A5F9A"
+                            size={24}
+                            name="search"
+                        />
+                    </TouchableOpacity>
                 )}
 
                 {isIos && (

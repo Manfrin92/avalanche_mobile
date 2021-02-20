@@ -23,13 +23,12 @@ export const BoldText = styled.Text`
     font-weight: bold;
     line-height: 22px;
     letter-spacing: -0.01px;
-    font-family: sans-serif;
+
     color: #434a54;
     align-self: center;
 `;
 
 export const StageText = styled.Text`
-    font-family: sans-serif;
     font-size: 22px;
     align-self: center;
     line-height: 22px;
@@ -41,7 +40,7 @@ export const NavigationText = styled.Text`
     font-size: 22px;
     line-height: 22px;
     letter-spacing: -0.01px;
-    font-family: sans-serif;
+
     color: #434a54;
     align-self: center;
     padding-left: 18px;

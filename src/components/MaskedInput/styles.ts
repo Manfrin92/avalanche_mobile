@@ -57,7 +57,6 @@ export const TextInput = styled.TextInput`
 `;
 
 export const Label = styled.Text`
-    font-family: sans-serif;
     font-size: 12px;
     line-height: 13px;
     color: #fff;

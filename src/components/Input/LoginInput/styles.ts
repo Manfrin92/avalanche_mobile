@@ -27,12 +27,11 @@ export const Container = styled.View<ContainerProps>`
     ${(props) =>
         props.isFocused &&
         css`
-            border-color: #0A5F9A;
+            border-color: #0a5f9a;
         `}
 `;
 export const TextInput = styled.TextInput`
     flex: 1;
     color: #666360;
     font-size: 16px;
-    font-family: sans-serif;
 `;

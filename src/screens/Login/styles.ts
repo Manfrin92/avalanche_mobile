@@ -16,13 +16,12 @@ export const ViewButton = styled.View`
 export const Text = styled.Text`
     font-size: 12px;
     color: #f08902;
-    font-family: sans-serif;
+
     margin-bottom: 8%;
     align-self: center;
 `;
 
 export const BoldText = styled.Text`
-    font-family: sans-serif;
     font-weight: bold;
     font-size: 32px;
     text-align: center;
@@ -37,7 +36,6 @@ export const StyledImage = styled.Image`
 `;
 
 export const StyledText = styled.Text`
-    font-family: sans-serif;
     font-size: 32px;
     text-align: center;
     color: #0a5f9a;

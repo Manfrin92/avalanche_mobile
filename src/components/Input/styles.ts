@@ -54,7 +54,7 @@ export const Container = styled.View<ContainerProps>`
 
 export const TextInput = styled.TextInput`
     flex: 1;
-    font-family: sans-serif;
+
     font-size: 20px;
     color: #ffffff;
     background-color: #acacac;
@@ -63,7 +63,6 @@ export const TextInput = styled.TextInput`
 `;
 
 export const Label = styled.Text`
-    font-family: sans-serif;
     font-size: 12px;
     line-height: 13px;
     color: #fff;

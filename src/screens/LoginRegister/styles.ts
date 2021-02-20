@@ -7,7 +7,6 @@ export const StyledImage = styled.Image`
 `;
 
 export const StyledText = styled.Text`
-    font-family: sans-serif;
     font-size: 32px;
     text-align: center;
     margin-top: 8%;
@@ -15,7 +14,6 @@ export const StyledText = styled.Text`
 `;
 
 export const BoldText = styled.Text`
-    font-family: sans-serif;
     font-weight: bold;
     font-size: 32px;
     text-align: center;

@@ -14,7 +14,7 @@ export const TextName = styled.Text`
     font-size: 22px;
     line-height: 22px;
     letter-spacing: -0.01px;
-    font-family: sans-serif;
+
     color: #f08902;
     align-self: center;
 `;
@@ -24,7 +24,7 @@ export const RedBoldText = styled.Text`
     font-weight: bold;
     line-height: 22px;
     letter-spacing: -0.01px;
-    font-family: sans-serif;
+
     color: #f08902;
     align-self: center;
 `;
@@ -44,7 +44,6 @@ export const Text = styled.Text`
     font-size: 22px;
     line-height: 23px;
     color: #434a54;
-    font-family: sans-serif;
 `;
 
 export const BoldText = styled.Text`
@@ -52,6 +51,6 @@ export const BoldText = styled.Text`
     line-height: 23px;
     font-weight: bold;
     letter-spacing: -0.01px;
-    font-family: sans-serif;
+
     color: #434a54;
 `;

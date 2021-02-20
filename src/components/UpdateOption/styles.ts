@@ -10,7 +10,7 @@ export const NavigationText = styled.Text`
     font-size: 22px;
     line-height: 22px;
     letter-spacing: -0.01px;
-    font-family: sans-serif;
+
     color: #434a54;
     align-self: center;
     padding-left: 18px;
