@@ -57,7 +57,7 @@ export const Title = styled.Text`
 `;
 
 export const Text = styled.Text`
-    font-size: 12px;
+    font-size: 18px;
     color: #f08902;
 `;
 
@@ -165,34 +165,10 @@ export const HelpDescription = styled.Text`
     margin-top: 3%;
 `;
 
-interface TermsProps {
-    isAccepted: boolean;
-}
-
-export const Square = styled.View<TermsProps>`
-    width: 24px;
-    height: 24px;
-    border-radius: 3px;
-    border-color: #f9f9f9;
-    border-width: 1px;
-    background-color: #f9f9f9;
-    justify-content: center;
-    align-items: center;
-
-    ${(props: TermsProps) =>
-        props.isAccepted &&
-        css`
-            width: 24px;
-            height: 24px;
-            border-width: 2px;
-            border-color: #00a57c;
-        `}
-`;
-
 export const styles = StyleSheet.create({
     menuContainer: {
         width: '88%',
-        height: 42,
+        height: 64,
         alignSelf: 'center',
         marginBottom: 8,
         alignItems: 'center',
@@ -201,21 +177,22 @@ export const styles = StyleSheet.create({
         borderColor: '#fff',
         backgroundColor: '#acacac',
         borderRadius: 8,
+        marginTop: 20,
     },
     menuWrapper: {
         borderRadius: 10,
-        width: 140,
+        width: '100%',
         // paddingRight: 15,
         justifyContent: 'center',
         alignItems: 'stretch',
         backgroundColor: '#f9f9f9',
         flex: 1,
     },
-
     menuOption: {
         justifyContent: 'center',
         alignItems: 'flex-start',
         height: 50,
+        alignSelf: 'center',
     },
 });
 

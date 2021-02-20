@@ -9,6 +9,7 @@ import MainScreen from '../screens/MainScreen';
 import Menu from '../screens/Menu';
 import NewHelp from '../screens/NewHelp';
 import UpdateRegister from '../screens/UpdateRegister';
+import FindHelp from '../screens/FindHelp';
 
 const App = createStackNavigator();
 
@@ -31,6 +32,7 @@ const AppRoutes: React.FC = () => {
             <App.Screen name="Menu" component={Menu} />
             <App.Screen name="NewHelp" component={NewHelp} />
             <App.Screen name="UpdateRegister" component={UpdateRegister} />
+            <App.Screen name="FindHelp" component={FindHelp} />
         </App.Navigator>
     );
 };

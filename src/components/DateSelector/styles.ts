@@ -20,7 +20,7 @@ export const SelectorContainer = styled.View`
 `;
 
 export const Text = styled.Text`
-    font-size: 16px;
+    font-size: 20px;
     line-height: 20px;
     text-align: center;
     color: #f08902;

@@ -18,9 +18,16 @@ interface MenuItemsProps {
     goToUrl(): void;
     navigateToUpdateRegister(): void;
     signOut(): void;
+    navigateToFindHelp(): void;
 }
 
-const MenuItems: React.FC<MenuItemsProps> = ({ userName, goToUrl, navigateToUpdateRegister, signOut }) => {
+const MenuItems: React.FC<MenuItemsProps> = ({
+    userName,
+    goToUrl,
+    navigateToUpdateRegister,
+    navigateToFindHelp,
+    signOut,
+}) => {
     return (
         <Container>
             <NameContainer>
@@ -36,7 +43,7 @@ const MenuItems: React.FC<MenuItemsProps> = ({ userName, goToUrl, navigateToUpda
                         <Text>Como ajudar?</Text>
                     </ItemContainer>
                 </TouchableOpacity>
-                <TouchableOpacity>
+                <TouchableOpacity onPress={navigateToFindHelp}>
                     <ItemContainer style={{ marginBottom: '8%' }}>
                         <Ionicons style={{ width: '14%' }} name="md-search" size={28} color="black" />
                         <BoldText>Encontrar ajudas</BoldText>

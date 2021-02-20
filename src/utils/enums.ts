@@ -6,4 +6,5 @@ export enum ScreenNamesEnum {
     Menu = 'Menu',
     NewHelp = 'NewHelp',
     UpdateRegister = 'UpdateRegister',
+    FindHelp = 'FindHelp',
 }

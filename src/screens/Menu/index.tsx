@@ -20,6 +20,7 @@ const Menu: React.FC = () => {
             <MenuItems
                 goToUrl={() => goToUrl(abascUrl)}
                 navigateToUpdateRegister={() => navigation.navigate(ScreenNamesEnum.UpdateRegister)}
+                navigateToFindHelp={() => navigation.navigate(ScreenNamesEnum.FindHelp)}
                 signOut={() => signOut()}
                 userName={user.name}
             />

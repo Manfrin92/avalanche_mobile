@@ -9,9 +9,10 @@ import { Container, Text, SelectorContainer, ActionText } from './styles';
 interface DateSelectorData {
     setChosenDate(date: Date): void;
     initialDate?: Date;
+    title?: string;
 }
 
-const DateSelector: React.FC<DateSelectorData> = ({ setChosenDate, initialDate }) => {
+const DateSelector: React.FC<DateSelectorData> = ({ setChosenDate, initialDate, title }) => {
     const today = new Date(Date.now());
     const [showFirstDate, setFirstDate] = useState(false);
     const [selectedDate, setSelectedDate] = useState(initialDate || today);
@@ -37,7 +38,7 @@ const DateSelector: React.FC<DateSelectorData> = ({ setChosenDate, initialDate }
             <SelectorContainer>
                 {!showFirstDate && (
                     <TouchableOpacity onPress={() => setFirstDate(true)}>
-                        <Text>Data da ajuda</Text>
+                        <Text style={{ marginBottom: 6 }}>{title || 'Data da ajuda'}</Text>
                         <Text>
                             {format(selectedDate, 'dd/MM/yyyy', {
                                 timeZone: 'America/Sao_Paulo',
