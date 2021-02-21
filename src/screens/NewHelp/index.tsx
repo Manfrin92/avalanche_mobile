@@ -729,18 +729,23 @@ const NewHelp: React.FC<NewHelpProps> = ({ route }) => {
                                                 optionsContainer: styles.menuWrapper,
                                             }}
                                         >
-                                            {helpedDateTypes.map((helpedDateType) => (
-                                                <MenuOption
-                                                    key={helpedDateType.id}
-                                                    style={styles.menuOption}
-                                                    onSelect={() => {
-                                                        setHelp({ ...help, helpedDateTypeId: helpedDateType.id });
-                                                        setSelectedHelpedDateType(helpedDateType);
-                                                    }}
-                                                >
-                                                    <Text>{helpedDateType.name}</Text>
-                                                </MenuOption>
-                                            ))}
+                                            <ScrollView style={{ maxHeight: 400 }}>
+                                                {helpedDateTypes.map((helpedDateType) => (
+                                                    <MenuOption
+                                                        key={helpedDateType.id}
+                                                        style={styles.menuOption}
+                                                        onSelect={() => {
+                                                            setHelp({
+                                                                ...help,
+                                                                helpedDateTypeId: helpedDateType.id,
+                                                            });
+                                                            setSelectedHelpedDateType(helpedDateType);
+                                                        }}
+                                                    >
+                                                        <Text>{helpedDateType.name}</Text>
+                                                    </MenuOption>
+                                                ))}
+                                            </ScrollView>
                                         </MenuOptions>
                                     </Menu>
                                 )}

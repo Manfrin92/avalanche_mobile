@@ -204,7 +204,7 @@ export const styles = StyleSheet.create({
     },
     menuWrapper: {
         borderRadius: 10,
-        width: 140,
+        width: '80%',
         // paddingRight: 15,
         justifyContent: 'center',
         alignItems: 'stretch',
@@ -216,6 +216,7 @@ export const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'flex-start',
         height: 50,
+        alignSelf: 'center',
     },
 });
 

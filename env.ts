@@ -1,7 +1,7 @@
-// export const APP_ENV = {
-//     APIURL: 'http://192.168.100.133:3333',
-// };
-
 export const APP_ENV = {
-    APIURL: 'http://10.0.2.2:3333',
+    APIURL: 'http://192.168.100.133:3333',
 };
+
+// export const APP_ENV = {
+//     APIURL: 'http://10.0.2.2:3333',
+// };

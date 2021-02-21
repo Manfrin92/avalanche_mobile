@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
-import { TextInput, Alert, SafeAreaView, Keyboard } from 'react-native';
+import { TextInput, Alert, SafeAreaView, Keyboard, Platform } from 'react-native';
 import * as Yup from 'yup';
 import { Form } from '@unform/mobile';
 import { FormHandles } from '@unform/core';
@@ -92,7 +92,11 @@ const Login: React.FC = () => {
                     Avalanche {'\n'} de <BoldText>Amor</BoldText>
                 </StyledText>
 
-                <Form ref={formRef} onSubmit={handleSignIn}>
+                <Form
+                    ref={formRef}
+                    onSubmit={handleSignIn}
+                    style={{ marginBottom: Platform.OS === 'ios' ? '60%' : '' }}
+                >
                     <Input
                         autoCorrect={false}
                         autoCapitalize="none"
