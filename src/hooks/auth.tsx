@@ -14,8 +14,19 @@ interface UserStoraged {
     name: string;
     email: string;
     cpf: string;
+    ddd: string;
     phoneNumber: string;
-    address: string;
+    address: {
+        id: string;
+        addressZipCode: string;
+        addressStreet: string;
+        addressNumber: string;
+        addressComplement: string;
+        addressArea: string;
+        addressCity: string;
+        addressState: string;
+        addressCountry?: string;
+    };
 }
 
 interface AuthContextData {

@@ -1,26 +1,16 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
-import { View, Alert, SafeAreaView, Platform, KeyboardAvoidingView, ScrollView, Text } from 'react-native';
+import { Alert, SafeAreaView, Platform, KeyboardAvoidingView, ScrollView } from 'react-native';
 import * as Yup from 'yup';
 
 import { useNavigation } from '@react-navigation/native';
 import { Form } from '@unform/mobile';
 import { FormHandles } from '@unform/core';
 import { MaterialCommunityIcons, FontAwesome5 } from '@expo/vector-icons';
-import Logo from '../../../assets/logo.png';
-import Button from '../../components/Button';
-import Selector from '../../components/Selector';
 
-import { UserData, FirstFormUpdateData, SecondFormData, AddressFromURL, Address } from '../../utils/Interfaces';
+import { UserData, FirstFormUpdateData, SecondFormData, Address } from '../../utils/Interfaces';
 import { testCPF, getAddressByCep } from '../../utils/AppUtil';
 
-import {
-    HeaderNavigatorContainer,
-    NavigationText,
-    StyledImage,
-    StageText,
-    BoldText,
-    OptionsContainer,
-} from './styles';
+import { OptionsContainer } from './styles';
 import getValidationsErrors from '../../utils/getValidationsErrors';
 import Input from '../../components/Input';
 import api from '../../services/api';
@@ -31,6 +21,8 @@ import UpdateRegisterHeader from '../../components/UpdateRegisterHeader';
 import UpdateOption from '../../components/UpdateOption';
 import UpdateRegisterOptionHeader from '../../components/UpdateRegisterOptionHeader';
 import RegisterFooterButtons from '../../components/RegisterFooterButtons';
+import MaskedInput from '../../components/MaskedInput';
+import { cepPattern } from '../../utils/RegexPatterns';
 
 const UpdateRegister: React.FC = () => {
     const [selecting, setSelecting] = useState(true);
@@ -45,6 +37,7 @@ const UpdateRegister: React.FC = () => {
     const fullNameRef = useRef<TextInput>(null);
     const emailRef = useRef<TextInput>(null);
     const cpfRef = useRef<TextInput>(null);
+    const dddRef = useRef<TextInput>(null);
     const phoneNumberRef = useRef<TextInput>(null);
     const passwordRef = useRef<TextInput>(null);
     const repeatPasswordRef = useRef<TextInput>(null);
@@ -121,6 +114,7 @@ const UpdateRegister: React.FC = () => {
                     id: user.id,
                     name: data.name,
                     email: data.email,
+                    ddd: data.ddd,
                     phoneNumber: data.phoneNumber,
                 });
 
@@ -130,6 +124,7 @@ const UpdateRegister: React.FC = () => {
                         ...user,
                         name: data.name,
                         email: data.email,
+                        ddd: data.ddd,
                         phoneNumber: data.phoneNumber,
                     },
                 });
@@ -138,6 +133,7 @@ const UpdateRegister: React.FC = () => {
                     ...updatedUser,
                     name: data.name,
                     email: data.email,
+                    ddd: data.ddd,
                     phoneNumber: data.phoneNumber,
                 });
 
@@ -162,7 +158,7 @@ const UpdateRegister: React.FC = () => {
                 Alert.alert('Erro na autenticação', 'Cheque as credenciais');
             }
         },
-        [updatedUser, user.id],
+        [updatedUser, user, setData, token],
     );
 
     const handleSecondForm = useCallback(
@@ -253,14 +249,14 @@ const UpdateRegister: React.FC = () => {
                 Alert.alert('Erro na atualização', 'Cheque as credenciais');
             }
         },
-        [updatedUser, user.id],
+        [updatedUser, user, setData, token, userAddress],
     );
 
     useEffect(() => {
         let mounted = true;
         async function getAddress(): Promise<void> {
             try {
-                const receivedRawAddress = await api.get(`/address/${user.address}`);
+                const receivedRawAddress = await api.get(`/address/${user.address.id}`);
                 if (receivedRawAddress && receivedRawAddress.data) {
                     if (mounted) {
                         setUserAddress({
@@ -278,7 +274,7 @@ const UpdateRegister: React.FC = () => {
             } catch (e) {
                 console.log(e);
                 setLoading(false);
-                Alert.alert('Erro ao buscar dados do endereço');
+                Alert.alert('Erro', 'Erro ao buscar dados do endereço');
             }
             setLoading(false);
         }
@@ -288,7 +284,15 @@ const UpdateRegister: React.FC = () => {
         return () => {
             mounted = false;
         };
-    }, [user.address, updatedUser]);
+    }, []);
+
+    useEffect(() => {
+        if (formStage === '2' && secondFormRef && secondFormRef.current) {
+            secondFormRef.current.setData({
+                addressZipCode: user.address.addressZipCode.replace(cepPattern.Regex, cepPattern.Mask),
+            });
+        }
+    }, [formStage]);
 
     if (loading) {
         return <Loading />;
@@ -366,6 +370,18 @@ const UpdateRegister: React.FC = () => {
                                     keyboardType="email-address"
                                     returnKeyType="next"
                                     onSubmitEditing={() => {
+                                        dddRef.current?.focus();
+                                    }}
+                                />
+
+                                <Input
+                                    ref={dddRef}
+                                    maxLength={2}
+                                    labelName="DDD"
+                                    name="ddd"
+                                    keyboardType="number-pad"
+                                    returnKeyType="next"
+                                    onSubmitEditing={() => {
                                         phoneNumberRef.current?.focus();
                                     }}
                                 />
@@ -409,7 +425,24 @@ const UpdateRegister: React.FC = () => {
                             style={{ flex: 1, justifyContent: 'flex-end' }}
                         >
                             <ScrollView style={{ marginTop: '6%' }}>
-                                <Input
+                                <MaskedInput
+                                    maskName="cep"
+                                    ref={addressZipCodeRef}
+                                    maxLength={10}
+                                    keyboardType="number-pad"
+                                    name="addressZipCode"
+                                    labelName="CEP"
+                                    returnKeyType="next"
+                                    onEndEditing={(e) => {
+                                        handleSearchAdressZipCode(e.nativeEvent.text.replace(/\D/g, ''));
+                                    }}
+                                    cepIcon
+                                    getCep={(e: any) =>
+                                        handleSearchAdressZipCode(e.nativeEvent.text.replace(/\D/g, ''))
+                                    }
+                                />
+
+                                {/* <Input
                                     ref={addressZipCodeRef}
                                     maxLength={8}
                                     autoCapitalize="words"
@@ -424,7 +457,7 @@ const UpdateRegister: React.FC = () => {
                                     getCep={(e: any) =>
                                         handleSearchAdressZipCode(e.nativeEvent.text.replace(/\D/g, ''))
                                     }
-                                />
+                                /> */}
                                 <Input
                                     ref={addressStreetRef}
                                     labelName="RUA"
