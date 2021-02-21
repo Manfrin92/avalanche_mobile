@@ -201,6 +201,7 @@ export const styles = StyleSheet.create({
         borderColor: '#fff',
         backgroundColor: '#acacac',
         borderRadius: 8,
+        padding: 4,
     },
     menuWrapper: {
         borderRadius: 10,
