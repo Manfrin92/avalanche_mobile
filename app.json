@@ -4,7 +4,6 @@
     "slug": "avalanche",
     "version": "1.0.0",
     "orientation": "portrait",
-
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
@@ -21,6 +20,8 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "description": "Projeto voluntário",
+    "githubUrl": "https://github.com/Manfrin92/avalanche_mobile"
   }
 }
