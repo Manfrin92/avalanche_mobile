@@ -14,7 +14,7 @@ export const HeaderNavigatorContainer = styled.View`
 
 export const Container = styled.View`
     flex-direction: row;
-    margin-left: 19;
+    margin-left: 19px;
     justify-content: space-between;
 `;
 
@@ -45,7 +45,6 @@ export const NavigationText = styled.Text`
 `;
 
 export const StageText = styled.Text`
-
     font-size: 22px;
     align-self: center;
     line-height: 22px;

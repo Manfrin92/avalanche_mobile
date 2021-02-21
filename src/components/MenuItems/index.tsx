@@ -19,6 +19,7 @@ interface MenuItemsProps {
     navigateToUpdateRegister(): void;
     signOut(): void;
     navigateToFindHelp(): void;
+    navigateToMain(): void;
 }
 
 const MenuItems: React.FC<MenuItemsProps> = ({
@@ -27,6 +28,7 @@ const MenuItems: React.FC<MenuItemsProps> = ({
     navigateToUpdateRegister,
     navigateToFindHelp,
     signOut,
+    navigateToMain,
 }) => {
     return (
         <Container>
@@ -49,7 +51,7 @@ const MenuItems: React.FC<MenuItemsProps> = ({
                         <BoldText>Encontrar ajudas</BoldText>
                     </ItemContainer>
                 </TouchableOpacity>
-                <TouchableOpacity>
+                <TouchableOpacity onPress={navigateToMain}>
                     <ItemContainer style={{ marginBottom: '8%' }}>
                         <SimpleLineIcons style={{ width: '14%' }} name="heart" size={28} color="black" />
                         <BoldText>Minhas ajudas</BoldText>

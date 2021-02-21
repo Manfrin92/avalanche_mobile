@@ -1,5 +1,5 @@
 import { StyleSheet } from 'react-native';
-import styled, { css } from 'styled-components/native';
+import styled from 'styled-components/native';
 
 export const Container = styled.View`
     flex: 1;
@@ -113,37 +113,6 @@ export const DateText = styled.Text`
     font-weight: bold;
     line-height: 23px;
     color: #434a54;
-`;
-
-export const TextInput = styled.TextInput`
-    flex: 1;
-    color: #f08902;
-    font-size: 16px;
-`;
-
-interface ContainerProps {
-    isFocused: boolean;
-    isErrored: boolean;
-}
-
-export const InputContainer = styled.View<ContainerProps>`
-    width: 100%;
-    height: 60px;
-    padding: 0 16px;
-    background: #f9f9f9;
-    border-radius: 10px;
-    margin-bottom: 8px;
-    border-width: 2px;
-    border-color: #f08902;
-
-    flex-direction: row;
-    align-items: center;
-
-    ${(props) =>
-        props.isErrored &&
-        css`
-            border-color: #c53030;
-        `}
 `;
 
 export const HelpTitle = styled.Text`

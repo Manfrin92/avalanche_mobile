@@ -14,7 +14,7 @@ export const HeaderNavigatorContainer = styled.View`
 
 export const HeaderLeftContainer = styled.View`
     flex-direction: row;
-    margin-left: 19;
+    margin-left: 19px;
 `;
 
 export const StyledImage = styled.Image`

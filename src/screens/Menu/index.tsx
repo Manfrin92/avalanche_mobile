@@ -23,6 +23,7 @@ const Menu: React.FC = () => {
                 navigateToFindHelp={() => navigation.navigate(ScreenNamesEnum.FindHelp)}
                 signOut={() => signOut()}
                 userName={user.name}
+                navigateToMain={() => navigation.navigate(ScreenNamesEnum.Main)}
             />
         </SafeAreaView>
     );

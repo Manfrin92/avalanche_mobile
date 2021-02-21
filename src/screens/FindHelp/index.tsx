@@ -1,23 +1,21 @@
-import React, { useState, useRef, useCallback, useEffect } from 'react';
-import {
-    View,
-    Alert,
-    SafeAreaView,
-    Platform,
-    KeyboardAvoidingView,
-    ScrollView,
-    Image,
-    TouchableOpacity,
-} from 'react-native';
-import { getDate, getMonth, setMonth, format, setDate } from 'date-fns';
+import React, { useState, useCallback, useEffect } from 'react';
+import { View, Alert, SafeAreaView, Platform, KeyboardAvoidingView, ScrollView, Image } from 'react-native';
+import { format } from 'date-fns';
 
 import { useNavigation } from '@react-navigation/native';
-import { MaterialCommunityIcons, Ionicons } from '@expo/vector-icons';
 import { Menu, MenuOption, MenuOptions, MenuTrigger } from 'react-native-popup-menu';
 import DateSelector from '../../components/DateSelector';
 import RegisterFooterButtons from '../../components/RegisterFooterButtons';
 
-import { DateContainer, DateText, menuSelectedTextAvailable, styles, Text, TextTitle } from './styles';
+import {
+    menuSelectedTextAvailable,
+    styles,
+    Text,
+    TextTitle,
+    HelpDescription,
+    HelpSubTitle,
+    HelpTitle,
+} from './styles';
 import api from '../../services/api';
 import { useAuth } from '../../hooks/auth';
 import { ScreenNamesEnum } from '../../utils/enums';
@@ -25,11 +23,55 @@ import HelpHeader from '../../components/HelpHeader';
 import helpImage from '../../../assets/helpImage.jpg';
 import Loading from '../Loading';
 import Button from '../../components/Button';
+import FoundHelpInfo from '../../components/FoundHelpInfo';
+import { cepPattern } from '../../utils/RegexPatterns';
 
 interface HelpDateType {
     id: string;
     name: string;
     groupName: string;
+}
+
+export interface HelpDateFiltered {
+    id: string;
+    date: Date;
+    help: {
+        id: string;
+        title: string;
+        description: string;
+        observation?: string;
+        imageName?: string;
+        needy: {
+            id: string;
+            name: string;
+            email: string;
+            showContact: boolean;
+            ddd: string;
+            phoneNumber: string;
+        };
+        address: {
+            id: string;
+            addressZipCode: string;
+            addressStreet: string;
+            addressNumber: string;
+            addressComplement: string;
+            addressArea: string;
+            addressCity: string;
+            addressState: string;
+        };
+        userManager: {
+            id: string;
+            name: string;
+            email: string;
+            cpf: number;
+            ddd: number;
+            phoneNumber: number;
+        };
+    };
+    type: {
+        id: string;
+        name: string;
+    };
 }
 
 const NewHelp: React.FC = () => {
@@ -43,50 +85,31 @@ const NewHelp: React.FC = () => {
     const [finalDate, setFinalDate] = useState<Date>(new Date());
     const [helpDateTypes, setHelpDateTypes] = useState<HelpDateType[]>();
     const [helpDateType, setHelpDateType] = useState<HelpDateType>({} as HelpDateType);
+    const [helpDateFiltered, setHelpDateFiltered] = useState<HelpDateFiltered[]>([] as HelpDateFiltered[]);
+    const [activeHelpDate, setActiveHelpDate] = useState<HelpDateFiltered>({} as HelpDateFiltered);
 
-    const handleSetInitialDate = useCallback((childChosenDate: Date) => {
-        const newDate = new Date();
-        const onlyDay = getDate(childChosenDate);
-        const onlyMonth = getMonth(childChosenDate);
-        const usingDay = setDate(newDate, onlyDay);
-        const usingMonth = setMonth(usingDay, onlyMonth);
-
-        const formatedFinalDate = `${format(usingMonth, 'yyyy-MM-dd')}`;
-
-        console.log('formated: ', formatedFinalDate);
-
-        // setChosenDate(childChosenDate);
-        // setHelp({ ...help, helpDate: formatedFinalDate });
-
-        // setSelectedDate(true);
-    }, []);
-
-    const handleSetFinalDate = useCallback((childChosenDate: Date) => {
-        const newDate = new Date();
-        const onlyDay = getDate(childChosenDate);
-        const onlyMonth = getMonth(childChosenDate);
-        const usingDay = setDate(newDate, onlyDay);
-        const usingMonth = setMonth(usingDay, onlyMonth);
-
-        const formatedFinalDate = `${format(usingMonth, 'yyyy-MM-dd')}`;
-
-        console.log('formated: ', formatedFinalDate);
-
-        // setChosenDate(childChosenDate);
-        // setHelp({ ...help, helpDate: formatedFinalDate });
-
-        // setSelectedDate(true);
-    }, []);
-
-    const handleHelpSearch = useCallback(() => {
+    const handleHelpSearch = useCallback(async () => {
         try {
-            console.log('dados até então: ', {
+            setLoading(true);
+
+            const { data } = await api.post('/help/filterHelp', {
                 initialDate,
                 finalDate,
                 helpDateType,
             });
+
+            setHelpDateFiltered(data);
+
+            if ((data && data.length <= 0) || data === undefined) {
+                Alert.alert('Sem resultados', 'Nenhuma ajuda encontrada com esses critérios.');
+            } else {
+                setFormStage('2');
+            }
+
+            setLoading(false);
         } catch (e) {
             Alert.alert('Erro', 'Erro ao buscar ajudas.');
+            setLoading(false);
         }
     }, [initialDate, finalDate, helpDateType]);
 
@@ -117,6 +140,32 @@ const NewHelp: React.FC = () => {
         };
     }, []);
 
+    const handleActiveHelp = useCallback((chosenHelp: HelpDateFiltered) => {
+        setActiveHelpDate(chosenHelp);
+
+        setFormStage('3');
+    }, []);
+
+    const handleSetVolunteerToHelp = useCallback(async () => {
+        try {
+            setLoading(true);
+
+            await api.put('/helpDate', {
+                id: activeHelpDate.id,
+                userVolunteer: user.id,
+            });
+
+            setLoading(false);
+
+            Alert.alert('Sucesso', 'Você entrou como voluntário nessa ajuda');
+
+            navigation.navigate(ScreenNamesEnum.Main);
+        } catch (e) {
+            Alert.alert('Erro', 'Não foi possível adicionar voluntário na ajuda');
+            setLoading(false);
+        }
+    }, [user.id, activeHelpDate.id, navigation]);
+
     if (loading) {
         return <Loading />;
     }
@@ -138,14 +187,14 @@ const NewHelp: React.FC = () => {
                             <View>
                                 <DateSelector
                                     title="Data inicial"
-                                    setChosenDate={handleSetInitialDate}
+                                    setChosenDate={(selected) => setInitialDate(selected)}
                                     initialDate={initialDate}
                                 />
                             </View>
                             <View>
                                 <DateSelector
                                     title="Data final"
-                                    setChosenDate={handleSetFinalDate}
+                                    setChosenDate={(selected) => setFinalDate(selected)}
                                     initialDate={finalDate}
                                 />
                             </View>
@@ -195,9 +244,26 @@ const NewHelp: React.FC = () => {
             {formStage === '2' && (
                 <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
                     <SafeAreaView style={{ flex: 1 }}>
-                        <HelpHeader isNewDate formCurrentStage={formStage} formTotalStages="3" />
+                        <HelpHeader
+                            isFindHelpDate
+                            navigateToMain={() => setFormStage('1')}
+                            formCurrentStage={formStage}
+                            formTotalStages="3"
+                        />
 
-                        <ScrollView style={{ marginTop: '6%' }} />
+                        <ScrollView style={{ marginTop: '6%' }}>
+                            {helpDateFiltered &&
+                                helpDateFiltered.length > 0 &&
+                                helpDateFiltered.map((helpDateFi) => (
+                                    <FoundHelpInfo
+                                        date={helpDateFi.date}
+                                        help={helpDateFi.help}
+                                        id={helpDateFi.id}
+                                        type={helpDateFi.type}
+                                        onPress={() => handleActiveHelp(helpDateFi)}
+                                    />
+                                ))}
+                        </ScrollView>
                     </SafeAreaView>
                 </KeyboardAvoidingView>
             )}
@@ -206,9 +272,75 @@ const NewHelp: React.FC = () => {
             {formStage === '3' && (
                 <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
                     <SafeAreaView style={{ flex: 1 }}>
-                        <HelpHeader isNewDate formCurrentStage={formStage} formTotalStages="3" />
+                        <HelpHeader
+                            navigateToMain={() => navigation.navigate(ScreenNamesEnum.Main)}
+                            isFindHelpDate
+                            formCurrentStage={formStage}
+                            formTotalStages="3"
+                        />
 
-                        <ScrollView style={{ marginTop: '6%' }} />
+                        <ScrollView style={{ marginTop: '6%' }}>
+                            <HelpTitle style={{ marginLeft: '3%' }}>
+                                Ajuda para {activeHelpDate.help.needy.name}
+                            </HelpTitle>
+                            <Image
+                                style={{ width: 350, height: 200, alignSelf: 'center', marginTop: '3%' }}
+                                source={helpImage}
+                            />
+                            <View style={{ margin: '3%' }}>
+                                <HelpSubTitle>Título: {activeHelpDate.help.title}</HelpSubTitle>
+
+                                <HelpDescription>
+                                    {activeHelpDate.help.description} {'\n'} Obs:{' '}
+                                    {activeHelpDate.help.observation ? activeHelpDate.help.observation : ''}
+                                </HelpDescription>
+
+                                <HelpSubTitle style={{ marginTop: '3%' }}>Local: </HelpSubTitle>
+
+                                <HelpDescription style={{ marginTop: '3%' }}>
+                                    {activeHelpDate.help.address.addressStreet}{' '}
+                                    {activeHelpDate.help.address.addressNumber},{' '}
+                                    {activeHelpDate.help.address.addressArea},{' '}
+                                    {activeHelpDate.help.address.addressCity}{' '}
+                                    {activeHelpDate.help.address.addressState}{' '}
+                                </HelpDescription>
+                                <HelpDescription>
+                                    CEP:{' '}
+                                    {activeHelpDate.help.address.addressZipCode.replace(
+                                        cepPattern.Regex,
+                                        cepPattern.Mask,
+                                    )}{' '}
+                                </HelpDescription>
+
+                                <HelpSubTitle style={{ marginTop: '3%' }}>Data: </HelpSubTitle>
+                                <HelpDescription style={{ marginTop: '3%' }}>
+                                    {activeHelpDate.date && format(new Date(activeHelpDate.date), 'dd/MM/yyyy')} às{' '}
+                                    {String(activeHelpDate.date).substr(11, 5)} horas.
+                                </HelpDescription>
+
+                                <HelpSubTitle style={{ marginTop: '3%' }}>Necessitado: </HelpSubTitle>
+                                <HelpDescription style={{ marginTop: '3%' }}>
+                                    {activeHelpDate.help.needy.showContact ? (
+                                        <>
+                                            {activeHelpDate.help.needy.name} {'\n'}Telefone: (
+                                            {activeHelpDate.help.needy.ddd}){' '}
+                                            {activeHelpDate.help.needy.phoneNumber} {'\n'}
+                                            E-mail: {activeHelpDate.help.needy.email}
+                                        </>
+                                    ) : (
+                                        <Text>Entrar em contato com organizador</Text>
+                                    )}
+                                </HelpDescription>
+
+                                <HelpSubTitle style={{ marginTop: '3%' }}>Organizador: </HelpSubTitle>
+                                <HelpDescription style={{ marginTop: '3%' }}>
+                                    {activeHelpDate.help.userManager.name} {'\n'}Telefone: (
+                                    {activeHelpDate.help.userManager.ddd}){' '}
+                                    {activeHelpDate.help.userManager.phoneNumber} {'\n'}E-mail:{' '}
+                                    {activeHelpDate.help.userManager.email}
+                                </HelpDescription>
+                            </View>
+                        </ScrollView>
 
                         <RegisterFooterButtons
                             textBackButton="VOLTAR"
@@ -216,7 +348,7 @@ const NewHelp: React.FC = () => {
                             textForwardButton="CONFIRMAR"
                             titleForwardButton="next"
                             backFunction={() => setFormStage('2')}
-                            forwardFunction={() => console.log('ok')}
+                            forwardFunction={handleSetVolunteerToHelp}
                         />
                     </SafeAreaView>
                 </KeyboardAvoidingView>
