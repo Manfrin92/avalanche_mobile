@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, useCallback } from 'react';
+import React, { useEffect, useState, useRef, useCallback, useMemo } from 'react';
 import { TextInput, Alert, SafeAreaView, Keyboard, Platform } from 'react-native';
 import * as Yup from 'yup';
 import { Form } from '@unform/mobile';
@@ -27,6 +27,8 @@ const Login: React.FC = () => {
     const navigation = useNavigation();
     const { signIn } = useAuth();
 
+    const isIos = useMemo(() => Platform.OS === 'ios', []);
+
     useEffect(() => {
         Keyboard.addListener('keyboardDidShow', () => setKeyboardOpen(true));
         Keyboard.addListener('keyboardDidHide', () => setKeyboardOpen(false));
@@ -51,36 +53,39 @@ const Login: React.FC = () => {
         };
     }, []);
 
-    const handleSignIn = useCallback(async (data: SignInFormData) => {
-        try {
-            formRef.current?.setErrors({});
+    const handleSignIn = useCallback(
+        async (data: SignInFormData) => {
+            try {
+                formRef.current?.setErrors({});
 
-            const schema = Yup.object().shape({
-                email: Yup.string().trim().required('E-mail obrigatório').email('Digite um email válido'),
-                password: Yup.string().required('Senha obrigatória'),
-            });
+                const schema = Yup.object().shape({
+                    email: Yup.string().trim().required('E-mail obrigatório').email('Digite um email válido'),
+                    password: Yup.string().required('Senha obrigatória'),
+                });
 
-            await schema.validate(data, { abortEarly: false });
+                await schema.validate(data, { abortEarly: false });
 
-            signIn({
-                email: data.email.trim(),
-                password: data.password,
-            });
+                signIn({
+                    email: data.email.trim(),
+                    password: data.password,
+                });
 
-            navigation.navigate(ScreenNamesEnum.Main);
-        } catch (err) {
-            if (err instanceof Yup.ValidationError) {
-                const errors = getValidationsErrors(err);
-                formRef.current?.setErrors(errors);
-                if (errors.email) Alert.alert(errors.email);
-                if (errors.password) Alert.alert(errors.password);
+                navigation.navigate(ScreenNamesEnum.Main);
+            } catch (err) {
+                if (err instanceof Yup.ValidationError) {
+                    const errors = getValidationsErrors(err);
+                    formRef.current?.setErrors(errors);
+                    if (errors.email) Alert.alert(errors.email);
+                    if (errors.password) Alert.alert(errors.password);
+                    return;
+                }
+
+                Alert.alert('Erro', 'Erro durante login.');
                 return;
             }
-
-            Alert.alert('Erro na autenticação', 'Favor verificar seu e-mail e senha');
-            return;
-        }
-    }, []);
+        },
+        [navigation, signIn],
+    );
 
     return (
         <SafeAreaView style={{ flex: 1 }}>
@@ -95,7 +100,7 @@ const Login: React.FC = () => {
                 <Form
                     ref={formRef}
                     onSubmit={handleSignIn}
-                    style={{ marginBottom: Platform.OS === 'ios' ? '60%' : '' }}
+                    style={{ marginBottom: isIos && keyboardOpen ? '60%' : 0 }}
                 >
                     <Input
                         autoCorrect={false}

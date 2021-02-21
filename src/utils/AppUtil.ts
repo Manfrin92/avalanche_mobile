@@ -17,6 +17,7 @@ export function goToUrl(url: string): void {
 }
 
 export function testCPF(cpf: string): boolean {
+    cpf = cpf.replace(/\D+/g, '');
     let sum;
     let restOfDivision;
     sum = 0;

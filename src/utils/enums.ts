@@ -8,3 +8,19 @@ export enum ScreenNamesEnum {
     UpdateRegister = 'UpdateRegister',
     FindHelp = 'FindHelp',
 }
+
+export enum SkillsEnum {
+    skillDoctor = 'skillDoctor',
+    skillCooker = 'skillCooker',
+    skillDriver = 'skillDriver',
+    skillNurse = 'skillNurse',
+    skillGeneralServices = 'skillGeneralServices',
+    skillHospitalPartner = 'skillHospitalPartner',
+    skillFinancialHelper = 'skillFinancialHelper',
+    skillMediator = 'skillMediator',
+    skillMason = 'skillMason',
+    skillCarpinter = 'skillCarpinter',
+    skillLawyer = 'skillLawyer',
+    skillLanguage = 'skillLanguage',
+    skillOther = 'skillOther',
+}

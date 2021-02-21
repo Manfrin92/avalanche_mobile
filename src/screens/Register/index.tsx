@@ -14,10 +14,11 @@ import { testCPF, getAddressByCep } from '../../utils/AppUtil';
 import getValidationsErrors from '../../utils/getValidationsErrors';
 import Input from '../../components/Input';
 import api from '../../services/api';
-import { ScreenNamesEnum } from '../../utils/enums';
+import { ScreenNamesEnum, SkillsEnum } from '../../utils/enums';
 import RegisterHeader from '../../components/RegisterHeader';
 import RegisterFooterButtons from '../../components/RegisterFooterButtons';
 import MaskedInput from '../../components/MaskedInput';
+import { cepPattern, cpfPattern } from '../../utils/RegexPatterns';
 
 const Register: React.FC = () => {
     const navigation = useNavigation();
@@ -52,6 +53,8 @@ const Register: React.FC = () => {
     const addressAreaRef = useRef<TextInput>(null);
     const addressCityRef = useRef<TextInput>(null);
     const addressStateRef = useRef<TextInput>(null);
+    // TERCEIRO FORM
+    const [skills, setSkills] = useState<Array<string>>();
 
     const handleSearchAdressZipCode = useCallback(async (cep: string) => {
         if (cep === '' || cep.length < 8) {
@@ -85,10 +88,12 @@ const Register: React.FC = () => {
             try {
                 firstFormRef.current?.setErrors({});
 
+                console.log('cpf retornado: ', data);
+
                 const schema = Yup.object().shape({
                     name: Yup.string().required('Nome obrigatório'),
                     email: Yup.string().email('Digite um email válido').required('Email obrigatório'),
-                    cpf: Yup.string().max(11, 'CPF mínimo 11 digitos').required('CPF obrigatório'),
+                    cpf: Yup.string().max(14, 'CPF mínimo 11 digitos').required('CPF obrigatório'),
                     phoneNumber: Yup.string()
                         .min(10, 'Telefone muito pequeno')
                         .max(11, 'Telefone excede máximo')
@@ -214,6 +219,7 @@ const Register: React.FC = () => {
                 addressArea: user.addressArea,
                 addressCity: user.addressCity,
                 addressState: user.addressState,
+                skills,
             });
 
             Alert.alert('Usuário criado com sucesso!');
@@ -225,17 +231,31 @@ const Register: React.FC = () => {
             }
             Alert.alert('Erro no cadastro');
         }
-    }, [user, navigation]);
+    }, [user, navigation, skills]);
 
     useEffect(() => {
         let mounted = true;
 
-        if (firstFormRef.current) {
+        if (firstFormRef && firstFormRef.current) {
             if (formStage === '1') {
                 if (mounted) {
                     firstFormRef.current.setData({
                         ...user,
+                        cpf: user.cpf ? user.cpf.replace(cpfPattern.Regex, cpfPattern.Mask) : '',
                         repeatPassword: user.password,
+                    });
+                }
+            }
+        }
+
+        if (secondFormRef && secondFormRef.current) {
+            if (formStage === '2') {
+                if (mounted) {
+                    secondFormRef.current.setData({
+                        ...user,
+                        addressZipCode: user.addressZipCode
+                            ? user.addressZipCode.replace(cepPattern.Regex, cepPattern.Mask)
+                            : '',
                     });
                 }
             }
@@ -474,53 +494,112 @@ const Register: React.FC = () => {
                             <Selector
                                 optionText="Cozinheiro (a)"
                                 selected={cooker}
-                                setSelected={() => setCooker(!cooker)}
+                                setSelected={() => {
+                                    if (skills) {
+                                        setSkills([...skills, SkillsEnum.skillCooker]);
+                                    } else {
+                                        setSkills([SkillsEnum.skillCooker]);
+                                    }
+                                    setCooker(!cooker);
+                                }}
                             />
 
                             <Selector
                                 optionText="Motorista (a)"
                                 selected={driver}
-                                setSelected={() => setDriver(!driver)}
+                                setSelected={() => {
+                                    if (skills) {
+                                        setSkills([...skills, SkillsEnum.skillDriver]);
+                                    } else {
+                                        setSkills([SkillsEnum.skillDriver]);
+                                    }
+                                    setDriver(!driver);
+                                }}
                             />
                             <Selector
                                 optionText="Médico (a)"
                                 selected={doctor}
-                                setSelected={() => setDoctor(!doctor)}
+                                setSelected={() => {
+                                    if (skills) {
+                                        setSkills([...skills, SkillsEnum.skillDoctor]);
+                                    } else {
+                                        setSkills([SkillsEnum.skillDoctor]);
+                                    }
+                                    setDoctor(!doctor);
+                                }}
                             />
                             <Selector
                                 optionText="Enfermeiro (a)"
                                 selected={nurse}
-                                setSelected={() => setNurse(!nurse)}
+                                setSelected={() => {
+                                    if (skills) {
+                                        setSkills([...skills, SkillsEnum.skillNurse]);
+                                    } else {
+                                        setSkills([SkillsEnum.skillNurse]);
+                                    }
+                                    setNurse(!nurse);
+                                }}
                             />
                             <Selector
                                 optionText="Serviços Gerais"
                                 selected={generalWorker}
-                                setSelected={() => setGeneralWorker(!generalWorker)}
+                                setSelected={() => {
+                                    if (skills) {
+                                        setSkills([...skills, SkillsEnum.skillGeneralServices]);
+                                    } else {
+                                        setSkills([SkillsEnum.skillGeneralServices]);
+                                    }
+                                    setGeneralWorker(!generalWorker);
+                                }}
                             />
                             <Selector
                                 optionText="Acompanhante Hospitalar"
                                 selected={hospitalCompanion}
-                                setSelected={() => setHospitalCompanion(!hospitalCompanion)}
+                                setSelected={() => {
+                                    if (skills) {
+                                        setSkills([...skills, SkillsEnum.skillHospitalPartner]);
+                                    } else {
+                                        setSkills([SkillsEnum.skillHospitalPartner]);
+                                    }
+                                    setHospitalCompanion(!hospitalCompanion);
+                                }}
                             />
                             <Selector
                                 optionText="Ajudante Financeiro"
                                 selected={financialHelper}
-                                setSelected={() => setFinancialHelper(!financialHelper)}
+                                setSelected={() => {
+                                    if (skills) {
+                                        setSkills([...skills, SkillsEnum.skillFinancialHelper]);
+                                    } else {
+                                        setSkills([SkillsEnum.skillFinancialHelper]);
+                                    }
+                                    setFinancialHelper(!financialHelper);
+                                }}
                             />
-                            <Selector
-                                optionText="Intercessor (a)"
-                                selected={interceptor}
-                                setSelected={() => setInterceptor(!interceptor)}
-                            />
+
                             <Selector
                                 optionText="Pedreiro (a)"
                                 selected={manualWorker}
-                                setSelected={() => setManualWorker(!manualWorker)}
+                                setSelected={() => {
+                                    if (skills) {
+                                        setSkills([...skills, SkillsEnum.skillMason]);
+                                    } else {
+                                        setSkills([SkillsEnum.skillMason]);
+                                    }
+                                    setManualWorker(!manualWorker);
+                                }}
                             />
                             <Selector
                                 optionText="Carpinteiro (a)"
                                 selected={carpinter}
-                                setSelected={() => setCarpinter(!carpinter)}
+                                setSelected={() => {
+                                    if (skills) {
+                                        setSkills([...skills, SkillsEnum.skillCarpinter]);
+                                    } else {
+                                        setSkills([SkillsEnum.skillCarpinter]);
+                                    }
+                                    setCarpinter(!carpinter);
+                                }}
                             />
                         </ScrollView>
 
