@@ -39,7 +39,7 @@ export const NavigationText = styled.Text`
     line-height: 22px;
     letter-spacing: -0.01px;
 
-    color: #0a5f9a;
+    color: #DA4453;
     align-self: center;
     padding-left: 18px;
 `;

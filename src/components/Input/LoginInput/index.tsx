@@ -72,14 +72,14 @@ const Input: React.RefForwardingComponent<InputRef, InputProps> = (
                     style={{ marginRight: 8 }}
                     name="lock"
                     size={20}
-                    color={isFocused || isFilled ? '#0A5F9A' : '#666360'}
+                    color={isFocused || isFilled ? '#da4453' : '#666360'}
                 />
             ) : (
                 <MaterialIcons
                     style={{ marginRight: 8 }}
                     name="email"
                     size={20}
-                    color={isFocused || isFilled ? '#0A5F9A' : '#666360'}
+                    color={isFocused || isFilled ? '#da4453' : '#666360'}
                 />
             )}
 

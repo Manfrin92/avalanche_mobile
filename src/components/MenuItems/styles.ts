@@ -15,7 +15,7 @@ export const TextName = styled.Text`
     line-height: 22px;
     letter-spacing: -0.01px;
 
-    color: #f08902;
+    color: #DA4453;
     align-self: center;
 `;
 
@@ -25,7 +25,7 @@ export const RedBoldText = styled.Text`
     line-height: 22px;
     letter-spacing: -0.01px;
 
-    color: #f08902;
+    color: #DA4453;
     align-self: center;
 `;
 

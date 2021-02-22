@@ -10,14 +10,14 @@ export const StyledText = styled.Text`
     font-size: 32px;
     text-align: center;
     margin-top: 8%;
-    color: #0a5f9a;
+    color: black;
 `;
 
 export const BoldText = styled.Text`
     font-weight: bold;
     font-size: 32px;
     text-align: center;
-    color: #0a5f9a;
+    color: black;
 `;
 
 export const FormView = styled.View`

@@ -65,7 +65,7 @@ const MenuItems: React.FC<MenuItemsProps> = ({
                 </TouchableOpacity>
                 <TouchableOpacity onPress={signOut}>
                     <ItemContainer style={{ marginBottom: '8%' }}>
-                        <MaterialCommunityIcons style={{ width: '14%' }} name="logout" size={28} color="#F08902" />
+                        <MaterialCommunityIcons style={{ width: '14%' }} name="logout" size={28} color="#da4453" />
                         <TextName>Sair</TextName>
                     </ItemContainer>
                 </TouchableOpacity>

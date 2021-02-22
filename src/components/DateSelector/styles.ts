@@ -16,20 +16,20 @@ export const SelectorContainer = styled.View`
     height: ${Platform.OS === 'android' ? 70 : 100}px;
     justify-content: center;
     border-width: 2px;
-    border-color: #f08902;
+    border-color: #da4453;
 `;
 
 export const Text = styled.Text`
     font-size: 20px;
     line-height: 20px;
     text-align: center;
-    color: #f08902;
+    color: #da4453;
 `;
 
 export const ActionText = styled.Text`
     font-size: 16px;
     line-height: 20px;
     text-align: center;
-    color: #0a5f9a;
+    color: #DA4453;
     padding: 2px 4% 1px 0;
 `;

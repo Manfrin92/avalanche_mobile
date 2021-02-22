@@ -24,14 +24,14 @@ export const Container = styled.View<ContainerProps>`
     ${(props: ContainerProps) =>
         props.buttonType === 'enter' &&
         css`
-            background-color: #f08902;
+            background-color: #da4453;
         `}
 
     ${(props: ContainerProps) =>
         props.buttonType === 'register' &&
         css`
             background-color: #f9f9f9;
-            border: 2px solid #0a5f9a;
+            border: 2px solid #da4453;
             margin-top: 4%;
         `}
 
@@ -62,13 +62,13 @@ export const Text = styled.Text<ButtonProps>`
     ${(props: ButtonProps) =>
         props.buttonType === 'register' &&
         css`
-            color: #0a5f9a;
+            color: #da4453;
         `}
 
         ${(props: ButtonProps) =>
         props.buttonType === 'goBack' &&
         css`
-            color: #f08902;
+            color: #da4453;
         `}
 `;
 

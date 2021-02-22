@@ -11,7 +11,7 @@ export const OptionContainer = styled.TouchableOpacity`
 export const Square = styled.View<SquareProps>`
     height: 22px;
     width: 22px;
-    border-color: #f08902;
+    border-color: #da4453;
     border-width: 2px;
     justify-content: center;
     align-items: center;
@@ -19,7 +19,7 @@ export const Square = styled.View<SquareProps>`
     ${(props) =>
         props.selected &&
         css`
-            background-color: #f08902;
+            background-color: #da4453;
         `}
 `;
 

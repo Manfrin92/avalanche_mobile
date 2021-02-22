@@ -172,6 +172,12 @@ const NewHelp: React.FC<NewHelpProps> = ({ route }) => {
             try {
                 firstFormRef.current?.setErrors({});
 
+                if (data && data.dateHour) {
+                    if (data.dateHour.length === 4) {
+                        data.dateHour = `${data.dateHour.substring(0, 2)}:${data.dateHour.substring(1, 3)}`;
+                    }
+                }
+
                 const schema = Yup.object().shape({
                     name: Yup.string().required('Nome do necessitado obrigatório'),
                     title: Yup.string().required('Título da ajuda obrigatório'),
@@ -568,7 +574,7 @@ const NewHelp: React.FC<NewHelpProps> = ({ route }) => {
             {formStage === '1' && (
                 <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
                     <SafeAreaView style={{ flex: 1 }}>
-                        <HelpHeader formCurrentStage={formStage} formTotalStages="5" />
+                        <HelpHeader formCurrentStage={formStage} formTotalStages="4" />
 
                         <Form
                             onSubmit={handleFirstForm}
@@ -778,7 +784,7 @@ const NewHelp: React.FC<NewHelpProps> = ({ route }) => {
             {formStage === '2' && (
                 <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
                     <SafeAreaView style={{ flex: 1 }}>
-                        <HelpHeader formCurrentStage={formStage} formTotalStages="5" />
+                        <HelpHeader formCurrentStage={formStage} formTotalStages="4" />
 
                         <Form
                             onSubmit={handleSecondForm}
@@ -882,55 +888,11 @@ const NewHelp: React.FC<NewHelpProps> = ({ route }) => {
                 </KeyboardAvoidingView>
             )}
 
-            {/* THIRD PART */}
+            {/* THIRTH PART */}
             {formStage === '3' && (
                 <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
                     <SafeAreaView style={{ flex: 1 }}>
-                        <HelpHeader formCurrentStage={formStage} formTotalStages="5" />
-
-                        <ScrollView style={{ marginTop: '6%', marginRight: '6%', marginLeft: '6%' }}>
-                            <TextTitle style={{ marginLeft: '0%' }}>Datas:</TextTitle>
-
-                            {selectedDate && chosenDate && (
-                                <View>
-                                    <TouchableOpacity>
-                                        <DateContainer
-                                            style={{
-                                                flexDirection: 'row',
-                                                justifyContent: 'space-between',
-                                            }}
-                                        >
-                                            <DateText>{format(chosenDate, 'dd/MM')}</DateText>
-                                            <DescriptionText>{help.title}</DescriptionText>
-                                            <MaterialCommunityIcons
-                                                style={{ marginLeft: '6%' }}
-                                                name="pencil"
-                                                size={38}
-                                                color="#F6BB42"
-                                            />
-                                        </DateContainer>
-                                    </TouchableOpacity>
-                                </View>
-                            )}
-                        </ScrollView>
-
-                        <RegisterFooterButtons
-                            textBackButton="VOLTAR"
-                            titleBackButton="goBack"
-                            textForwardButton="PRÓXIMO"
-                            titleForwardButton="next"
-                            backFunction={() => setFormStage('2')}
-                            forwardFunction={() => setFormStage('4')}
-                        />
-                    </SafeAreaView>
-                </KeyboardAvoidingView>
-            )}
-
-            {/* FOURTH PART */}
-            {formStage === '4' && (
-                <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-                    <SafeAreaView style={{ flex: 1 }}>
-                        <HelpHeader isNewDate formCurrentStage={formStage} formTotalStages="5" />
+                        <HelpHeader isNewDate formCurrentStage={formStage} formTotalStages="4" />
 
                         <ScrollView style={{ marginTop: '6%' }}>
                             <View>
@@ -947,18 +909,18 @@ const NewHelp: React.FC<NewHelpProps> = ({ route }) => {
                             titleBackButton="goBack"
                             textForwardButton="PRÓXIMO"
                             titleForwardButton="next"
-                            backFunction={() => setFormStage('3')}
-                            forwardFunction={() => setFormStage('5')}
+                            backFunction={() => setFormStage('2')}
+                            forwardFunction={() => setFormStage('4')}
                         />
                     </SafeAreaView>
                 </KeyboardAvoidingView>
             )}
 
             {/* FIFTH PART */}
-            {formStage === '5' && (
+            {formStage === '4' && (
                 <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
                     <SafeAreaView style={{ flex: 1 }}>
-                        <HelpHeader isNewDate formCurrentStage={formStage} formTotalStages="5" />
+                        <HelpHeader isNewDate formCurrentStage={formStage} formTotalStages="4" />
 
                         <ScrollView style={{ marginTop: '6%' }}>
                             <HelpTitle style={{ marginLeft: '3%' }}>Ajuda para {needyInCreation.name}</HelpTitle>
@@ -999,7 +961,7 @@ const NewHelp: React.FC<NewHelpProps> = ({ route }) => {
                             titleBackButton="goBack"
                             textForwardButton="PUBLICAR"
                             titleForwardButton="next"
-                            backFunction={() => setFormStage('4')}
+                            backFunction={() => setFormStage('3')}
                             forwardFunction={() =>
                                 route && route.params && route.params.editing && route.params.editing
                                     ? handleUpdateHelp()

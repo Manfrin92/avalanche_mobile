@@ -87,7 +87,7 @@ const Input: React.RefForwardingComponent<InputRef, InputProps> = (
                         <FontAwesome
                             style={{ marginRight: 15, marginTop: '35%' }}
                             onClick={getCep}
-                            color="#0A5F9A"
+                            color="#da4453"
                             size={24}
                             name="search"
                         />
@@ -98,7 +98,7 @@ const Input: React.RefForwardingComponent<InputRef, InputProps> = (
                     <TouchableOpacity style={{ marginRight: 0 }} onPress={searchClick}>
                         <FontAwesome
                             style={{ marginRight: 15, marginTop: '35%' }}
-                            color="#0A5F9A"
+                            color="#da4453"
                             size={24}
                             name="search"
                         />

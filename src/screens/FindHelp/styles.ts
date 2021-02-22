@@ -58,7 +58,7 @@ export const Title = styled.Text`
 
 export const Text = styled.Text`
     font-size: 18px;
-    color: #f08902;
+    color: #da4453;
 `;
 
 export const BoldText = styled.Text`
