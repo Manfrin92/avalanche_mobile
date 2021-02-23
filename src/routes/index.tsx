@@ -1,9 +1,11 @@
 import React from 'react';
-import { View } from 'react-native';
+import { LogBox, View } from 'react-native';
 import { useAuth } from '../hooks/auth';
 
 import AppRoutes from './App';
 import AuthRoutes from './Auth';
+
+// LogBox.ignoreAllLogs();
 
 const Routes: React.FC = () => {
     const { user, loading } = useAuth();

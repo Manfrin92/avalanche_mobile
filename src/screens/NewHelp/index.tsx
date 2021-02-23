@@ -174,7 +174,7 @@ const NewHelp: React.FC<NewHelpProps> = ({ route }) => {
 
                 if (data && data.dateHour) {
                     if (data.dateHour.length === 4) {
-                        data.dateHour = `${data.dateHour.substring(0, 2)}:${data.dateHour.substring(1, 3)}`;
+                        data.dateHour = `${data.dateHour.substring(0, 2)}:${data.dateHour.substring(2)}`;
                     }
                 }
 
@@ -899,10 +899,6 @@ const NewHelp: React.FC<NewHelpProps> = ({ route }) => {
                                 <DateSelector setChosenDate={handleSetChosenDate} initialDate={chosenDate} />
                             </View>
                         </ScrollView>
-
-                        <TouchableOpacity style={{ alignSelf: 'flex-end', marginBottom: '6%', marginRight: '6%' }}>
-                            <Ionicons name="md-trash" size={72} color="#F6BB42" />
-                        </TouchableOpacity>
 
                         <RegisterFooterButtons
                             textBackButton="VOLTAR"
