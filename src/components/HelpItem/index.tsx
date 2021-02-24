@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, TouchableOpacity, Alert } from 'react-native';
 import { MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons';
 
 import { HelpTitle, HelpDescription, HelpBoldDescription } from './styles';
+import { Type } from '../../utils/Interfaces';
 
 interface HelpItemProps {
     id: string;
@@ -22,9 +23,24 @@ interface HelpItemProps {
     helpDate?: Date;
     ExcludeHelp(): Promise<void>;
     navigate(): void;
+    helpType: Type;
 }
 
-const HelpItem: React.FC<HelpItemProps> = ({ title, ExcludeHelp, navigate, ...rest }) => {
+const HelpItem: React.FC<HelpItemProps> = ({ title, ExcludeHelp, navigate, helpType, ...rest }) => {
+    const helpTypeName = useMemo(() => {
+        let nameInArray;
+        if (helpType && helpType.name) {
+            nameInArray = helpType.name.split(' ');
+            if (nameInArray && nameInArray.length === 1) {
+                return nameInArray[0];
+            }
+            if (nameInArray && nameInArray.length === 2) {
+                return `${nameInArray[0]} \n ${nameInArray[1]}`;
+            }
+        }
+        return '';
+    }, [helpType]);
+
     return (
         <View {...rest} style={{ marginTop: '8%' }}>
             <View
@@ -56,7 +72,7 @@ const HelpItem: React.FC<HelpItemProps> = ({ title, ExcludeHelp, navigate, ...re
                         color="black"
                     />
                     <View style={{ justifyContent: 'space-around', marginLeft: '4%' }}>
-                        <HelpTitle style={{ marginBottom: '4%' }}>Acompanhamento {'\n'}Hospitalar</HelpTitle>
+                        <HelpTitle style={{ marginBottom: '4%' }}> {helpTypeName} </HelpTitle>
                         <HelpDescription>
                             Título da ajuda <HelpBoldDescription>{title}</HelpBoldDescription>
                         </HelpDescription>

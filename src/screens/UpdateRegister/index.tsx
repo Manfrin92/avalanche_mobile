@@ -22,7 +22,7 @@ import UpdateOption from '../../components/UpdateOption';
 import UpdateRegisterOptionHeader from '../../components/UpdateRegisterOptionHeader';
 import RegisterFooterButtons from '../../components/RegisterFooterButtons';
 import MaskedInput from '../../components/MaskedInput';
-import { cepPattern } from '../../utils/RegexPatterns';
+import { cepPattern, phonePattern } from '../../utils/RegexPatterns';
 
 const UpdateRegister: React.FC = () => {
     const [selecting, setSelecting] = useState(true);
@@ -261,6 +261,13 @@ const UpdateRegister: React.FC = () => {
                     if (mounted) {
                         setUserAddress({
                             ...receivedRawAddress.data,
+                            phoneNumber:
+                                receivedRawAddress.data && receivedRawAddress.data.phoneNumber
+                                    ? receivedRawAddress.data.phoneNumber.replace(
+                                          phonePattern.Regex,
+                                          phonePattern.Mask,
+                                      )
+                                    : '',
                             addressNumber: receivedRawAddress.data.addressNumber
                                 ? `${receivedRawAddress.data.addressNumber}`
                                 : '',
@@ -389,9 +396,9 @@ const UpdateRegister: React.FC = () => {
                                 <Input
                                     ref={phoneNumberRef}
                                     maxLength={11}
-                                    labelName="TELEFONE"
-                                    name="phoneNumber"
                                     keyboardType="number-pad"
+                                    name="phoneNumber"
+                                    labelName="Telefone"
                                     returnKeyType="next"
                                     onSubmitEditing={() => {
                                         passwordRef.current?.focus();

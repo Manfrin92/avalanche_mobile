@@ -95,23 +95,31 @@ export interface SecondFormHelpData {
     addressCountry: string;
 }
 
-export interface HelpDataToShow {
+export interface HelpDateDataToShow {
     id: string;
-    email?: string;
-    title?: string;
-    description?: string | null;
-    observation?: string | null;
-    addressZipCode?: string;
-    addressStreet?: string;
-    addressNumber?: string;
-    addressCity?: string;
-    addressState?: string;
-    addressComplement?: string;
-    addressArea?: string;
-    addressCountry?: string;
-    helpDateId?: string;
-    helpDate?: Date;
+    date: string;
+    help: {
+        id: string;
+        title: string;
+        description: string;
+        observation?: string | null;
+        imageName?: string | null;
+        userManager: UserManager;
+        needy: Needy;
+        address: Address;
+    };
+    type: Type;
     ExcludeHelp(): Promise<void>;
+}
+
+export interface UserManager {
+    id: string;
+    name: string;
+    email: string;
+    cpf: string;
+    ddd: string;
+    phoneNumber: string;
+    address: Address;
 }
 
 export interface Address {
@@ -122,4 +130,21 @@ export interface Address {
     addressArea: string;
     addressCity: string;
     addressState: string;
+    addressCountry?: string;
+    id?: string;
+}
+
+export interface Needy {
+    id: string;
+    name: string;
+    email: string;
+    showContact: boolean;
+    ddd: string;
+    phoneNumber: string;
+}
+
+export interface Type {
+    id: string;
+    name: string;
+    groupName: string;
 }

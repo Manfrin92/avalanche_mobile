@@ -6,7 +6,7 @@ import api from '../../services/api';
 import MainHeader from '../../components/MainHeader';
 import HelpItem from '../../components/HelpItem';
 import NewHelpButton from '../../components/NewHelpButton';
-import { HelpDataToShow } from '../../utils/Interfaces';
+import { HelpDateDataToShow } from '../../utils/Interfaces';
 import { ScreenNamesEnum } from '../../utils/enums';
 import { useAuth } from '../../hooks/auth';
 import Loading from '../Loading';
@@ -14,7 +14,7 @@ import Loading from '../Loading';
 const MainScreen: React.FC = () => {
     const { user } = useAuth();
     const navigation = useNavigation();
-    const [helps, setHelps] = useState([] as HelpDataToShow[]);
+    const [helpDates, setHelpDates] = useState([] as HelpDateDataToShow[]);
     const [loading, setLoading] = useState(true);
     const isFocused = useIsFocused();
 
@@ -32,8 +32,8 @@ const MainScreen: React.FC = () => {
                             setLoading(true);
                             try {
                                 await api.delete(`help/${id}`);
-                                const newHelps = helps.filter((help) => help.id !== id);
-                                setHelps(newHelps);
+                                const newHelps = helpDates.filter((helpDate) => helpDate.help.id !== id);
+                                setHelpDates(newHelps);
                                 setLoading(false);
                             } catch (e) {
                                 setLoading(false);
@@ -47,14 +47,15 @@ const MainScreen: React.FC = () => {
                 // // console.log(e);
             }
         },
-        [helps],
+        [helpDates],
     );
 
     const getHelpsByUser = useCallback(async () => {
         try {
             if (user && user.id) {
                 const helpsRaw = await api.get(`/help/${user.id}`);
-                setHelps([...helpsRaw.data]);
+                setHelpDates([...helpsRaw.data]);
+
                 setLoading(false);
             }
         } catch (e) {
@@ -76,17 +77,18 @@ const MainScreen: React.FC = () => {
             <MainHeader navigateToMenu={() => navigation.navigate(ScreenNamesEnum.Menu)} />
 
             <ScrollView>
-                {helps.length > 0 &&
-                    helps.map((help) => {
+                {helpDates.length > 0 &&
+                    helpDates.map((helpDate) => {
                         return (
                             <HelpItem
-                                ExcludeHelp={() => handleExcludeHelp(help.id)}
-                                key={help.id}
-                                id={help.id}
-                                title={help.title}
+                                helpType={helpDate.type}
+                                ExcludeHelp={() => handleExcludeHelp(helpDate.help.id)}
+                                key={helpDate.help.id}
+                                id={helpDate.help.id}
+                                title={helpDate.help.title}
                                 navigate={() =>
                                     navigation.navigate(ScreenNamesEnum.NewHelp, {
-                                        helpId: help.id,
+                                        helpId: helpDate.help.id,
                                         editing: true,
                                     })
                                 }

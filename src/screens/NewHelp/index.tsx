@@ -17,7 +17,7 @@ import { Menu, MenuOptions, MenuOption, MenuTrigger } from 'react-native-popup-m
 import { useNavigation } from '@react-navigation/native';
 import { Form } from '@unform/mobile';
 import { FormHandles } from '@unform/core';
-import { MaterialCommunityIcons, Ionicons } from '@expo/vector-icons';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import DateSelector from '../../components/DateSelector';
 import RegisterFooterButtons from '../../components/RegisterFooterButtons';
 
@@ -26,9 +26,6 @@ import { getAddressByCep } from '../../utils/AppUtil';
 
 import {
     TextTitle,
-    DateContainer,
-    DateText,
-    DescriptionText,
     HelpTitle,
     HelpDescription,
     HelpSubTitle,
@@ -45,7 +42,7 @@ import { ScreenNamesEnum } from '../../utils/enums';
 import HelpHeader from '../../components/HelpHeader';
 import helpImage from '../../../assets/helpImage.jpg';
 import MaskedInput from '../../components/MaskedInput';
-import { cepPattern, hourPattern } from '../../utils/RegexPatterns';
+import { cepPattern, hourPattern, phonePattern } from '../../utils/RegexPatterns';
 import Loading from '../Loading';
 import NeedySelector from '../../components/NeedySelector';
 import Button from '../../components/Button';
@@ -391,7 +388,10 @@ const NewHelp: React.FC<NewHelpProps> = ({ route }) => {
                                 name: response.data.name,
                                 email: response.data.email,
                                 dddPhoneNumber: response.data.dddPhoneNumber,
-                                phoneNumber: response.data.phoneNumber,
+                                phoneNumber: response.data.phoneNumber.replace(
+                                    phonePattern.Regex,
+                                    phonePattern.Mask,
+                                ),
                                 dateHour: `${response.data.dateHour}`,
                             });
                         }
@@ -457,7 +457,10 @@ const NewHelp: React.FC<NewHelpProps> = ({ route }) => {
                         firstFormRef.current.setData({
                             ...needyInCreation,
                             ...help,
-                            phoneNumber: needyInCreation.phoneNumber,
+                            phoneNumber: needyInCreation.phoneNumber.replace(
+                                phonePattern.Regex,
+                                phonePattern.Mask,
+                            ),
                         });
                     }
                 }
@@ -494,14 +497,16 @@ const NewHelp: React.FC<NewHelpProps> = ({ route }) => {
 
     // Editing every change in array
     useEffect(() => {
-        if (route && route.params && route.params.editing && help.addressZipCode) {
+        if (route && route.params && route.params.editing) {
             if (formStage === '1') {
                 if (needyInCreation && needyInCreation.phoneNumber) {
                     if (firstFormRef && firstFormRef.current) {
                         firstFormRef.current.setData({
                             ...needyInCreation,
                             ...help,
-                            phoneNumber: needyInCreation.phoneNumber,
+                            phoneNumber: needyInCreation.phoneNumber
+                                ? needyInCreation.phoneNumber.replace(phonePattern.Regex, phonePattern.Mask)
+                                : '',
                         });
                     }
                 }
@@ -559,7 +564,9 @@ const NewHelp: React.FC<NewHelpProps> = ({ route }) => {
             needyId: selectedNeedy.id,
             showContact: selectedNeedy.showContact,
             dddPhoneNumber: selectedNeedy.ddd ? selectedNeedy.ddd : undefined,
-            phoneNumber: selectedNeedy.phoneNumber ? selectedNeedy.phoneNumber : undefined,
+            phoneNumber: selectedNeedy.phoneNumber
+                ? selectedNeedy.phoneNumber.replace(phonePattern.Regex, phonePattern.Mask)
+                : undefined,
         });
         setFormStage('1');
     }, [selectedNeedy]);

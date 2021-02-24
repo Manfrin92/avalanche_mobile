@@ -315,15 +315,18 @@ const NewHelp: React.FC = () => {
                                 <HelpSubTitle style={{ marginTop: '3%' }}>Data: </HelpSubTitle>
                                 <HelpDescription style={{ marginTop: '3%' }}>
                                     {activeHelpDate.date && format(new Date(activeHelpDate.date), 'dd/MM/yyyy')} às{' '}
-                                    {String(activeHelpDate.date).substr(11, 5)} horas.
+                                    {String(Number(String(activeHelpDate.date).substr(11, 2)) - 3)}
+                                    {String(activeHelpDate.date).substr(13, 3)} horas.
                                 </HelpDescription>
 
                                 <HelpSubTitle style={{ marginTop: '3%' }}>Necessitado: </HelpSubTitle>
                                 <HelpDescription style={{ marginTop: '3%' }}>
                                     {activeHelpDate.help.needy.showContact ? (
                                         <>
-                                            {activeHelpDate.help.needy.name} {'\n'}Telefone: (
-                                            {activeHelpDate.help.needy.ddd}){' '}
+                                            {activeHelpDate.help.needy.name}
+                                            {'\n'}Telefone:
+                                            {activeHelpDate.help.needy.ddd &&
+                                                `(${activeHelpDate.help.needy.ddd})`}{' '}
                                             {activeHelpDate.help.needy.phoneNumber} {'\n'}
                                             E-mail: {activeHelpDate.help.needy.email}
                                         </>
