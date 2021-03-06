@@ -540,16 +540,10 @@ const NewHelp: React.FC<NewHelpProps> = ({ route }) => {
             findNeedyFormRef.current.getFieldValue('nameEmailSearch')
         ) {
             try {
-                //  Quando essa rota estiver buscando aprox. descomentar
-                // const { data } = await api.post('/needy/getNeedyByEmailOrName', {
-                //     name: findNeedyFormRef.current.getFieldValue('nameEmailSearch'),
-                //     email: findNeedyFormRef.current.getFieldValue('nameEmailSearch'),
-                // });
-                // setReturnedNeedies([data]);
-                setLoading(true);
-                const { data } = await api.get('/needy');
-                setReturnedNeedies([...data]);
-                setLoading(false);
+                const { data } = await api.post('/needy/getNeedyByEmailOrName', {
+                    nameOrEmail: findNeedyFormRef.current.getFieldValue('nameEmailSearch'),
+                });
+                setReturnedNeedies(data);
             } catch (e) {
                 console.log('erro busca: ', e);
                 Alert.alert('Erro', 'Falha ao buscar necessitado.');
