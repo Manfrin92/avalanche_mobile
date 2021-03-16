@@ -1,51 +1,57 @@
-import React, { useState, useRef, useCallback, useEffect } from 'react';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
+import { FormHandles } from '@unform/core';
+import { Form } from '@unform/mobile';
+import { format, getDate, getMonth, setDate, setMonth } from 'date-fns';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
-    View,
     Alert,
-    SafeAreaView,
-    Platform,
-    KeyboardAvoidingView,
+
+
+
+
+
+    Image, KeyboardAvoidingView, Platform, SafeAreaView,
+
+
     ScrollView,
     TextInput,
-    Image,
-    TouchableOpacity,
+
+    TouchableOpacity, View
 } from 'react-native';
+import { Menu, MenuOption, MenuOptions, MenuTrigger } from 'react-native-popup-menu';
 import * as Yup from 'yup';
-import { getDate, getMonth, setMonth, format, setDate } from 'date-fns';
-import { Menu, MenuOptions, MenuOption, MenuTrigger } from 'react-native-popup-menu';
-
-import { useNavigation } from '@react-navigation/native';
-import { Form } from '@unform/mobile';
-import { FormHandles } from '@unform/core';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
-import DateSelector from '../../components/DateSelector';
-import RegisterFooterButtons from '../../components/RegisterFooterButtons';
-
-import { HelpData, FirstFormHelpData, SecondFormHelpData } from '../../utils/Interfaces';
-import { getAddressByCep } from '../../utils/AppUtil';
-
-import {
-    TextTitle,
-    HelpTitle,
-    HelpDescription,
-    HelpSubTitle,
-    Square,
-    Text,
-    styles,
-    menuSelectedTextAvailable,
-} from './styles';
-import getValidationsErrors from '../../utils/getValidationsErrors';
-import Input from '../../components/Input';
-import api from '../../services/api';
-import { useAuth } from '../../hooks/auth';
-import { ScreenNamesEnum } from '../../utils/enums';
-import HelpHeader from '../../components/HelpHeader';
 import helpImage from '../../../assets/helpImage.jpg';
+import Button from '../../components/Button';
+import DateSelector from '../../components/DateSelector';
+import HelpHeader from '../../components/HelpHeader';
+import Input from '../../components/Input';
 import MaskedInput from '../../components/MaskedInput';
+import NeedySelector from '../../components/NeedySelector';
+import RegisterFooterButtons from '../../components/RegisterFooterButtons';
+import { useAuth } from '../../hooks/auth';
+import api from '../../services/api';
+import { getAddressByCep } from '../../utils/AppUtil';
+import { ScreenNamesEnum } from '../../utils/enums';
+import getValidationsErrors from '../../utils/getValidationsErrors';
+import { FirstFormHelpData, HelpData, SecondFormHelpData } from '../../utils/Interfaces';
 import { cepPattern, hourPattern, phonePattern } from '../../utils/RegexPatterns';
 import Loading from '../Loading';
-import NeedySelector from '../../components/NeedySelector';
-import Button from '../../components/Button';
+import {
+    HelpDescription,
+    HelpSubTitle, HelpTitle,
+
+
+
+
+
+    menuSelectedTextAvailable, Square,
+
+    styles, Text, TextTitle
+} from './styles';
+
+
+
 
 interface SkillType {
     id: string;
@@ -794,7 +800,7 @@ const NewHelp: React.FC<NewHelpProps> = ({ route }) => {
                             initialData={help}
                         >
                             <ScrollView style={{ marginTop: '6%' }}>
-                                <TextTitle>Local das ajuda:</TextTitle>
+                                <TextTitle>Local da ajuda:</TextTitle>
 
                                 <MaskedInput
                                     maskName="cep"
