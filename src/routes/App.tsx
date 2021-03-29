@@ -1,15 +1,15 @@
+import { CardStyleInterpolators, createStackNavigator } from '@react-navigation/stack';
 import React from 'react';
-
-import { createStackNavigator, CardStyleInterpolators } from '@react-navigation/stack';
-
+import FindHelp from '../screens/FindHelp';
 import Login from '../screens/Login';
 import LoginRegister from '../screens/LoginRegister';
-import Register from '../screens/Register';
 import MainScreen from '../screens/MainScreen';
 import Menu from '../screens/Menu';
 import NewHelp from '../screens/NewHelp';
+import Register from '../screens/Register';
 import UpdateRegister from '../screens/UpdateRegister';
-import FindHelp from '../screens/FindHelp';
+
+
 
 const App = createStackNavigator();
 
@@ -25,8 +25,8 @@ const AppRoutes: React.FC = () => {
                 cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
             }}
         >
-            <App.Screen name="Main" component={MainScreen} />
             <App.Screen name="LoginRegister" component={LoginRegister} />
+            <App.Screen name="Main" component={MainScreen} />
             <App.Screen name="Login" component={Login} />
             <App.Screen name="Register" component={Register} />
             <App.Screen name="Menu" component={Menu} />
