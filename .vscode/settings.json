@@ -1,0 +1,12 @@
+{
+    "files.exclude": {
+        "**/.git": true,
+        "**/.DS_Store": true,
+        "package-lock.json": true,
+        "yarn.lock": true,
+        "**/node_modules": true,
+        "**/avalanche": true,
+        "**/dist": true,
+        "node_modules": true
+    },
+}
